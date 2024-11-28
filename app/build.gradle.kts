@@ -5,7 +5,7 @@ plugins {
 
 android {
   namespace = "com.yandex.yaweather"
-  compileSdk = 34
+  compileSdk = 35
 
   defaultConfig {
     applicationId = "com.yandex.yaweather"
