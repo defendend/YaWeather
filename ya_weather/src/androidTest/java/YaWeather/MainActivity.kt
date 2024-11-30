@@ -1,0 +1,4 @@
+package YaWeather
+
+class MainActivity {
+}
