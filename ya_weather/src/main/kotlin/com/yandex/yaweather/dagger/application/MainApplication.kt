@@ -1,9 +1,9 @@
 package dagger.application
 
 import android.app.Application
-import dagger.component.AppComponent
-import dagger.component.DaggerAppComponent
-import data.diModules.ApplicationContextProvider
+import com.yandex.yaweather.dagger.component.AppComponent
+import com.yandex.yaweather.dagger.component.DaggerAppComponent
+import com.yandex.yaweather.data.diModules.ApplicationContextProvider
 
 
 class MainApplication : Application() {

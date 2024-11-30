@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
-import ui.screens.WeatherScreen
+import com.yandex.yaweather.ui.screens.WeatherScreen
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {

@@ -1,4 +1,4 @@
-package data.diModules
+package com.yandex.yaweather.data.diModules
 
 import android.app.Application
 import android.content.Context
