@@ -1,6 +1,8 @@
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
+  kotlin("kapt")
+  kotlin("plugin.serialization") version "2.0.20"
 }
 
 android {
@@ -40,4 +42,17 @@ dependencies {
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)
   androidTestImplementation(libs.androidx.espresso.core)
+
+  //network
+  implementation(libs.retrofit)
+  implementation(libs.kotlinx.serialization.json)
+  implementation(libs.retrofit2.kotlinx.serialization.converter)
+  implementation(libs.okhttp)
+  implementation(libs.logging.interceptor)
+
+  //dagger
+  implementation(libs.dagger)
+  kapt(libs.dagger.compiler)
+  implementation(libs.dagger.android)
+  kapt(libs.dagger.android.processor)
 }
