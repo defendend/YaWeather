@@ -1,5 +1,6 @@
 package data.network
 
+import com.yandex.yaweather.data.network.WeatherApi
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit

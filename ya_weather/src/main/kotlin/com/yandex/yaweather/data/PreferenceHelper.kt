@@ -1,4 +1,4 @@
-package data
+package com.yandex.yaweather.data
 
 import android.content.Context
 import android.content.SharedPreferences

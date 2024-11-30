@@ -1,5 +1,6 @@
-package data.network
+package com.yandex.yaweather.data.network
 
+import data.network.CoordinatesResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
