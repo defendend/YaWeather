@@ -18,8 +18,8 @@ class MainActivity : ComponentActivity() {
         const val mainScreen = "MainScreen"
     }
 
-    @Inject
-    lateinit var YaWeatherViewModel: YaWeatherViewModel
+//    @Inject
+//    lateinit var YaWeatherViewModel: YaWeatherViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
