@@ -68,5 +68,4 @@ dependencies {
 
   //compose
   implementation(libs.androidx.activity)
-  implementation(libs.androidx.navigation.compose)
 }
