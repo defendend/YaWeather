@@ -55,4 +55,17 @@ dependencies {
   kapt(libs.dagger.compiler)
   implementation(libs.dagger.android)
   kapt(libs.dagger.android.processor)
+
+  //coroutines
+  implementation(libs.kotlinx.coroutines.android)
+
+  //ui
+  implementation (libs.androidx.material3)
+  implementation(libs.androidx.ui)
+  implementation(libs.androidx.material)
+  implementation (libs.androidx.ui.tooling.preview)
+
+  //compose
+  implementation(libs.androidx.activity)
+  implementation(libs.androidx.navigation.compose)
 }
