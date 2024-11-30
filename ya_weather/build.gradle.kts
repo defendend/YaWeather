@@ -1,8 +1,10 @@
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.android)
+  alias(libs.plugins.kotlin.compose)
   kotlin("kapt")
   kotlin("plugin.serialization") version "2.0.20"
+
 }
 
 android {
@@ -63,8 +65,15 @@ dependencies {
   //ui
   implementation (libs.androidx.material3)
   implementation(libs.androidx.ui)
-  implementation(libs.androidx.material)
   implementation (libs.androidx.ui.tooling.preview)
+
+  //Navigation
+  implementation(libs.navigation.compose)
+  implementation(libs.androidx.navigation.fragment)
+  implementation(libs.androidx.navigation.ui)
+  implementation(libs.androidx.navigation.dynamic.features.fragment)
+  androidTestImplementation(libs.androidx.navigation.testing)
+
 
   //compose
   implementation(libs.androidx.activity)
