@@ -63,9 +63,9 @@ dependencies {
   implementation(libs.kotlinx.coroutines.android)
 
   //ui
-  implementation (libs.androidx.material3)
+  implementation(libs.androidx.material3)
   implementation(libs.androidx.ui)
-  implementation (libs.androidx.ui.tooling.preview)
+  implementation(libs.androidx.ui.tooling.preview)
 
   //Navigation
   implementation(libs.navigation.compose)
@@ -77,4 +77,5 @@ dependencies {
 
   //compose
   implementation(libs.androidx.activity)
+
 }
