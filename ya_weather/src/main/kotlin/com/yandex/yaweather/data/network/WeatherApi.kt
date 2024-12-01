@@ -11,5 +11,5 @@ interface WeatherApi {
     @Query("lat") lat: String,
     @Query("lon") lon: String,
     @Query("appid") appid: String
-  ): Response<CoordinatesResponse>
+  ): CoordinatesResponse
 }

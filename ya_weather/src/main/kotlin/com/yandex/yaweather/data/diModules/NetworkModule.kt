@@ -1,6 +1,7 @@
 package data.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.yandex.yaweather.data.network.WeatherApi
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
@@ -8,7 +9,6 @@ import okhttp3.MediaType.Companion.toMediaType
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import javax.inject.Singleton
 
 @Module
 class NetworkProvider {
@@ -24,4 +24,7 @@ class NetworkProvider {
       .client(okHttpClient)
       .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
       .build()
+
+  @Provides
+  fun providesHomeApi(retrofit: Retrofit): WeatherApi = retrofit.create(WeatherApi::class.java)
 }
