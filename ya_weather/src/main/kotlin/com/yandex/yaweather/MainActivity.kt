@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    enableEdgeToEdge()
     (application as MainApplication).mainComponent.inject(this)
     setContent {
       val uiState by viewModel.currentWeatherState.collectAsState()
