@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,198 +35,202 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yandex.yaweather.R
+import com.yandex.yaweather.handler.WeatherScreenAction
+import data.network.CoordinatesResponse
 
 @Composable
-fun WeatherScreen() {
-    LazyColumn(
+fun WeatherScreen(uiState: CoordinatesResponse, action: (WeatherScreenAction) -> Unit) {
+  LazyColumn(
+    modifier = Modifier
+      .fillMaxSize()
+      .background(color = Color.Gray)
+      .padding(16.dp),
+    verticalArrangement = Arrangement.spacedBy(16.dp)
+  ) {
+    item {
+      Row(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Default.Menu,
-                        contentDescription = "Settings"
-                    )
-                }
-                IconButton(onClick = { }) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add"
-                    )
-                }
-            }
+          .fillMaxWidth()
+          .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        IconButton(onClick = {}) {
+          Icon(
+            imageVector = Icons.Default.Settings,
+            contentDescription = "Settings"
+          )
         }
-
-        item {
-            Column(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Лондон, Англия",
-                    fontSize = 24.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "10°",
-                    fontSize = 64.sp,
-                    color = Color.White,
-                    fontWeight = FontWeight.ExtraBold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Макс. 14° Мин. 11°",
-                    fontSize = 16.sp,
-                    color = Color.LightGray
-                )
-            }
+        IconButton(onClick = { action(WeatherScreenAction.AddCityAction) }) {
+          Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = "Add"
+          )
         }
-
-        item {
-            HourlyForecast()
-        }
-
-        item {
-            TenDayForecast()
-        }
+      }
     }
+
+    item {
+      Column(
+        modifier = Modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        Text(
+          text = uiState.name.toString(),
+          fontSize = 24.sp,
+          color = Color.White,
+          fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+          text = (if ((uiState.main?.temp?.toInt() ?: 0) > 273) "+" else "") +
+            ((uiState.main?.temp?.toInt()?.minus(273)) ?: 0).toString() + "°",
+          fontSize = 64.sp,
+          color = Color.White,
+          fontWeight = FontWeight.ExtraBold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+          text = "Макс. 14° Мин. 11°",
+          fontSize = 16.sp,
+          color = Color.LightGray
+        )
+      }
+    }
+
+    item {
+      HourlyForecast()
+    }
+
+    item {
+      TenDayForecast()
+    }
+  }
 }
 
 @Composable
 fun HourlyForecast() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.DarkGray, RoundedCornerShape(16.dp))
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "ПОЧАСОВОЙ ПРОГНОЗ",
-            fontSize = 16.sp,
-            color = Color.LightGray,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .background(Color.DarkGray, RoundedCornerShape(16.dp))
+      .padding(16.dp)
+  ) {
+    Text(
+      text = "ПОЧАСОВОЙ ПРОГНОЗ",
+      fontSize = 16.sp,
+      color = Color.LightGray,
+      fontWeight = FontWeight.Bold
+    )
+    Spacer(modifier = Modifier.height(8.dp))
 
-        LazyRow(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
+    LazyRow(
+      horizontalArrangement = Arrangement.spacedBy(16.dp),
+      modifier = Modifier.fillMaxWidth()
+    ) {
+      items(50) { index ->
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier.width(60.dp)
         ) {
-            items(50) { index ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.width(60.dp)
-                ) {
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(text = "10°", color = Color.White, fontSize = 18.sp)
-                    Icon(
-                        painter = painterResource(id = R.drawable.heavy_showers_fill),
-                        contentDescription = null,
-                        tint = Color.LightGray,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "${String.format("%02d", (index + 1) % 24)} h",
-                        color = Color.LightGray,
-                        fontSize = 14.sp
-                    )
-                }
-            }
+          Spacer(modifier = Modifier.height(4.dp))
+          Text(text = "10°", color = Color.White, fontSize = 18.sp)
+          Icon(
+            painter = painterResource(id = R.drawable.heavy_showers_fill),
+            contentDescription = null,
+            tint = Color.LightGray,
+            modifier = Modifier.size(24.dp)
+          )
+          Spacer(modifier = Modifier.height(4.dp))
+          Text(
+            text = "${String.format("%02d", (index + 1) % 24)} h",
+            color = Color.LightGray,
+            fontSize = 14.sp
+          )
         }
+      }
     }
+  }
 }
+
 @Composable
 fun TenDayForecast() {
-    var itemCount by remember { mutableIntStateOf(5) }
-    var showMoreButton by remember { mutableStateOf(true) }
+  var itemCount by remember { mutableIntStateOf(5) }
+  var showMoreButton by remember { mutableStateOf(true) }
 
-    Column(
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .background(Color.DarkGray, RoundedCornerShape(16.dp))
+      .padding(16.dp)
+  ) {
+    Text(
+      text = "10-ДНЕВНЫЙ ПРОГНОЗ",
+      fontSize = 16.sp,
+      color = Color.LightGray,
+      fontWeight = FontWeight.Bold
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+
+    repeat(itemCount) {
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.DarkGray, RoundedCornerShape(16.dp))
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "10-ДНЕВНЫЙ ПРОГНОЗ",
-            fontSize = 16.sp,
-            color = Color.LightGray,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        repeat(itemCount) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "Сб", color = Color.White, fontSize = 16.sp)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.heavy_showers_fill),
-                        contentDescription = null,
-                        tint = Color.LightGray,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "11°", color = Color.LightGray, fontSize = 14.sp)
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = "14°", color = Color.White, fontSize = 16.sp)
-                }
-            }
+          .fillMaxWidth()
+          .padding(vertical = 12.dp)
+      ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Spacer(modifier = Modifier.width(4.dp))
+          Text(text = "Сб", color = Color.White, fontSize = 16.sp)
         }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (showMoreButton) {
-            TextButton(
-                onClick = {
-                    if (itemCount < 10) {
-                        itemCount += 5
-                    }
-                    showMoreButton = false
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(
-                    text = "Показать ещё",
-                    color = Color.LightGray
-                )
-            }
-        } else {
-            TextButton(
-                onClick = {
-                    itemCount = 5
-                    showMoreButton = true
-                },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(
-                    text = "Скрыть",
-                    color = Color.LightGray
-                )
-            }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Icon(
+            painter = painterResource(id = R.drawable.heavy_showers_fill),
+            contentDescription = null,
+            tint = Color.LightGray,
+            modifier = Modifier.size(14.dp)
+          )
+          Spacer(modifier = Modifier.width(4.dp))
+          Text(text = "11°", color = Color.LightGray, fontSize = 14.sp)
         }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Spacer(modifier = Modifier.width(4.dp))
+          Text(text = "14°", color = Color.White, fontSize = 16.sp)
+        }
+      }
     }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    if (showMoreButton) {
+      TextButton(
+        onClick = {
+          if (itemCount < 10) {
+            itemCount += 5
+          }
+          showMoreButton = false
+        },
+        modifier = Modifier.align(Alignment.CenterHorizontally)
+      ) {
+        Text(
+          text = "Показать ещё",
+          color = Color.LightGray
+        )
+      }
+    } else {
+      TextButton(
+        onClick = {
+          itemCount = 5
+          showMoreButton = true
+        },
+        modifier = Modifier.align(Alignment.CenterHorizontally)
+      ) {
+        Text(
+          text = "Скрыть",
+          color = Color.LightGray
+        )
+      }
+    }
+  }
 }
