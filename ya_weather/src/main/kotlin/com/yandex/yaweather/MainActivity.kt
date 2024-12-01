@@ -8,7 +8,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ui.screens.WeatherScreen
+import com.yandex.yaweather.ui.screens.CitySelectionScreen
+import com.yandex.yaweather.ui.screens.SplashScreen
+import com.yandex.yaweather.ui.screens.WeatherScreen
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
@@ -28,10 +30,17 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             // Use NavHost to manage navigation
-            NavHost(navController, startDestination = "weather_screen") {
-                composable("weather_screen") {
-                    WeatherScreen()
+            NavHost(navController, startDestination = "splash_screen") {
+                composable("splash_screen") {
+                    SplashScreen(navController)
                 }
+                composable("weather_screen") {
+                    WeatherScreen(navController)
+                }
+                composable("city_selection_screen") {
+                    CitySelectionScreen()
+                }
+
             }
         }
     }

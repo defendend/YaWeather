@@ -33,10 +33,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.yandex.yaweather.R
 
 @Composable
-fun WeatherScreen() {
+fun WeatherScreen(navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +59,7 @@ fun WeatherScreen() {
                         contentDescription = "Settings"
                     )
                 }
-                IconButton(onClick = {}) {
+                IconButton(onClick = {navController.navigate("city_selection_screen")}) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Add"

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -24,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+
 @Composable
 fun CitySelectionScreen() {
   Scaffold(
@@ -33,6 +35,15 @@ fun CitySelectionScreen() {
   ) { paddingValues ->
     LazyColumn(contentPadding = paddingValues) {
       item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+
     }
   }
 }
@@ -46,7 +57,7 @@ fun WeatherSearchBar() {
   SearchBar(
     query = query,
     onQueryChange = { query = it },
-    onSearch = { /* Handle search */ },
+    onSearch = {  },
     active = active,
     onActiveChange = { active = it },
     placeholder = { Text("Search...") },
@@ -55,11 +66,16 @@ fun WeatherSearchBar() {
       .padding(10.dp)
   ) {
     Text("Search result for \"$query\"")
+    LazyColumn {
+      items(listOf<String>("Хуйинск", "Залупинск", "Мухосранск")) { result ->
+        Text(text = result, modifier = Modifier.padding(8.dp))
+      }
+    }
   }
 }
 
 @Composable
-fun City(CityName: String, cityTimeMinutes: Int, temperatureCelsius: Int, weather: String, h: Int, l: Int) {
+fun City(cityName: String, cityTimeMinutes: Int, temperatureCelsius: Int, weather: String, h: Int, l: Int) {
   cityTimeMinutes / (1000 * 60) % 60
   val hours = cityTimeMinutes / (1000 * 60 * 60) % 24
   Box(
@@ -73,7 +89,7 @@ fun City(CityName: String, cityTimeMinutes: Int, temperatureCelsius: Int, weathe
     Column(modifier = Modifier
       .align(Alignment.TopStart)
       .padding(10.dp)) {
-      Text(text = CityName, fontSize = 30.sp, color = Color.White)
+      Text(text = cityName, fontSize = 30.sp, color = Color.White)
       Text("12:13 PM", color = Color.White)
     }
     Text(text = "$temperatureCelsius°", modifier = Modifier

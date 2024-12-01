@@ -19,21 +19,32 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.yandex.yaweather.R
+import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen() {
-  Box(modifier = Modifier.fillMaxWidth().background(Color(0xFF7BD3F7))) {
+fun SplashScreen(navController: NavController) {
+  Image(painter = painterResource(R.drawable.img),
+    modifier = Modifier.fillMaxSize(),
+    contentDescription = "Sun Icon",
+    contentScale = ContentScale.Crop)
+  Box(modifier = Modifier.fillMaxSize()) {
     AnimatedSun()
     MovingCloud()
+  }
+  LaunchedEffect(Unit) {
+    delay(3000)
+    navController.navigate("weather_screen")
   }
 }
 
@@ -87,8 +98,8 @@ fun MovingCloud() {
 
   Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center)
   {
-    DrawAnimatedCloud(-400f, 250f, 1)
-    DrawAnimatedCloud(-400f, 200f, 3)
+    DrawAnimatedCloud(-400f, 290f, 1)
+    DrawAnimatedCloud(-400f, 300f, 3)
     DrawAnimatedCloud(-400f, 350f, 4)
     DrawAnimatedCloud(-400f, 4000f, 6)
   }
@@ -110,7 +121,7 @@ private fun DrawAnimatedCloud(initialValue: Float, targetValue:Float, cloudId: I
     initialValue = initialValue,
     targetValue = targetValue,
     animationSpec = infiniteRepeatable(
-      animation = tween(durationMillis = 6500, easing = LinearEasing),
+      animation = tween(durationMillis = 7000, easing = LinearEasing),
       repeatMode = RepeatMode.Restart
     ),
     label = ""
@@ -124,5 +135,4 @@ private fun DrawAnimatedCloud(initialValue: Float, targetValue:Float, cloudId: I
         .offset(animatedOffset.dp, 0.dp)
     )
   }
-
 }
