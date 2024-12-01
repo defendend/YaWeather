@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
     setContent {
       val currentWeatherState = viewModel.currentWeatherState.collectAsState()
       val navController = rememberNavController()
+
       NavHost(navController, startDestination = "weather_screen") {
         composable("weather_screen") {
           WeatherScreen()
