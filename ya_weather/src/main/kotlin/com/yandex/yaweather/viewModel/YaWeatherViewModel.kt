@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yandex.yaweather.repository.OpenWeatherRepository
 import data.network.CoordinatesResponse
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +31,7 @@ class YaWeatherViewModel @Inject constructor(private val weatherRepository: Open
   val errorMessage = _errorMessage.asStateFlow()
 
   fun getCurrentWeather(lat: String, lon: String) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       weatherRepository.getCurrentWeather(lat, lon).onSuccess {
         _currentWeather.value = it
       }.onFailure {

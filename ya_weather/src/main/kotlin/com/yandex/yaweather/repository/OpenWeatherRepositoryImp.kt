@@ -1,6 +1,7 @@
 package com.yandex.yaweather.repository
 
 import android.view.WindowManager.BadTokenException
+import com.yandex.yaweather.data.diModules.WeatherRetrofitQualifier
 import com.yandex.yaweather.data.network.ForecastResponse
 import com.yandex.yaweather.data.network.WeatherApi
 import data.network.CoordinatesResponse

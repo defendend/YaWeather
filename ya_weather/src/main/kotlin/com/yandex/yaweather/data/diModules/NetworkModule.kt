@@ -1,6 +1,9 @@
 package data.network
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import com.yandex.yaweather.data.diModules.CityRetrofitQualifier
+import com.yandex.yaweather.data.diModules.WeatherRetrofitQualifier
+import com.yandex.yaweather.data.network.CityApi
 import com.yandex.yaweather.data.network.WeatherApi
 import dagger.Module
 import dagger.Provides
@@ -17,8 +20,9 @@ class NetworkProvider {
   @Provides
   fun providesOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
 
+  @WeatherRetrofitQualifier
   @Provides
-  fun providesRetrofit(okHttpClient: OkHttpClient): Retrofit =
+  fun providesWeatherRetrofit(okHttpClient: OkHttpClient): Retrofit =
     Retrofit.Builder()
       .baseUrl("https://api.openweathermap.org/")
       .client(okHttpClient)
@@ -26,5 +30,17 @@ class NetworkProvider {
       .build()
 
   @Provides
-  fun providesHomeApi(retrofit: Retrofit): WeatherApi = retrofit.create(WeatherApi::class.java)
+  fun providesHomeApi(@WeatherRetrofitQualifier retrofit: Retrofit): WeatherApi =
+    retrofit.create(WeatherApi::class.java)
+
+  @CityRetrofitQualifier
+  @Provides
+  fun providesCityRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+    .baseUrl("http://htmlweb.ru/")
+    .client(okHttpClient)
+    .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+    .build()
+
+  @Provides
+  fun providerCityApi(@CityRetrofitQualifier retrofit: Retrofit): CityApi = retrofit.create(CityApi::class.java)
 }
