@@ -1,5 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,82 +41,68 @@ import com.yandex.yaweather.R
 import com.yandex.yaweather.handler.WeatherScreenAction
 import data.network.CoordinatesResponse
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WeatherScreen(uiState: CoordinatesResponse, action: (WeatherScreenAction) -> Unit) {
-  Box(modifier = Modifier
-    .fillMaxSize()
-    .background(color = Color.Gray)
-    .padding(16.dp)) {
-    LazyColumn(
-      modifier = Modifier
-        .fillMaxSize()
-        .background(color = Color.Gray)
-        .padding(16.dp)
-        .padding(top = 36.dp),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-      horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-      item {
-        Column(
-          modifier = Modifier,
-          horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-          Text(
-            text = uiState.name.toString(),
-            fontSize = 24.sp,
-            color = Color.White,
-            fontWeight = FontWeight.Bold
-          )
-          Spacer(modifier = Modifier.height(8.dp))
-          Text(
-            text = (if ((uiState.main?.temp?.toInt() ?: 0) > 273) "+" else "") +
-              ((uiState.main?.temp?.toInt()?.minus(273)) ?: 0).toString() + "°",
-            fontSize = 64.sp,
-            color = Color.White,
-            fontWeight = FontWeight.ExtraBold
-          )
-          Spacer(modifier = Modifier.height(8.dp))
-          Text(
-            text = "Макс. 14° Мин. 11°",
-            fontSize = 16.sp,
-            color = Color.LightGray
-          )
-        }
-      }
-
-      item {
-        HourlyForecast(modifier = Modifier)
-      }
-
-      item {
-        TenDayForecast()
-      }
+  Scaffold(
+    topBar = {
+      TopBar(Modifier, action)
     }
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(start =  8.dp, end = 8.dp, top = 24.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-      IconButton(onClick = {}) {
-        Icon(
-          imageVector = Icons.Default.Settings,
-          contentDescription = "Settings"
-        )
-      }
-      IconButton(onClick = { action(WeatherScreenAction.AddCityAction) }) {
-        Icon(
-          imageVector = Icons.Default.Add,
-          contentDescription = "Add"
-        )
+  ) { innerPadding ->
+    Box(modifier = Modifier
+      .fillMaxSize()
+      .background(color = Color.Gray)
+      .padding(16.dp)) {
+      LazyColumn(
+        modifier = Modifier
+          .fillMaxSize()
+          .background(color = Color.Gray)
+          .padding(top = 54.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        item {
+          Column(
+            modifier = Modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
+          ) {
+            Text(
+              text = uiState.name.toString(),
+              fontSize = 24.sp,
+              color = Color.White,
+              fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+              text = (if ((uiState.main?.temp?.toInt() ?: 0) > 273) "+" else "") +
+                ((uiState.main?.temp?.toInt()?.minus(273)) ?: 0).toString() + "°",
+              fontSize = 64.sp,
+              color = Color.White,
+              fontWeight = FontWeight.ExtraBold
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+              text = "Макс. 14° Мин. 11°",
+              fontSize = 16.sp,
+              color = Color.LightGray
+            )
+          }
+        }
+
+        item {
+          HourlyForecast(modifier = Modifier, uiState)
+        }
+
+        item {
+          TenDayForecast()
+        }
       }
     }
   }
 }
 
 @Composable
-fun HourlyForecast(modifier: Modifier) {
+fun HourlyForecast(modifier: Modifier, uiState: CoordinatesResponse) {
   Column(
     modifier = modifier
       .fillMaxWidth()
@@ -123,7 +111,7 @@ fun HourlyForecast(modifier: Modifier) {
   ) {
     Text(
       modifier = modifier.padding(start = 8.dp),
-      text = "ПОЧАСОВОЙ ПРОГНОЗ",
+      text = "3 ЧАСОВОЙ ПРОГНОЗ",
       fontSize = 16.sp,
       color = Color.LightGray,
       fontWeight = FontWeight.Bold
@@ -155,6 +143,30 @@ fun HourlyForecast(modifier: Modifier) {
           )
         }
       }
+    }
+  }
+}
+
+@Composable
+fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit) {
+  Row(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(start =  8.dp, end = 8.dp, top = 24.dp),
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    IconButton(onClick = {}) {
+      Icon(
+        imageVector = Icons.Default.Settings,
+        contentDescription = "Settings"
+      )
+    }
+    IconButton(onClick = { action(WeatherScreenAction.AddCityAction) }) {
+      Icon(
+        imageVector = Icons.Default.Add,
+        contentDescription = "Add"
+      )
     }
   }
 }
