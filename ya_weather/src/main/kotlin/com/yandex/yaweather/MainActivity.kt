@@ -8,7 +8,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import ui.screens.WeatherScreen
+import com.yandex.yaweather.ui.screens.WeatherScreen
+
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
@@ -16,9 +17,6 @@ class MainActivity : ComponentActivity() {
     object Route {
         const val mainScreen = "MainScreen"
     }
-
-//    @Inject
-//    lateinit var YaWeatherViewModel: YaWeatherViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

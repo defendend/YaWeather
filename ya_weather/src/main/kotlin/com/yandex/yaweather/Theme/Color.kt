@@ -1,4 +1,4 @@
-package com.abisoft.composetext.ui.theme
+package com.yandex.yaweather.Theme
 
 import androidx.compose.ui.graphics.Color
 

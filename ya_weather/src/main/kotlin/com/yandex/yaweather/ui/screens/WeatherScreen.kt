@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,6 +25,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -54,11 +56,11 @@ fun WeatherScreen() {
             ) {
                 IconButton(onClick = {}) {
                     Icon(
-                        imageVector = Icons.Default.Settings,
+                        imageVector = Icons.Default.Menu,
                         contentDescription = "Settings"
                     )
                 }
-                IconButton(onClick = {}) {
+                IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Add"
@@ -148,11 +150,10 @@ fun HourlyForecast() {
         }
     }
 }
-
 @Composable
 fun TenDayForecast() {
-
     var itemCount by remember { mutableIntStateOf(5) }
+    var showMoreButton by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -197,28 +198,28 @@ fun TenDayForecast() {
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        TextButton(
-            onClick = {
-                if (itemCount < 10) {
-                    itemCount += 5
-                }
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) {
-            Text(
-                text = if (itemCount < 10) "Показать ещё" else "",
-                color = Color.LightGray
-            )
-        }
-
-
-        if (itemCount > 5) {
-            Spacer(modifier = Modifier.height(8.dp))
+        if (showMoreButton) {
+            TextButton(
+                onClick = {
+                    if (itemCount < 10) {
+                        itemCount += 5
+                    }
+                    showMoreButton = false
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "Показать ещё",
+                    color = Color.LightGray
+                )
+            }
+        } else {
             TextButton(
                 onClick = {
                     itemCount = 5
+                    showMoreButton = true
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
