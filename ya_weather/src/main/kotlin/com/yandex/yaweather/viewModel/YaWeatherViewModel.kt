@@ -35,4 +35,7 @@ class YaWeatherViewModel @Inject constructor(private val weatherRepository: Open
       }
     }
   }
+  fun getCurrentTemperature(): String {
+    return ((_currentWeather.value.main?.temp)?.minus(273))?.toInt().toString() ?: "N/A"
+  }
 }
