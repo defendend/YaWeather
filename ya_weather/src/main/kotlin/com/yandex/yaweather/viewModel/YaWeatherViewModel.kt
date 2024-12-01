@@ -4,13 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yandex.yaweather.repository.OpenWeatherRepository
 import data.network.CoordinatesResponse
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class YaWeatherViewModel @Inject constructor(private val weatherRepository: OpenWeatherRepository) : ViewModel() {
-  private val _currentWeather = MutableStateFlow<CoordinatesResponse>(
+  private val _currentWeather = MutableStateFlow(
     CoordinatesResponse(
       base = "",
       visibility = 1,
@@ -21,7 +23,8 @@ class YaWeatherViewModel @Inject constructor(private val weatherRepository: Open
       cod = 200
     )
   )
-  val currentWeatherState = _currentWeather.asStateFlow()
+  val currentWeatherState: StateFlow<CoordinatesResponse>
+    get() = _currentWeather.asStateFlow()
 
   private val _errorMessage = MutableStateFlow<String>("")
   val errorMessage = _errorMessage.asStateFlow()
