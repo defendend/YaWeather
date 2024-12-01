@@ -33,7 +33,7 @@ fun MapScreen(
     cameraPositionState = cameraPositionState,
     onMapClick = { latLng ->
       markerPosition = latLng
-      onMapClick(latLng) // Har safar xarita bosilganda onMapClick ni chaqiramiz
+      onMapClick(latLng)
     },
   ) {
     markerPosition?.let { position ->

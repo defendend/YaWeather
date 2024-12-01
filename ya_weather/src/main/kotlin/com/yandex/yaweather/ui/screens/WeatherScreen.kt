@@ -1,6 +1,5 @@
 package com.yandex.yaweather.ui.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -252,3 +251,6 @@ fun TenDayForecast() {
     }
   }
 }
+
+@Composable
+fun Wigets() {}
