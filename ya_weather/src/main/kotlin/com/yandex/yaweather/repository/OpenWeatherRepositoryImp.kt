@@ -10,7 +10,9 @@ import jakarta.inject.Inject
 class OpenWeatherRepositoryImp @Inject constructor(private val weatherApi: WeatherApi) : OpenWeatherRepository {
 
   override suspend fun getCurrentWeather(lat: String, lon: String): Result<CoordinatesResponse> {
-    return try {
+
+    return try
+    {
       val response = weatherApi.current(lat, lon, "7fd3fa2b3bf71545e2ff3b1a1f0871a0")
       if (response.cod in 200..299) {
         Result.success(response)

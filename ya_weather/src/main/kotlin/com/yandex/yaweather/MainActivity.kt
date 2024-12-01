@@ -21,6 +21,7 @@ class MainActivity : ComponentActivity() {
   }
 
 
+
   @Inject
   lateinit var viewModel: YaWeatherViewModel
 
