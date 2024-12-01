@@ -153,7 +153,7 @@ fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit) {
   Row(
     modifier = modifier
       .fillMaxWidth()
-      .padding(start =  8.dp, end = 8.dp, top = 24.dp),
+      .padding(start =  8.dp, end = 8.dp, top = 36.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically
   ) {
