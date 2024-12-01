@@ -20,7 +20,7 @@ data class ForecastResponse(
   @SerialName("list")
   val list: List<Per3Hour>? = null,
   @SerialName("name")
-  val city: City
+  val city: City? = null
 )
 
 @Serializable

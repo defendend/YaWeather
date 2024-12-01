@@ -1,4 +1,4 @@
-package dagger.application
+package com.yandex.yaweather.dagger.application
 
 import android.app.Application
 import com.yandex.yaweather.dagger.component.AppComponent
