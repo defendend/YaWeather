@@ -1,6 +1,7 @@
 package com.yandex.yaweather.repository
 
 import android.view.WindowManager.BadTokenException
+import com.yandex.yaweather.data.diModules.WeatherRetrofitQualifier
 import com.yandex.yaweather.data.network.ForecastResponse
 import com.yandex.yaweather.data.network.WeatherApi
 import data.network.CoordinatesResponse
@@ -13,7 +14,7 @@ class OpenWeatherRepositoryImp @Inject constructor(private val weatherApi: Weath
 
     return try
     {
-      val response = weatherApi.current(lat, lon, "7fd3fa2b3bf71545e2ff3b1a1f0871a0")
+      val response = weatherApi.current(lat, lon)
       if (response.cod in 200..299) {
         Result.success(response)
       } else {
@@ -26,7 +27,7 @@ class OpenWeatherRepositoryImp @Inject constructor(private val weatherApi: Weath
 
   override suspend fun getForecastWeather(lat: String, lon: String): Result<ForecastResponse> {
     return try {
-      val response = weatherApi.forecast(lat, lon, "7fd3fa2b3bf71545e2ff3b1a1f0871a0")
+      val response = weatherApi.forecast(lat, lon)
       if (response.cod?.toInt() in 200..299) {
         Result.success(response)
       } else {

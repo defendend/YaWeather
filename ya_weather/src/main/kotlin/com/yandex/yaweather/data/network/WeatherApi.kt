@@ -9,13 +9,17 @@ interface WeatherApi {
   suspend fun current(
     @Query("lat") lat: String,
     @Query("lon") lon: String,
-    @Query("appid") appid: String
+    @Query("appid") appid: String = API_KEY
   ): CoordinatesResponse
 
   @GET("data/2.5/forecast")
   suspend fun forecast(
     @Query("lat") lat: String,
     @Query("lon") lon: String,
-    @Query("appid") appid: String
+    @Query("appid") appid: String = API_KEY
   ): ForecastResponse
+
+  companion object{
+    private const val API_KEY = "7fd3fa2b3bf71545e2ff3b1a1f0871a0"
+  }
 }
