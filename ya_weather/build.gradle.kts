@@ -17,6 +17,7 @@ android {
     targetSdk = 34
     versionCode = 1
     versionName = "1.0"
+    resValue("string","google_map_key","AIzaSyAU9u-OLQ-tRYAVcs_q1z8HAs4sgHBkTx0")
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -77,4 +78,9 @@ dependencies {
 
   //compose
   implementation(libs.androidx.activity)
+
+  //map
+  implementation(libs.play.services.maps)
+  implementation(libs.maps.compose)
+
 }
