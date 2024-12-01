@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.yandex.yaweather.ui.screens.WeatherScreen
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
 import dagger.application.MainApplication
+import com.yandex.yaweather.ui.screens.MapScreen
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
@@ -18,6 +19,7 @@ class MainActivity : ComponentActivity() {
   object Route {
     const val mainScreen = "MainScreen"
   }
+
 
   @Inject
   lateinit var viewModel: YaWeatherViewModel
