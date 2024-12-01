@@ -14,17 +14,9 @@ import javax.inject.Inject
 
 class YaWeatherViewModel @Inject constructor(private val weatherRepository: OpenWeatherRepository) : ViewModel() {
   private val _currentWeather = MutableStateFlow(
-    CoordinatesResponse(
-      base = "",
-      visibility = 1,
-      dt = 1L,
-      timezone = 1,
-      id = 1,
-      name = "",
-      cod = 200
-    )
+    WeatherUiState()
   )
-  val currentWeatherState: StateFlow<CoordinatesResponse>
+  val currentWeatherState: StateFlow<WeatherUiState>
     get() = _currentWeather.asStateFlow()
 
   private val _errorMessage = MutableStateFlow<String>("")
@@ -33,13 +25,34 @@ class YaWeatherViewModel @Inject constructor(private val weatherRepository: Open
   fun getCurrentWeather(lat: String, lon: String) {
     viewModelScope.launch(Dispatchers.IO) {
       weatherRepository.getCurrentWeather(lat, lon).onSuccess {
-        _currentWeather.value = it
+        _currentWeather.value = mapResponseToUiState(it)
       }.onFailure {
         _errorMessage.value = it.message.toString()
       }
     }
   }
-  fun getCurrentTemperature(): String {
-    return ((_currentWeather.value.main?.temp)?.minus(273))?.toInt().toString() ?: "N/A"
+
+  private fun mapResponseToUiState(response: CoordinatesResponse): WeatherUiState {
+    return WeatherUiState(
+      cityName = response.name ?: "N/A",
+      temperature = getCurrentTemperature(response),
+      description = response.weather?.firstOrNull()?.description ?: "N/A"
+    )
   }
+
+  private fun getCurrentTemperature(response: CoordinatesResponse): String {
+    return ((response.main?.temp)?.minus(273))?.toInt().toString()
+  }
+}
+
+data class WeatherUiState(
+  val cityName: String = "",
+  val temperature: String = "",
+  val description: String = "",
+  val widgetsUiState: WidgetsUiState = WidgetsUiState()
+) {
+
+  data class WidgetsUiState(
+    val id: String = ""
+  )
 }

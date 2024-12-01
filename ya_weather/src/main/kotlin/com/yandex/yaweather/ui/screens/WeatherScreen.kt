@@ -1,5 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,11 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yandex.yaweather.R
 import com.yandex.yaweather.handler.WeatherScreenAction
+import com.yandex.yaweather.viewModel.WeatherUiState
+import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 import data.network.CoordinatesResponse
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun WeatherScreen(uiState: CoordinatesResponse, action: (WeatherScreenAction) -> Unit) {
+fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
   Scaffold(
     topBar = {
       TopBar(Modifier, action)
@@ -66,15 +69,14 @@ fun WeatherScreen(uiState: CoordinatesResponse, action: (WeatherScreenAction) ->
             horizontalAlignment = Alignment.CenterHorizontally
           ) {
             Text(
-              text = uiState.name.toString(),
+              text = uiState.cityName,
               fontSize = 24.sp,
               color = Color.White,
               fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = (if ((uiState.main?.temp?.toInt() ?: 0) > 273) "+" else "") +
-                ((uiState.main?.temp?.toInt()?.minus(273)) ?: 0).toString() + "°",
+              text = uiState.temperature,
               fontSize = 64.sp,
               color = Color.White,
               fontWeight = FontWeight.ExtraBold
@@ -101,7 +103,7 @@ fun WeatherScreen(uiState: CoordinatesResponse, action: (WeatherScreenAction) ->
 }
 
 @Composable
-fun HourlyForecast(modifier: Modifier, uiState: CoordinatesResponse) {
+fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
   Column(
     modifier = modifier
       .fillMaxWidth()
@@ -253,4 +255,4 @@ fun TenDayForecast() {
 }
 
 @Composable
-fun Wigets() {}
+fun Wigets(modifier: Modifier, uiState: WidgetsUiState) {}
