@@ -37,11 +37,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.yandex.yaweather.R
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
-import data.network.CoordinatesResponse
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -51,10 +51,12 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
       TopBar(Modifier, action)
     }
   ) { innerPadding ->
-    Box(modifier = Modifier
-      .fillMaxSize()
-      .background(color = Color.Gray)
-      .padding(16.dp)) {
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color.Gray)
+        .padding(16.dp)
+    ) {
       LazyColumn(
         modifier = Modifier
           .fillMaxSize()
@@ -100,6 +102,9 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
       }
     }
   }
+  val systemUiController = rememberSystemUiController()
+  systemUiController.setStatusBarColor(Color.Gray)
+  systemUiController.setNavigationBarColor(Color.Gray)
 }
 
 @Composable
@@ -153,7 +158,7 @@ fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit) {
   Row(
     modifier = modifier
       .fillMaxWidth()
-      .padding(start =  8.dp, end = 8.dp, top = 36.dp),
+      .padding(start = 8.dp, end = 8.dp, top = 36.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically
   ) {
@@ -255,4 +260,5 @@ fun TenDayForecast() {
 }
 
 @Composable
-fun Wigets(modifier: Modifier, uiState: WidgetsUiState) {}
+fun Wigets(modifier: Modifier, uiState: WidgetsUiState) {
+}
