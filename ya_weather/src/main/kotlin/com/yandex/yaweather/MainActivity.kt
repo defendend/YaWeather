@@ -14,7 +14,6 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.handler.WeatherScreenAction.AddCityAction
 import com.yandex.yaweather.handler.WeatherScreenAction.OpenMapAction
 import com.yandex.yaweather.ui.screens.CitySelectionScreen
-import com.yandex.yaweather.ui.screens.MapScreen
 import com.yandex.yaweather.ui.screens.WeatherScreen
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
 import dagger.application.MainApplication
