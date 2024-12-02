@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
       viewModel.getCurrentWeather("41.31", "69.24")
       val navController = rememberNavController()
 
-      NavHost(navController, startDestination = Route.openMapScreen) {
+      NavHost(navController, startDestination = Route.mainScreen) {
         composable(Route.mainScreen) {
           WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
         }
