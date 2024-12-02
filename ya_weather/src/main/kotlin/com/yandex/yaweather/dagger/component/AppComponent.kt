@@ -5,7 +5,7 @@ import dagger.Component
 import com.yandex.yaweather.data.diModules.ApplicationContextProvider
 import com.yandex.yaweather.data.diModules.CityFinderProvider
 import com.yandex.yaweather.data.diModules.OpenWeatherRepositoryProvider
-import data.network.NetworkProvider
+import com.yandex.yaweather.data.diModules.NetworkProvider
 
 @Component(
   modules = [
