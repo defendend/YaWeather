@@ -1,4 +1,4 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
   <!-- Base application theme. -->
   <style name="Theme.YaWeather" parent="Theme.AppCompat.DayNight">
     <!-- Primary brand color. -->
@@ -14,9 +14,11 @@
     <!-- Customize your theme here. -->
     <item name="android:windowIsTranslucent">true</item>
   </style>
+
   <style name="Theme.Splash" parent="Theme.Material3.DayNight.NoActionBar">
     <item name="android:windowBackground">@color/white</item>
     <item name="android:windowAnimationStyle">@null</item>
     <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowContentTransitions">true</item>
   </style>
 </resources>

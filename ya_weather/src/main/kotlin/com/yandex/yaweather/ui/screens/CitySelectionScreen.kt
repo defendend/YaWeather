@@ -32,7 +32,7 @@ fun CitySelectionScreen() {
     }
   ) { paddingValues ->
     LazyColumn(contentPadding = paddingValues) {
-      item {City("Tashkent", 100, 30, "rain" ,30, 30)}
+      item { City("Tashkent", 100, 30, "rain", 30, 30) }
     }
   }
 }
@@ -70,20 +70,28 @@ fun City(CityName: String, cityTimeMinutes: Int, temperatureCelsius: Int, weathe
       .height(100.dp)
       .background(color = Color.Black)
   ) {
-    Column(modifier = Modifier
-      .align(Alignment.TopStart)
-      .padding(10.dp)) {
+    Column(
+      modifier = Modifier
+        .align(Alignment.TopStart)
+        .padding(10.dp)
+    ) {
       Text(text = CityName, fontSize = 30.sp, color = Color.White)
       Text("12:13 PM", color = Color.White)
     }
-    Text(text = "$temperatureCelsius°", modifier = Modifier
-      .align(Alignment.TopEnd)
-      .padding(10.dp), fontSize = 40.sp, color = Color.White)
-    Text(weather, modifier = Modifier
-      .align(Alignment.BottomStart)
-      .padding(10.dp), color = Color.White)
-    Text("H:$h° L:$l°", modifier = Modifier
-      .align(Alignment.BottomEnd)
-      .padding(10.dp), color = Color.White)
+    Text(
+      text = "$temperatureCelsius°", modifier = Modifier
+        .align(Alignment.TopEnd)
+        .padding(10.dp), fontSize = 40.sp, color = Color.White
+    )
+    Text(
+      weather, modifier = Modifier
+        .align(Alignment.BottomStart)
+        .padding(10.dp), color = Color.White
+    )
+    Text(
+      "H:$h° L:$l°", modifier = Modifier
+        .align(Alignment.BottomEnd)
+        .padding(10.dp), color = Color.White
+    )
   }
 }
