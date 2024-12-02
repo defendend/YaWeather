@@ -2,6 +2,7 @@ package com.yandex.yaweather.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.yandex.yaweather.repository.OpenWeatherRepository
 import data.network.CoordinatesResponse
 import kotlinx.coroutines.Dispatchers
@@ -42,6 +43,28 @@ class YaWeatherViewModel @Inject constructor(private val weatherRepository: Open
 
   private fun getCurrentTemperature(response: CoordinatesResponse): String {
     return ((response.main?.temp)?.minus(273))?.toInt().toString()
+}
+
+  fun updateMarkerPosition(latLng: LatLng) {
+    viewModelScope.launch(Dispatchers.IO) {
+      try {
+        val lat = latLng.latitude.toString()
+        val lon = latLng.longitude.toString()
+        println("UpdateMarkerPosition :\n lat=$lat, lon=$lon")
+        val response = weatherRepository.getCurrentWeather(lat, lon)
+        if (response.isSuccess) {
+          println("Weather fetched: ${response.getOrNull()?.main?.temp}")
+          _currentWeather.value = mapResponseToUiState(response.getOrNull()!!)
+        } else {
+          println("Error fetching weather: ${response.exceptionOrNull()?.message}")
+          _errorMessage.value = response.exceptionOrNull()?.message.toString()
+        }
+
+      } catch (e: Exception) {
+        println("Exception: ${e.message}")
+        _errorMessage.value = e.message.toString()
+      }
+    }
   }
 }
 
