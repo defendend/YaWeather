@@ -30,7 +30,7 @@ class NetworkProvider {
       .build()
 
   @Provides
-  fun providesHomeApi(@WeatherRetrofitQualifier retrofit: Retrofit): WeatherApi =
+  fun providesWeatherApi(@WeatherRetrofitQualifier retrofit: Retrofit): WeatherApi =
     retrofit.create(WeatherApi::class.java)
 
   @CityRetrofitQualifier
