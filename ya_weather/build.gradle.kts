@@ -17,7 +17,7 @@ android {
     targetSdk = 34
     versionCode = 1
     versionName = "1.0"
-    resValue("string","google_map_key","AIzaSyAU9u-OLQ-tRYAVcs_q1z8HAs4sgHBkTx0")
+    resValue("string", "google_map_key", "AIzaSyAU9u-OLQ-tRYAVcs_q1z8HAs4sgHBkTx0")
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -34,6 +34,9 @@ android {
   }
   kotlinOptions {
     jvmTarget = "11"
+  }
+  buildFeatures {
+    viewBinding = true
   }
 }
 
@@ -64,9 +67,9 @@ dependencies {
   implementation(libs.kotlinx.coroutines.android)
 
   //ui
-  implementation (libs.androidx.material3)
+  implementation(libs.androidx.material3)
   implementation(libs.androidx.ui)
-  implementation (libs.androidx.ui.tooling.preview)
+  implementation(libs.androidx.ui.tooling.preview)
 
   //Navigation
   implementation(libs.navigation.compose)
@@ -87,8 +90,12 @@ dependencies {
 
 
   //Chuck
-  debugImplementation("com.github.chuckerteam.chucker:library:4.0.0")
-  releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
+  debugImplementation(libs.library)
+  releaseImplementation(libs.library.no.op)
+
+  //glance
+  implementation("androidx.glance:glance:1.0.0-alpha05")
+  implementation("androidx.glance:glance-appwidget:1.0.0-alpha05")
 
 
   //Gif
