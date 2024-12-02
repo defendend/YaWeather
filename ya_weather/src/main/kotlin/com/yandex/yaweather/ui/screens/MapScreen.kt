@@ -15,12 +15,14 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.yandex.yaweather.handler.MapScreenAction
+import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
 import data.network.CoordinatesResponse
 @Composable
 fun MapScreen(
-  currentWeatherState: State<CoordinatesResponse>,
-  onMapClick: (LatLng) -> Unit
+  uiState: WeatherUiState,
+  action: (MapScreenAction) -> Unit
 ) {
   val toshekent = LatLng(41.2995, 69.2401)
   val cameraPositionState = rememberCameraPositionState {
@@ -33,13 +35,14 @@ fun MapScreen(
     cameraPositionState = cameraPositionState,
     onMapClick = { latLng ->
       markerPosition = latLng
-      onMapClick(latLng)
+      println("bosilyapti")
+      action(MapScreenAction.UpdateMarkerPositionAction(latLng))
     },
   ) {
     markerPosition?.let { position ->
       Marker(
         state = MarkerState(position = position),
-        title = "Temperature: ${currentWeatherState.value.main?.temp?.minus(273)?.toInt() ?: "N/A"}°C"
+        title = "Temperature: ${uiState.temperature}°C"
       )
     }
   }
