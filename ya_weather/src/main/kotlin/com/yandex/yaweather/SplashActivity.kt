@@ -53,7 +53,7 @@ class SplashActivity : ComponentActivity() {
       delay(3000)
       startActivity(Intent(this@SplashActivity, MainActivity::class.java))
       finish()
-      overridePendingTransition(R.anim.circle_in, R.anim.circle_out)
+      overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
     Box(modifier = Modifier.fillMaxWidth().background(
       brush = Brush.verticalGradient(
