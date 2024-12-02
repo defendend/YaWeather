@@ -1,15 +1,14 @@
-package data.network
+package com.yandex.yaweather.data.diModules
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.yandex.yaweather.data.diModules.CityRetrofitQualifier
-import com.yandex.yaweather.data.diModules.WeatherRetrofitQualifier
 import com.yandex.yaweather.data.network.CityApi
 import com.yandex.yaweather.data.network.WeatherApi
 import dagger.Module
 import dagger.Provides
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
-
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
@@ -18,7 +17,8 @@ class NetworkProvider {
   private val json = Json { ignoreUnknownKeys = true }
 
   @Provides
-  fun providesOkHttpClient(): OkHttpClient = OkHttpClient.Builder().build()
+  fun providesOkHttpClient(context: Context): OkHttpClient =
+    OkHttpClient.Builder().addInterceptor(ChuckerInterceptor.Builder(context).build()).build()
 
   @WeatherRetrofitQualifier
   @Provides

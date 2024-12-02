@@ -86,4 +86,8 @@ dependencies {
   implementation(libs.accompanist.systemuicontroller)
 
 
+  //Chuck
+  debugImplementation("com.github.chuckerteam.chucker:library:4.0.0")
+  releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
+
 }
