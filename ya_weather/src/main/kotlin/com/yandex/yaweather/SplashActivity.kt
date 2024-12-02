@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -41,6 +42,7 @@ import kotlinx.coroutines.delay
 class SplashActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
     setContent {
       SplashScreen()
     }
@@ -55,11 +57,13 @@ class SplashActivity : ComponentActivity() {
     }
     Box(modifier = Modifier.fillMaxWidth().background(
       brush = Brush.verticalGradient(
-        colors = listOf(
-          Color(0xFF4682B4),
-          Color(0xFF87CEFA),
-          Color(0xFFB0E0E6)
-        )
+      colors = listOf(
+        Color(0xFF4682B4),
+        Color(0xFF5A9BD4),
+        Color(0xFF87CEFA),
+        Color(0xFFAEDCF3),
+        Color(0xFFB0E0E6)
+      )
       )
     )) {
       AnimatedSun()
@@ -118,10 +122,8 @@ fun MovingCloud() {
 
   Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center)
   {
-    DrawAnimatedCloud(-350f, 290f, 1, 8000)
-    DrawAnimatedCloud(-350f, 320f, 3, 5000)
-    DrawAnimatedCloud(-350f, 350f, 4, 7000)
-    DrawAnimatedCloud(-400f, 4000f, 6, 1000)
+    DrawAnimatedCloud(-350f, 290f, 2, 8000)
+    DrawAnimatedCloud(-350f, 320f, 1, 5000)
   }
 
 }
@@ -130,12 +132,9 @@ fun MovingCloud() {
 private fun DrawAnimatedCloud(initialValue: Float, targetValue:Float, cloudId: Int, speedMillis: Int){
   val infiniteTransition = rememberInfiniteTransition(label = "")
   val img = when (cloudId) {
-    1 -> R.drawable.cloud1
-    2 -> R.drawable.cloud2
-    3 -> R.drawable.cloud3
-    4 -> R.drawable.cloud4
-    5 -> R.drawable.cloud5
-    else -> R.drawable.plane
+    1 -> R.drawable.cloud_svgrepo_com
+    2 -> R.drawable.cloud_2
+    else -> R.drawable.cloud_svgrepo_com
   }
   val animatedOffset by infiniteTransition.animateFloat(
     initialValue = initialValue,
@@ -151,7 +150,7 @@ private fun DrawAnimatedCloud(initialValue: Float, targetValue:Float, cloudId: I
       painter = painterResource(id = img),
       contentDescription = "Cloud Icon",
       modifier = Modifier
-        .size(140.dp)
+        .size(100.dp)
         .offset(animatedOffset.dp, 0.dp)
     )
   }
