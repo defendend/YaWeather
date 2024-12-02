@@ -90,4 +90,9 @@ dependencies {
   debugImplementation("com.github.chuckerteam.chucker:library:4.0.0")
   releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
 
+
+  //Gif
+  implementation("com.google.accompanist:accompanist-drawablepainter:0.35.0-alpha")
+
+
 }
