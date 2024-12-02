@@ -15,6 +15,7 @@
   import androidx.compose.animation.core.rememberInfiniteTransition
   import androidx.compose.animation.core.tween
   import androidx.compose.foundation.Image
+  import androidx.compose.foundation.background
   import androidx.compose.foundation.layout.Arrangement
   import androidx.compose.foundation.layout.Box
   import androidx.compose.foundation.layout.Column
@@ -29,7 +30,8 @@
   import androidx.compose.ui.Modifier
   import androidx.compose.ui.draw.rotate
   import androidx.compose.ui.draw.scale
-  import androidx.compose.ui.layout.ContentScale
+  import androidx.compose.ui.graphics.Brush
+  import androidx.compose.ui.graphics.Color
   import androidx.compose.ui.res.painterResource
   import androidx.compose.ui.unit.dp
   import kotlinx.coroutines.delay
@@ -46,15 +48,20 @@
     @Composable
     fun SplashScreen() {
       LaunchedEffect(Unit) {
-        delay(2500)
+        delay(4000)
         startActivity(Intent(this@SplashActivity, MainActivity::class.java))
         finish()
+        overridePendingTransition(R.anim.circle_in, R.anim.circle_out)
       }
-      Image(painter = painterResource(R.drawable.img),
-        modifier = Modifier.fillMaxSize(),
-        contentDescription = "background",
-        contentScale = ContentScale.Crop)
-      Box(modifier = Modifier.fillMaxWidth()) {
+      Box(modifier = Modifier.fillMaxWidth().background(
+        brush = Brush.verticalGradient(
+          colors = listOf(
+            Color(0xFF4682B4),
+            Color(0xFF87CEFA),
+            Color(0xFFB0E0E6)
+          )
+        )
+      )) {
         AnimatedSun()
         MovingCloud()
       }
@@ -82,14 +89,13 @@
 
 
     val scale by infiniteTransition.animateFloat(
-      initialValue = 1f,
-      targetValue = 1.2f,
+      initialValue = 0.7f,
+      targetValue = 1f,
       animationSpec = infiniteRepeatable(
-        animation = tween(durationMillis = 1250, easing = LinearEasing),
+        animation = tween(durationMillis = 1000, easing = LinearEasing),
         repeatMode = RepeatMode.Reverse
       ), label = ""
     )
-
 
     Box(
       modifier = Modifier.fillMaxSize(),
