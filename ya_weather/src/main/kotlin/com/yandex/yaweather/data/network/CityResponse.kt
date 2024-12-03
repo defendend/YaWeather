@@ -8,17 +8,17 @@ data class CityResponse(
   @SerialName("limit")
   val limit : Int = 4,
   @SerialName("0")
-  val item0: Item? = null,
+  val cityItem0: CityItem? = null,
   @SerialName("1")
-  val item1: Item? = null,
+  val cityItem1: CityItem? = null,
   @SerialName("2")
-  val item2: Item? = null,
+  val cityItem2: CityItem? = null,
   @SerialName("3")
-  val item4: Item? = null
+  val cityItem3: CityItem? = null
 )
 
 @Serializable
-data class Item(
+data class CityItem(
   @SerialName("name")
   val name: String? = null,
   @SerialName("full_name")
@@ -26,10 +26,10 @@ data class Item(
   @SerialName("english")
   val engName: String? = null,
   @SerialName("latitude")
-  val lat: String? = null,
+  val lat: Double? = null,
   @SerialName("longitude")
-  val lon: String? = null,
+  val lon: Double? = null,
   @SerialName("time_zone")
-  val timeZone: String? = null
+  val timeZone: Int? = null
 )
 
