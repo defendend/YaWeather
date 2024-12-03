@@ -2,6 +2,7 @@ package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -98,6 +99,9 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
 
         item {
           TenDayForecast()
+        }
+        item {
+          MapWidget(action)
         }
       }
     }
@@ -258,7 +262,33 @@ fun TenDayForecast() {
     }
   }
 }
+@Composable
+fun MapWidget(action: (WeatherScreenAction) -> Unit) {
+  Box(
+    modifier = Modifier
+      .fillMaxWidth()
+      .height(200.dp)
+      .background(Color.Blue, RoundedCornerShape(16.dp))
+      .clickable {
+        action(WeatherScreenAction.OpenMapAction)
+      },
+    contentAlignment = Alignment.Center
+  ) {
+    Text(text = "Map Widget", color = Color.White)
+  }
+}
+
 
 @Composable
-fun Wigets(modifier: Modifier, uiState: WidgetsUiState) {
+fun Wigets(modifier: Modifier = Modifier, uiState: WidgetsUiState) {
+  // Placeholder для будущей реализации
+  Box(
+    modifier = modifier
+      .fillMaxWidth()
+      .height(100.dp)
+      .background(Color.Gray),
+    contentAlignment = Alignment.Center
+  ) {
+    Text(text = "Widgets Placeholder", color = Color.White)
+  }
 }
