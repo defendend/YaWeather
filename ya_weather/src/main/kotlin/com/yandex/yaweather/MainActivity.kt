@@ -10,6 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.yandex.yaweather.dagger.application.MainApplication
+import com.yandex.yaweather.handler.CityScreenAction
+import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
 import com.yandex.yaweather.handler.MapScreenAction
 import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
 import com.yandex.yaweather.handler.WeatherScreenAction
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
     (application as MainApplication).mainComponent.inject(this)
     setContent {
       val uiState by viewModel.currentWeatherState.collectAsState()
+      val cityItems = viewModel.cities.collectAsState()
       viewModel.getCurrentWeather("41.31", "69.24")
       val navController = rememberNavController()
 
@@ -45,7 +48,7 @@ class MainActivity : ComponentActivity() {
           WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
         }
         composable(Route.addCityScreen) {
-          CitySelectionScreen()
+          CitySelectionScreen(cityItems) { action -> handleCityAction(action) }
         }
         composable(Route.openMapScreen) {
           MapScreen(uiState, { action -> handleMapAction(action) })
@@ -66,6 +69,15 @@ class MainActivity : ComponentActivity() {
     when (action) {
       is UpdateMarkerPositionAction -> {
         viewModel.updateMarkerPosition(action.latLng)
+      }
+    }
+  }
+
+  private fun handleCityAction(action: CityScreenAction) {
+
+    when (action) {
+      is SearchCityAction -> {
+        viewModel.getCitiesByName(action.query)
       }
     }
   }
