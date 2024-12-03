@@ -36,7 +36,7 @@ class NetworkProvider {
   @CityRetrofitQualifier
   @Provides
   fun providesCityRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-    .baseUrl("http://htmlweb.ru/")
+    .baseUrl("https://htmlweb.ru/")
     .client(okHttpClient)
     .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
     .build()
