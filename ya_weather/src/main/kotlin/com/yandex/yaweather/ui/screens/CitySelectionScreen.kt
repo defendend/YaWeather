@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.yandex.yaweather.R
+
 
 object TempData {
   val db = mutableListOf<City>(
@@ -83,7 +85,7 @@ fun CitySelectionScreen() {
     }
   ) { paddingValues ->
     LazyColumn(
-      modifier = Modifier.fillMaxSize().padding(16.dp),
+      modifier = Modifier.fillMaxSize(),
       contentPadding = paddingValues
     ) {
       items(filteredCities) { city ->
@@ -131,9 +133,10 @@ fun WeatherSearchBar(query: String, onQueryChange: (String) -> Unit) {
       placeholder = { Text(if (query.isEmpty()) "Search cities..." else "") },
       modifier = Modifier
         .fillMaxWidth()
-        .padding(10.dp)
-        .clip(MaterialTheme.shapes.medium)
+        .clip(MaterialTheme.shapes.medium).padding(start = 8.dp, end = 8.dp)
         .background(MaterialTheme.colorScheme.surface)
+        .padding(bottom = 7.dp)
+        .shadow(elevation = 20.dp)
     ) {
       if (query.isEmpty() && recentSearches.isNotEmpty()) {
         Text("Recent searches", modifier = Modifier.padding(8.dp))
@@ -143,12 +146,11 @@ fun WeatherSearchBar(query: String, onQueryChange: (String) -> Unit) {
               text = city,
               modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(16.dp)
                 .clip(MaterialTheme.shapes.small)
                 .clickable {
-                  onQueryChange(city) // Подстановка из истории
+                  onQueryChange(city)
                   active = false
                 }
             )
@@ -196,7 +198,7 @@ fun WeatherSearchBar(query: String, onQueryChange: (String) -> Unit) {
                   if (!recentSearches.contains(result.name)) {
                     recentSearches.add(0, result.name)
                   }
-                  onQueryChange("") // Очистка строки поиска
+                  onQueryChange("")
                   active = false
                 }
             )
