@@ -6,16 +6,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.Icons.AutoMirrored.Filled
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,12 +44,16 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.ZoneOffset
 
 
 object TempData {
@@ -53,7 +64,6 @@ object TempData {
 @Composable
 fun CitySelectionScreen(cityItems: State<MutableList<CityItem>>, action: (CityScreenAction) -> Unit) {
   var query by remember { mutableStateOf("") }
-  var filteredCities by remember { mutableStateOf(getCities()) }
 
   Scaffold(
     topBar = {
@@ -71,20 +81,22 @@ fun CitySelectionScreen(cityItems: State<MutableList<CityItem>>, action: (CitySc
       modifier = Modifier.fillMaxSize(),
       contentPadding = paddingValues
     ) {
-      items(filteredCities) { city ->
+      items(TempData.db) { city ->
         CityItem(city)
       }
     }
   }
 }
 
-fun getCities(): List<CityItem> {
-  return TempData.db
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WeatherSearchBar(query: String, cityItems: State<MutableList<CityItem>>, action: (CityScreenAction) -> Unit, onQueryChange: (String) -> Unit) {
+fun WeatherSearchBar(
+  query: String,
+  cityItems: State<MutableList<CityItem>>,
+  action: (CityScreenAction) -> Unit,
+  onQueryChange: (String) -> Unit
+) {
   var active by remember { mutableStateOf(false) }
   val recentSearches = remember { mutableStateListOf<String>() }
 
@@ -106,7 +118,7 @@ fun WeatherSearchBar(query: String, cityItems: State<MutableList<CityItem>>, act
             active = false
             onQueryChange("")
           }) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+            Icon(Filled.ArrowBack, contentDescription = "Назад")
           }
         } else {
           Icon(
@@ -118,65 +130,114 @@ fun WeatherSearchBar(query: String, cityItems: State<MutableList<CityItem>>, act
       placeholder = { Text(if (query.isEmpty()) "Search cities..." else "") },
       modifier = Modifier
         .fillMaxWidth()
-        .clip(MaterialTheme.shapes.medium).padding(start = 8.dp, end = 8.dp)
+        .clip(MaterialTheme.shapes.medium)
+        .padding(start = 8.dp, end = 8.dp)
         .background(MaterialTheme.colorScheme.surface)
         .padding(bottom = 7.dp)
         .shadow(elevation = 20.dp)
     ) {
       if (query.isEmpty() && recentSearches.isNotEmpty()) {
         Text("Recent searches", modifier = Modifier.padding(8.dp))
-        LazyColumn {
-          items(recentSearches) { city ->
-            Text(
-              text = city,
-              modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(16.dp)
-                .clip(MaterialTheme.shapes.small)
-                .clickable {
-                  onQueryChange(city)
-                  active = false
-                }
-            )
-          }
-        }
-      } else if (query.isNotEmpty()) {
-        Text(
-          text = "Search result for \"$query\"",
-          modifier = Modifier.padding(8.dp)
-        )
         LazyColumn(
           modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 8.dp)
+        ) {
+          items(recentSearches) { city ->
+            Card(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
+                .clip(MaterialTheme.shapes.medium)
+                .clickable {
+                  onQueryChange(city)
+                  active = false
+                },
+              colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface
+              ),
+              elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+              )
+            ) {
+              Row(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+              ) {
+                Image(
+                  painter = painterResource(id = R.drawable.history_icon),
+                  contentDescription = "history_icon",
+                  modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                  text = city,
+                  style = MaterialTheme.typography.bodyLarge
+                )
+              }
+            }
+          }
+        }
+
+      } else if (query.isNotEmpty()) {
+        Text(
+          text = "Search result for \"$query\"",
+          modifier = Modifier.padding(8.dp),
+          style = MaterialTheme.typography.titleMedium
+        )
+
+        LazyColumn(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
         ) {
           val cities = cityItems.value
           items(cities) { result ->
-            Text(
-              text = result.fullName?: "",
+            Card(
               modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .padding(16.dp)
-                .clip(MaterialTheme.shapes.small)
+                .padding(vertical = 8.dp)
                 .clickable {
                   TempData.db.add(result)
                   if (!recentSearches.contains(result.name)) {
-                    recentSearches.add(0, result.name?: "")
+                    recentSearches.add(0, result.name ?: "")
                   }
                   onQueryChange("")
                   active = false
-                }
-            )
+                  cityItems.value.clear()
+                },
+              shape = MaterialTheme.shapes.medium,
+              elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+              )
+            ) {
+              Column(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .background(MaterialTheme.colorScheme.primaryContainer)
+                  .padding(16.dp)
+              ) {
+                Text(
+                  text = result.fullName ?: "",
+                  style = MaterialTheme.typography.bodyLarge,
+                  color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                  text = "Coordinates: ${result.lat}, ${result.lon}",
+                  style = MaterialTheme.typography.bodySmall,
+                  color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+              }
+            }
           }
         }
       }
     }
   }
 }
-
 
 
 @Composable
@@ -193,20 +254,25 @@ fun CityItem(city: CityItem) {
       painter = rememberDrawablePainter(
         drawable = getDrawable(
           LocalContext.current,
-            R.drawable.rain_gif
+          R.drawable.rain_gif
         )
       ),
       contentDescription = "Loading animation",
       contentScale = ContentScale.FillWidth,
     )
-    Column(modifier = Modifier
-      .align(Alignment.TopStart)
-      .padding(10.dp)) {
-      Text(text = city.name?: "", fontSize = 30.sp, color = Color.White)
-      Text("12:13 PM", color = Color.White)
+    Column(
+      modifier = Modifier
+        .align(Alignment.TopStart)
+        .padding(10.dp)
+    ) {
+      val currentUtcTime = ZonedDateTime.now(ZoneOffset.UTC)
+      val adjustedTime = city.timeZone?.toLong()?.let { currentUtcTime.plusHours(it) }
+      val formattedTime = adjustedTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
+      Text(text = city.name ?: "", fontSize = 30.sp, color = Color.White)
+      Text(formattedTime.toString(), color = Color.White)
     }
     Text(
-      text = "$10°",
+      text = "10°",
       modifier = Modifier
         .align(Alignment.TopEnd)
         .padding(10.dp),
