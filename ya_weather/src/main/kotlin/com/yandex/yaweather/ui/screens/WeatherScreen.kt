@@ -1,8 +1,9 @@
+@file:Suppress("UNUSED_EXPRESSION")
+
 package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,12 +34,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import com.yandex.yaweather.R
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.WeatherUiState
@@ -264,19 +274,44 @@ fun TenDayForecast() {
 }
 @Composable
 fun MapWidget(action: (WeatherScreenAction) -> Unit) {
-  Box(
-    modifier = Modifier
-      .fillMaxWidth()
-      .height(200.dp)
-      .background(Color.Blue, RoundedCornerShape(16.dp))
-      .clickable {
-        action(WeatherScreenAction.OpenMapAction)
-      },
-    contentAlignment = Alignment.Center
-  ) {
-    Text(text = "Map Widget", color = Color.White)
+  val toshekent = LatLng(41.2995, 69.2401)
+  val cameraPositionState = rememberCameraPositionState {
+    position = CameraPosition.fromLatLngZoom(toshekent, 10f)
   }
-}
+
+    GoogleMap(
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(200.dp)
+        .background(Color.Gray)
+        .clip(RoundedCornerShape(16.dp)),
+      cameraPositionState = cameraPositionState,
+      properties = MapProperties(isMyLocationEnabled = false),
+      onMapClick = {
+        action(WeatherScreenAction.OpenMapAction)
+
+      },
+      uiSettings = MapUiSettings(
+        zoomGesturesEnabled = false,
+        zoomControlsEnabled = false,
+        scrollGesturesEnabled = false,
+        compassEnabled = false,
+        rotationGesturesEnabled = false,
+        tiltGesturesEnabled = false)
+    ) {
+      Marker(
+        state = MarkerState(position = toshekent),
+        title = "",
+        snippet = "",
+        onClick = {
+          action(WeatherScreenAction.OpenMapAction)
+          true
+        }
+      )
+    }
+
+  }
+
 
 
 @Composable

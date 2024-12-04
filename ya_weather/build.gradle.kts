@@ -85,7 +85,7 @@ dependencies {
   //map
   implementation(libs.play.services.maps)
   implementation(libs.maps.compose)
-
+  implementation ("com.google.android.gms:play-services-location:21.3.0")
   implementation(libs.accompanist.systemuicontroller)
 
 

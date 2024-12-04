@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -36,6 +37,8 @@ fun MapScreen(
   }
   var markerPosition by remember { mutableStateOf<LatLng?>(toshekent) }
   var isNightMode by remember { mutableStateOf(false) }
+  val context = LocalContext.current
+
   val nightModeStyle = """
         [
           {
@@ -199,6 +202,9 @@ fun MapScreen(
           }
         ]
     """.trimIndent()
+
+
+
   Column(modifier = Modifier.fillMaxSize()) {
     Button(
       onClick = { isNightMode = !isNightMode },
@@ -227,9 +233,10 @@ fun MapScreen(
       markerPosition?.let { position ->
         Marker(
           state = MarkerState(position = position),
-          title = "Temperature: ${uiState.temperature}°C"
+          title = "Temperature: ${uiState.temperature}°C",
         )
       }
     }
   }
+
 }
