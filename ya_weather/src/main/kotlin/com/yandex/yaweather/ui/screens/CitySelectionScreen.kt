@@ -55,18 +55,17 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
+import com.yandex.yaweather.viewModel.CitySelectionUIState
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.ZoneOffset
 
-
-object TempData {
-  val db = mutableListOf<CityItem>()
-}
-
-
 @Composable
-fun CitySelectionScreen(cityItems: State<MutableList<CityItem>>, action: (CityScreenAction) -> Unit) {
+fun CitySelectionScreen(
+  cityItems: State<MutableList<CityItem>>,
+  favoriteCityItems: MutableList<CitySelectionUIState>,
+  action: (CityScreenAction) -> Unit
+) {
   var query by remember { mutableStateOf("") }
 
   Scaffold(
@@ -85,8 +84,8 @@ fun CitySelectionScreen(cityItems: State<MutableList<CityItem>>, action: (CitySc
       modifier = Modifier.fillMaxSize(),
       contentPadding = paddingValues
     ) {
-      items(TempData.db) { city ->
-        CityItem(city)
+      items(favoriteCityItems) { cityUIState ->
+        CityItem(cityUIState)
       }
     }
   }
@@ -208,7 +207,7 @@ fun WeatherSearchBar(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .clickable {
-                  TempData.db.add(result)
+                  action(CityScreenAction.AddToFavoriteCityList(result))
                   if (!recentSearches.contains(result.name)) {
                     recentSearches.add(0, result.name ?: "")
                   }
@@ -245,7 +244,7 @@ fun WeatherSearchBar(
 
 
 @Composable
-fun CityItem(city: CityItem) {
+fun CityItem(citySelectionUIState: CitySelectionUIState) {
   Box(
     modifier = Modifier
       .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -281,11 +280,11 @@ fun CityItem(city: CityItem) {
         .padding(16.dp)
     ) {
       val currentUtcTime = ZonedDateTime.now(ZoneOffset.UTC)
-      val adjustedTime = city.timeZone?.toLong()?.let { currentUtcTime.plusHours(it) }
+      val adjustedTime = citySelectionUIState.cityItem.timeZone?.toLong()?.let { currentUtcTime.plusHours(it) }
       val formattedTime = adjustedTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
 
       Text(
-        text = city.name ?: "",
+        text = citySelectionUIState.cityItem.name ?: "",
         fontSize = 26.sp,
         fontWeight = FontWeight.Bold,
         color = Color.White,
@@ -299,7 +298,7 @@ fun CityItem(city: CityItem) {
       )
     }
     Text(
-      text = "10°",
+      text = "${citySelectionUIState.weatherUiState.temperature}°",
       modifier = Modifier
         .align(Alignment.TopEnd)
         .padding(16.dp),
@@ -309,7 +308,7 @@ fun CityItem(city: CityItem) {
     )
 
     Text(
-      text = "Мужитский дождь",
+      text = citySelectionUIState.weatherUiState.description,
       modifier = Modifier
         .align(Alignment.BottomStart)
         .padding(16.dp),
@@ -318,7 +317,7 @@ fun CityItem(city: CityItem) {
     )
 
     Text(
-      text = "H:${city.lat}° L:${city.lon}°",
+      text = "H:${citySelectionUIState.weatherUiState.temperatureMax}° L:${citySelectionUIState.weatherUiState.temperatureMin}°",
       modifier = Modifier
         .align(Alignment.BottomEnd)
         .padding(16.dp),
