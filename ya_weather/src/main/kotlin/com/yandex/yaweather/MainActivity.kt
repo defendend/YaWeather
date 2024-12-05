@@ -1,16 +1,25 @@
 package com.yandex.yaweather
 
+import android.Manifest.permission
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.yandex.yaweather.Theme.YaWeatherTheme
 import com.yandex.yaweather.dagger.application.MainApplication
+import com.yandex.yaweather.data.diModules.LocationService
 import com.yandex.yaweather.handler.CityScreenAction
 import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
 import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
@@ -36,6 +45,12 @@ class MainActivity : ComponentActivity() {
   @Inject
   lateinit var viewModel: YaWeatherViewModel
 
+  @Inject
+  lateinit var locationService: LocationService
+
+  private lateinit var fusedLocationClient: FusedLocationProviderClient
+  private val LOCATION_PERMISSION_REQUEST_CODE = 1
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     (application as MainApplication).mainComponent.inject(this)
@@ -43,7 +58,20 @@ class MainActivity : ComponentActivity() {
       val uiState by viewModel.userCurrentWeatherState.collectAsState()
       val cityItems = viewModel.cities.collectAsState()
       val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
-      viewModel.getCurrentWeather("41.31", "69.24")
+
+      fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+      if (ContextCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION)
+        != PackageManager.PERMISSION_GRANTED) {
+        ActivityCompat.requestPermissions(this,
+          arrayOf(permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+      } else {
+        fetchLocation()
+      }
+
+      val coordinates = locationService.coordinates.collectAsState()
+      viewModel.getCurrentWeather(coordinates.value?.first.toString(), coordinates.value?.second.toString())
+
       val navController = rememberNavController()
       YaWeatherTheme {
         NavHost(navController, startDestination = Route.mainScreen) {
@@ -85,6 +113,32 @@ class MainActivity : ComponentActivity() {
       }
       is AddToFavoriteCityList -> {
          viewModel.updateFavoriteCityItems(action.cityItem)
+      }
+    }
+  }
+
+  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+      if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        fetchLocation()
+      } else {
+        Toast.makeText(this, "Location permission is required for weather updates", Toast.LENGTH_SHORT).show()
+      }
+    }
+  }
+
+  private fun fetchLocation() {
+    if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+      fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+        location?.let {
+          val latitude = it.latitude
+          val longitude = it.longitude
+          locationService.setLocation(latitude to longitude)
+          Toast.makeText(this, "Lat: $latitude, Lon: $longitude", Toast.LENGTH_SHORT).show()
+        } ?: run {
+          Toast.makeText(this, "Unable to get location. Try again.", Toast.LENGTH_SHORT).show()
+        }
       }
     }
   }
