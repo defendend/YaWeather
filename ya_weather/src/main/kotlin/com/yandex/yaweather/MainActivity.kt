@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.yandex.yaweather.Theme.YaWeatherTheme
 import com.yandex.yaweather.dagger.application.MainApplication
 import com.yandex.yaweather.handler.CityScreenAction
+import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
 import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
 import com.yandex.yaweather.handler.MapScreenAction
 import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
@@ -39,8 +40,9 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     (application as MainApplication).mainComponent.inject(this)
     setContent {
-      val uiState by viewModel.currentWeatherState.collectAsState()
+      val uiState by viewModel.userCurrentWeatherState.collectAsState()
       val cityItems = viewModel.cities.collectAsState()
+      val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
       viewModel.getCurrentWeather("41.31", "69.24")
       val navController = rememberNavController()
       YaWeatherTheme {
@@ -49,7 +51,7 @@ class MainActivity : ComponentActivity() {
             WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
           }
           composable(Route.addCityScreen) {
-            CitySelectionScreen(cityItems) { action -> handleCityAction(action) }
+            CitySelectionScreen(cityItems, favoriteCityItems) { action -> handleCityAction(action) }
           }
           composable(Route.openMapScreen) {
             MapScreen(uiState, { action -> handleMapAction(action) })
@@ -80,6 +82,9 @@ class MainActivity : ComponentActivity() {
     when (action) {
       is SearchCityAction -> {
         viewModel.getCitiesByName(action.query)
+      }
+      is AddToFavoriteCityList -> {
+         viewModel.updateFavoriteCityItems(action.cityItem)
       }
     }
   }

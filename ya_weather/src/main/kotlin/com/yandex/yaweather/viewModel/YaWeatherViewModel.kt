@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,10 +19,9 @@ class YaWeatherViewModel @Inject constructor(
   private val weatherRepository: OpenWeatherRepository,
   private val cityFinderRepository: CityFinderRepository
 ) : ViewModel() {
-  private val _currentWeather = MutableStateFlow(
-    WeatherUiState()
-  )
-  val currentWeatherState: StateFlow<WeatherUiState>
+
+  private val _currentWeather = MutableStateFlow(WeatherUiState())
+  val userCurrentWeatherState: StateFlow<WeatherUiState>
     get() = _currentWeather.asStateFlow()
 
   private val _errorMessage = MutableStateFlow<String>("")
@@ -30,10 +30,25 @@ class YaWeatherViewModel @Inject constructor(
   private val _cities = MutableStateFlow<MutableList<CityItem>>(mutableListOf())
   val cities = _cities.asStateFlow()
 
+  private val _favoriteCityItems = MutableStateFlow<MutableList<CitySelectionUIState>>(mutableListOf())
+  val  favoriteCityItems = _favoriteCityItems.asStateFlow()
+
   fun getCurrentWeather(lat: String, lon: String) {
     viewModelScope.launch(Dispatchers.IO) {
       weatherRepository.getCurrentWeather(lat, lon).onSuccess {
         _currentWeather.value = mapResponseToUiState(it)
+      }.onFailure {
+        _errorMessage.value = it.message.toString()
+      }
+    }
+  }
+
+  fun updateFavoriteCityItems(cityItem: CityItem) {
+    viewModelScope.launch(Dispatchers.IO)
+    {
+      weatherRepository.getCurrentWeather(cityItem.lat.toString(), cityItem.lon.toString()).onSuccess {
+        coordinatesResponse ->
+        _favoriteCityItems.update { (it + CitySelectionUIState(cityItem, mapResponseToUiState(coordinatesResponse))).toMutableList() }
       }.onFailure {
         _errorMessage.value = it.message.toString()
       }
@@ -90,6 +105,11 @@ class YaWeatherViewModel @Inject constructor(
     }
   }
 }
+
+data class CitySelectionUIState(
+  val cityItem: CityItem,
+  val weatherUiState: WeatherUiState
+)
 
 data class WeatherUiState(
   val cityName: String = "",
