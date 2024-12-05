@@ -76,7 +76,10 @@ class YaWeatherViewModel @Inject constructor(
     return WeatherUiState(
       cityName = response.name ?: "N/A",
       temperature = getCurrentTemperature(response),
-      description = response.weather?.firstOrNull()?.description ?: "N/A"
+      temperatureMax = ((response.main?.tempMax)?.minus(273))?.toInt().toString(),
+      temperatureMin = ((response.main?.tempMin)?.minus(273))?.toInt().toString(),
+      description = response.weather?.firstOrNull()?.description ?: "N/A",
+
     )
   }
   private fun getCurrentTemperature(response: CoordinatesResponse): String {
