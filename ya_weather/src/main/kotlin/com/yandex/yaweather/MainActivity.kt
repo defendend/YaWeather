@@ -47,11 +47,9 @@ class MainActivity : ComponentActivity() {
 
   @Inject
   lateinit var locationService: LocationService
+
+  private lateinit var fusedLocationClient: FusedLocationProviderClient
   private val LOCATION_PERMISSION_REQUEST_CODE = 1
-
-
-  private var lat : Double = 0.0
-  private var lon : Double = 0.0
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -60,9 +58,8 @@ class MainActivity : ComponentActivity() {
       val uiState by viewModel.userCurrentWeatherState.collectAsState()
       val cityItems = viewModel.cities.collectAsState()
       val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
-      viewModel.getCurrentWeather("41.31", "69.24")
 
-      checkPermissionAndFetchLocation()
+      fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
       if (ContextCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION)
         != PackageManager.PERMISSION_GRANTED) {
@@ -72,7 +69,9 @@ class MainActivity : ComponentActivity() {
         fetchLocation()
       }
 
-      viewModel.getCurrentWeather(lat.toString(), lon.toString())
+      val coordinates = locationService.coordinates.collectAsState()
+      viewModel.getCurrentWeather(coordinates.value?.first.toString(), coordinates.value?.second.toString())
+
       val navController = rememberNavController()
       YaWeatherTheme {
         NavHost(navController, startDestination = Route.mainScreen) {
@@ -118,16 +117,6 @@ class MainActivity : ComponentActivity() {
     }
   }
 
-  private fun checkPermissionAndFetchLocation() {
-    if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION)
-      != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(this,
-        arrayOf(permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
-    } else {
-      fetchLocation()
-    }
-  }
-
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
@@ -140,13 +129,16 @@ class MainActivity : ComponentActivity() {
   }
 
   private fun fetchLocation() {
-    locationService.getLastKnownLocation()?.addOnSuccessListener { location: Location? ->
-      location?.let {
-        lat = it.latitude
-        lon = it.longitude
-        Toast.makeText(this, "Lat: $lat, Lon: $lon", Toast.LENGTH_SHORT).show()
-      } ?: run {
-        Toast.makeText(this, "Unable to get location. Try again.", Toast.LENGTH_SHORT).show()
+    if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+      fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+        location?.let {
+          val latitude = it.latitude
+          val longitude = it.longitude
+          locationService.setLocation(latitude to longitude)
+          Toast.makeText(this, "Lat: $latitude, Lon: $longitude", Toast.LENGTH_SHORT).show()
+        } ?: run {
+          Toast.makeText(this, "Unable to get location. Try again.", Toast.LENGTH_SHORT).show()
+        }
       }
     }
   }
