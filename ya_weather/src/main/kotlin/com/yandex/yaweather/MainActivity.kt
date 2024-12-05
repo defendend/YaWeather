@@ -145,7 +145,6 @@ class MainActivity : ComponentActivity() {
         lat = it.latitude
         lon = it.longitude
         Toast.makeText(this, "Lat: $lat, Lon: $lon", Toast.LENGTH_SHORT).show()
-        // Use latitude and longitude to fetch weather data
       } ?: run {
         Toast.makeText(this, "Unable to get location. Try again.", Toast.LENGTH_SHORT).show()
       }
