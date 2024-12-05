@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.yandex.yaweather.Theme.YaWeatherTheme
 import com.yandex.yaweather.dagger.application.MainApplication
 import com.yandex.yaweather.handler.CityScreenAction
 import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
@@ -42,16 +43,17 @@ class MainActivity : ComponentActivity() {
       val cityItems = viewModel.cities.collectAsState()
       viewModel.getCurrentWeather("41.31", "69.24")
       val navController = rememberNavController()
-
-      NavHost(navController, startDestination = Route.mainScreen) {
-        composable(Route.mainScreen) {
-          WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
-        }
-        composable(Route.addCityScreen) {
-          CitySelectionScreen(cityItems) { action -> handleCityAction(action) }
-        }
-        composable(Route.openMapScreen) {
-          MapScreen(uiState, { action -> handleMapAction(action) })
+      YaWeatherTheme {
+        NavHost(navController, startDestination = Route.mainScreen) {
+          composable(Route.mainScreen) {
+            WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
+          }
+          composable(Route.addCityScreen) {
+            CitySelectionScreen(cityItems) { action -> handleCityAction(action) }
+          }
+          composable(Route.openMapScreen) {
+            MapScreen(uiState, { action -> handleMapAction(action) })
+          }
         }
       }
     }

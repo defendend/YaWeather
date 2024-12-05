@@ -4,6 +4,7 @@ import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,9 +43,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
@@ -130,11 +134,14 @@ fun WeatherSearchBar(
       placeholder = { Text(if (query.isEmpty()) "Search cities..." else "") },
       modifier = Modifier
         .fillMaxWidth()
-        .clip(MaterialTheme.shapes.medium)
         .padding(start = 8.dp, end = 8.dp)
-        .background(MaterialTheme.colorScheme.surface)
-        .padding(bottom = 7.dp)
+        .clip(MaterialTheme.shapes.extraSmall)
         .shadow(elevation = 20.dp)
+        .background(MaterialTheme.colorScheme.surface)
+        .padding(bottom = 7.dp, top = 10.dp)
+        .clip(MaterialTheme.shapes.large)
+
+
     ) {
       if (query.isEmpty() && recentSearches.isNotEmpty()) {
         Text("Recent searches", modifier = Modifier.padding(8.dp))
@@ -153,10 +160,6 @@ fun WeatherSearchBar(
                   onQueryChange(city)
                   active = false
                 },
-              colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
-              ),
               elevation = CardDefaults.cardElevation(
                 defaultElevation = 4.dp
               )
@@ -170,8 +173,12 @@ fun WeatherSearchBar(
                 Image(
                   painter = painterResource(id = R.drawable.history_icon),
                   contentDescription = "history_icon",
-                  modifier = Modifier.size(24.dp)
+                  modifier = Modifier.size(24.dp),
+                  colorFilter = ColorFilter.tint(
+                    if (isSystemInDarkTheme()) Color.White else Color.Black
+                  )
                 )
+
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                   text = city,
@@ -217,18 +224,15 @@ fun WeatherSearchBar(
               Column(
                 modifier = Modifier
                   .fillMaxWidth()
-                  .background(MaterialTheme.colorScheme.primaryContainer)
                   .padding(16.dp)
               ) {
                 Text(
                   text = result.fullName ?: "",
                   style = MaterialTheme.typography.bodyLarge,
-                  color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
                   text = "Coordinates: ${result.lat}, ${result.lon}",
                   style = MaterialTheme.typography.bodySmall,
-                  color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
               }
             }
@@ -244,11 +248,10 @@ fun WeatherSearchBar(
 fun CityItem(city: CityItem) {
   Box(
     modifier = Modifier
-      .padding(horizontal = 16.dp, vertical = 5.dp)
-      .clip(RoundedCornerShape(10.dp))
+      .padding(horizontal = 16.dp, vertical = 8.dp)
+      .clip(RoundedCornerShape(16.dp))
       .fillMaxWidth()
-      .height(100.dp)
-      .background(color = Color.Black)
+      .height(120.dp)
   ) {
     Image(
       painter = rememberDrawablePainter(
@@ -258,42 +261,69 @@ fun CityItem(city: CityItem) {
         )
       ),
       contentDescription = "Loading animation",
-      contentScale = ContentScale.FillWidth,
+      contentScale = ContentScale.Crop,
+      modifier = Modifier
+        .fillMaxSize()
+        .clip(RoundedCornerShape(16.dp))
     )
+
+    Box(
+      modifier = Modifier
+        .padding(horizontal = 16.dp, vertical = 8.dp)
+        .clip(RoundedCornerShape(16.dp))
+        .fillMaxWidth()
+        .height(120.dp)
+    )
+
     Column(
       modifier = Modifier
         .align(Alignment.TopStart)
-        .padding(10.dp)
+        .padding(16.dp)
     ) {
       val currentUtcTime = ZonedDateTime.now(ZoneOffset.UTC)
       val adjustedTime = city.timeZone?.toLong()?.let { currentUtcTime.plusHours(it) }
       val formattedTime = adjustedTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
-      Text(text = city.name ?: "", fontSize = 30.sp, color = Color.White)
-      Text(formattedTime.toString(), color = Color.White)
+
+      Text(
+        text = city.name ?: "",
+        fontSize = 26.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.White,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+      )
+      Text(
+        text = formattedTime ?: "",
+        fontSize = 16.sp,
+        color = Color.White.copy(alpha = 0.8f)
+      )
     }
     Text(
       text = "10°",
       modifier = Modifier
         .align(Alignment.TopEnd)
-        .padding(10.dp),
-      fontSize = 40.sp,
+        .padding(16.dp),
+      fontSize = 36.sp,
+      fontWeight = FontWeight.Bold,
       color = Color.White
     )
+
     Text(
-      "мужитский дождь",
+      text = "Мужитский дождь",
       modifier = Modifier
         .align(Alignment.BottomStart)
-        .padding(10.dp),
-      color = Color.White
+        .padding(16.dp),
+      fontSize = 14.sp,
+      color = Color.White.copy(alpha = 0.8f)
     )
+
     Text(
-      "H:${city.lat}° L:${city.lon}°",
+      text = "H:${city.lat}° L:${city.lon}°",
       modifier = Modifier
         .align(Alignment.BottomEnd)
-        .padding(10.dp),
-      color = Color.White
+        .padding(16.dp),
+      fontSize = 14.sp,
+      color = Color.White.copy(alpha = 0.8f)
     )
   }
 }
-
-
