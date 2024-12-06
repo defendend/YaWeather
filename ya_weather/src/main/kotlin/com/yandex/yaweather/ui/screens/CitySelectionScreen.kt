@@ -261,18 +261,19 @@ fun CityItem(citySelectionUIState: CitySelectionUIState, action: (CityScreenActi
       painter = rememberDrawablePainter(
         drawable = getDrawable(
           LocalContext.current,
-          when (citySelectionUIState.weatherUiState.description) {
-            "clear sky" -> R.drawable.clear_sky
-            "few clouds" -> R.drawable.clouds_gif
-            "scattered clouds" -> R.drawable.scaffered_clouds
-            "broken clouds" -> R.drawable.scaffered_clouds
-            "shower rain" -> R.drawable.fall_rain
-            "rain" -> R.drawable.rain_gif
-            "thunderstorm" -> R.drawable.thunderstorm
-            "snow" -> R.drawable.snow_gif
-            "mist" -> R.drawable.mist
+          when {
+            citySelectionUIState.weatherUiState.description == "shower rain" -> R.drawable.fall_rain
+            citySelectionUIState.weatherUiState.description.contains("rain", ignoreCase = true) -> R.drawable.rain_gif
+            citySelectionUIState.weatherUiState.description.contains("clear", ignoreCase = true) -> R.drawable.clear_sky
+            citySelectionUIState.weatherUiState.description.contains("scattered", ignoreCase = true) -> R.drawable.scaffered_clouds
+            citySelectionUIState.weatherUiState.description.contains("clouds", ignoreCase = true) -> R.drawable.clouds_gif
+            citySelectionUIState.weatherUiState.description.contains("thunderstorm", ignoreCase = true) -> R.drawable.thunderstorm
+            citySelectionUIState.weatherUiState.description.contains("snow", ignoreCase = true) -> R.drawable.snow_gif
+            citySelectionUIState.weatherUiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist
+            citySelectionUIState.weatherUiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist
             else -> R.drawable.clear_sky
           }
+
         )
       ),
       contentDescription = "Loading animation",
