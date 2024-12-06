@@ -6,6 +6,7 @@ import com.yandex.yaweather.data.diModules.CityFinderProvider
 import com.yandex.yaweather.data.diModules.LocationModule
 import com.yandex.yaweather.data.diModules.NetworkProvider
 import com.yandex.yaweather.data.diModules.OpenWeatherRepositoryProvider
+import com.yandex.yaweather.widget.WeatherWorker
 import dagger.Component
 
 @Component(
@@ -19,4 +20,5 @@ import dagger.Component
 )
 interface AppComponent {
   fun inject(activity: MainActivity)
+  fun inject(worker: WeatherWorker)
 }

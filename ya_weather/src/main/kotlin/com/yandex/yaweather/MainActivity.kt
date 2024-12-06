@@ -77,10 +77,13 @@ class MainActivity : ComponentActivity() {
 
       fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-      if (ContextCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION)
-        != PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(this,
-          arrayOf(permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
+      if (ContextCompat.checkSelfPermission(
+          this, permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
+        ActivityCompat.requestPermissions(
+          this, arrayOf(permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE
+        )
       } else {
         fetchLocation()
       }
@@ -134,17 +137,17 @@ class MainActivity : ComponentActivity() {
   private fun handleAction(navController: NavController, action: WeatherScreenAction) {
     when (action) {
       is AddCityAction -> navController.navigate(Route.addCityScreen)
-      is OpenMapAction -> {navController.navigate(Route.openMapScreen)}
+      is OpenMapAction -> {
+        navController.navigate(Route.openMapScreen)
+      }
     }
   }
 
   private fun checkPermissions(): Boolean {
     return ActivityCompat.checkSelfPermission(
-      this,
-      permission.ACCESS_COARSE_LOCATION
+      this, permission.ACCESS_COARSE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-      this,
-      permission.ACCESS_FINE_LOCATION
+      this, permission.ACCESS_FINE_LOCATION
     ) == PackageManager.PERMISSION_GRANTED
   }
 
@@ -162,9 +165,11 @@ class MainActivity : ComponentActivity() {
       is SearchCityAction -> {
         viewModel.getCitiesByName(action.query)
       }
+
       is AddToFavoriteCityList -> {
-         viewModel.updateFavoriteCityItems(action.cityItem)
+        viewModel.updateFavoriteCityItems(action.cityItem)
       }
+
       is OpenMainScreen -> navController.navigate(Route.mainScreen)
       is UpdateMainScreen -> {
         viewModel.getCurrentWeather(action.cityItem.lat.toString(), action.cityItem.lon.toString())
@@ -184,7 +189,10 @@ class MainActivity : ComponentActivity() {
   }
 
   private fun fetchLocation() {
-    if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+    if (ActivityCompat.checkSelfPermission(
+        this, permission.ACCESS_COARSE_LOCATION
+      ) == PackageManager.PERMISSION_GRANTED
+    ) {
       fusedLocationClient.lastLocation.addOnCompleteListener { task ->
         val location = task.result
         location?.let {
@@ -214,9 +222,7 @@ class MainActivity : ComponentActivity() {
     // on FusedLocationClient
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     fusedLocationClient.requestLocationUpdates(
-      mLocationRequest,
-      mLocationCallback,
-      Looper.getMainLooper()
+      mLocationRequest, mLocationCallback, Looper.getMainLooper()
     )
   }
 

@@ -101,5 +101,7 @@ dependencies {
   //Gif
   implementation("com.google.accompanist:accompanist-drawablepainter:0.35.0-alpha")
 
+  implementation ("androidx.work:work-runtime-ktx:2.8.1")
+
 
 }
