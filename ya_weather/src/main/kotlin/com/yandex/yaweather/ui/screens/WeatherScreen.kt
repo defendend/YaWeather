@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,11 +58,9 @@ import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
-  Scaffold(
-    topBar = {
-      TopBar(Modifier, action)
-    }
-  ) { innerPadding ->
+  Scaffold(topBar = {
+    TopBar(Modifier, action)
+  }) { innerPadding ->
     Box(
       modifier = Modifier
         .fillMaxSize()
@@ -78,27 +77,18 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
       ) {
         item {
           Column(
-            modifier = Modifier,
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
           ) {
             Text(
-              text = uiState.cityName,
-              fontSize = 24.sp,
-              color = Color.White,
-              fontWeight = FontWeight.Bold
+              text = uiState.cityName, fontSize = 24.sp, color = Color.White, fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = uiState.temperature,
-              fontSize = 64.sp,
-              color = Color.White,
-              fontWeight = FontWeight.ExtraBold
+              text = uiState.temperature, fontSize = 64.sp, color = Color.White, fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = "Макс. 14° Мин. 11°",
-              fontSize = 16.sp,
-              color = Color.LightGray
+              text = "Макс. 14° Мин. 11°", fontSize = 16.sp, color = Color.LightGray
             )
           }
         }
@@ -139,13 +129,11 @@ fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
     Spacer(modifier = modifier.height(8.dp))
 
     LazyRow(
-      horizontalArrangement = Arrangement.spacedBy(16.dp),
-      modifier = modifier.fillMaxWidth()
+      horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier.fillMaxWidth()
     ) {
       items(50) { index ->
         Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = modifier.padding(start = 8.dp)
+          horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.padding(start = 8.dp)
         ) {
           Spacer(modifier = modifier.height(4.dp))
           Text(text = "10°", color = Color.White, fontSize = 18.sp)
@@ -157,9 +145,7 @@ fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
           )
           Spacer(modifier = modifier.height(4.dp))
           Text(
-            text = "${String.format("%02d", (index + 1) % 24)} h",
-            color = Color.LightGray,
-            fontSize = 14.sp
+            text = "${String.format("%02d", (index + 1) % 24)} h", color = Color.LightGray, fontSize = 14.sp
           )
         }
       }
@@ -176,16 +162,23 @@ fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit) {
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically
   ) {
-    IconButton(onClick = {}) {
-      Icon(
-        imageVector = Icons.Default.Settings,
-        contentDescription = "Settings"
-      )
+    Row {
+      IconButton(onClick = {}) {
+        Icon(
+          imageVector = Icons.Default.Settings, contentDescription = "Settings"
+        )
+      }
+      IconButton(onClick = {
+        action.invoke(WeatherScreenAction.OpenInfoAction)
+      }) {
+        Icon(
+          imageVector = Icons.Default.Info, contentDescription = "Info"
+        )
+      }
     }
     IconButton(onClick = { action(WeatherScreenAction.AddCityAction) }) {
       Icon(
-        imageVector = Icons.Default.Add,
-        contentDescription = "Add"
+        imageVector = Icons.Default.Add, contentDescription = "Add"
       )
     }
   }
@@ -203,10 +196,7 @@ fun TenDayForecast() {
       .padding(16.dp)
   ) {
     Text(
-      text = "10-ДНЕВНЫЙ ПРОГНОЗ",
-      fontSize = 16.sp,
-      color = Color.LightGray,
-      fontWeight = FontWeight.Bold
+      text = "10-ДНЕВНЫЙ ПРОГНОЗ", fontSize = 16.sp, color = Color.LightGray, fontWeight = FontWeight.Bold
     )
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -248,12 +238,10 @@ fun TenDayForecast() {
             itemCount += 5
           }
           showMoreButton = false
-        },
-        modifier = Modifier.align(Alignment.CenterHorizontally)
+        }, modifier = Modifier.align(Alignment.CenterHorizontally)
       ) {
         Text(
-          text = "Показать ещё",
-          color = Color.LightGray
+          text = "Показать ещё", color = Color.LightGray
         )
       }
     } else {
@@ -261,17 +249,16 @@ fun TenDayForecast() {
         onClick = {
           itemCount = 5
           showMoreButton = true
-        },
-        modifier = Modifier.align(Alignment.CenterHorizontally)
+        }, modifier = Modifier.align(Alignment.CenterHorizontally)
       ) {
         Text(
-          text = "Скрыть",
-          color = Color.LightGray
+          text = "Скрыть", color = Color.LightGray
         )
       }
     }
   }
 }
+
 @Composable
 fun MapWidget(action: (WeatherScreenAction) -> Unit) {
   val toshekent = LatLng(41.2995, 69.2401)
@@ -279,39 +266,34 @@ fun MapWidget(action: (WeatherScreenAction) -> Unit) {
     position = CameraPosition.fromLatLngZoom(toshekent, 10f)
   }
 
-    GoogleMap(
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(200.dp)
-        .background(Color.Gray)
-        .clip(RoundedCornerShape(16.dp)),
-      cameraPositionState = cameraPositionState,
-      properties = MapProperties(isMyLocationEnabled = false),
-      onMapClick = {
-        action(WeatherScreenAction.OpenMapAction)
+  GoogleMap(
+    modifier = Modifier
+      .fillMaxWidth()
+      .height(200.dp)
+      .background(Color.Gray)
+      .clip(RoundedCornerShape(16.dp)),
+    cameraPositionState = cameraPositionState,
+    properties = MapProperties(isMyLocationEnabled = false),
+    onMapClick = {
+      action(WeatherScreenAction.OpenMapAction)
 
-      },
-      uiSettings = MapUiSettings(
-        zoomGesturesEnabled = false,
-        zoomControlsEnabled = false,
-        scrollGesturesEnabled = false,
-        compassEnabled = false,
-        rotationGesturesEnabled = false,
-        tiltGesturesEnabled = false)
-    ) {
-      Marker(
-        state = MarkerState(position = toshekent),
-        title = "",
-        snippet = "",
-        onClick = {
-          action(WeatherScreenAction.OpenMapAction)
-          true
-        }
-      )
-    }
-
+    },
+    uiSettings = MapUiSettings(
+      zoomGesturesEnabled = false,
+      zoomControlsEnabled = false,
+      scrollGesturesEnabled = false,
+      compassEnabled = false,
+      rotationGesturesEnabled = false,
+      tiltGesturesEnabled = false
+    )
+  ) {
+    Marker(state = MarkerState(position = toshekent), title = "", snippet = "", onClick = {
+      action(WeatherScreenAction.OpenMapAction)
+      true
+    })
   }
 
+}
 
 
 @Composable
@@ -321,8 +303,7 @@ fun Wigets(modifier: Modifier = Modifier, uiState: WidgetsUiState) {
     modifier = modifier
       .fillMaxWidth()
       .height(100.dp)
-      .background(Color.Gray),
-    contentAlignment = Alignment.Center
+      .background(Color.Gray), contentAlignment = Alignment.Center
   ) {
     Text(text = "Widgets Placeholder", color = Color.White)
   }

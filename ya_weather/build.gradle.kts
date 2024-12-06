@@ -89,18 +89,15 @@ dependencies {
   implementation(libs.accompanist.systemuicontroller)
 
 
-  //Chuck
+  //Chucker
   debugImplementation(libs.library)
   releaseImplementation(libs.library.no.op)
-
-  //glance
-  implementation("androidx.glance:glance:1.0.0-alpha05")
-  implementation("androidx.glance:glance-appwidget:1.0.0-alpha05")
 
 
   //Gif
   implementation("com.google.accompanist:accompanist-drawablepainter:0.35.0-alpha")
 
+  //Worker
   implementation ("androidx.work:work-runtime-ktx:2.8.1")
 
 

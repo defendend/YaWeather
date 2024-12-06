@@ -6,4 +6,6 @@
   <string name="appwidget_temperature">Temperature</string>
   <string name="app_widget_sunrise">Sunrise</string>
   <string name="app_widget_sunset">Sunset</string>
+  <string name="back_button">Кнопка назад</string>
+  <string name="info_screen_image">Картинка на Инфо скрине</string>
 </resources>

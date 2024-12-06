@@ -31,15 +31,17 @@ import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
 import com.yandex.yaweather.handler.CityScreenAction.MoveCity
 import com.yandex.yaweather.handler.CityScreenAction.OpenSelectedCityScreen
 import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
+import com.yandex.yaweather.handler.InfoScreenAction
 import com.yandex.yaweather.handler.MapScreenAction
 import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.handler.WeatherScreenAction.AddCityAction
+import com.yandex.yaweather.handler.WeatherScreenAction.OpenInfoAction
 import com.yandex.yaweather.handler.WeatherScreenAction.OpenMapAction
 import com.yandex.yaweather.ui.screens.CitySelectionScreen
+import com.yandex.yaweather.ui.screens.InfoScreen
 import com.yandex.yaweather.ui.screens.MapScreen
 import com.yandex.yaweather.ui.screens.WeatherScreen
-import com.yandex.yaweather.viewModel.MapUIState
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +59,7 @@ class MainActivity : ComponentActivity() {
     const val addCityScreen = "AddCityScreen"
     const val openMapScreen = "OpenMapScreen"
     const val SelectedCityScreen = "SelectedCityScreen"
+    const val infoScreen = "InfoScreen"
   }
 
   @Inject
@@ -110,7 +113,7 @@ class MainActivity : ComponentActivity() {
             arguments = listOf(navArgument("weatherUiStateIndex") { type = NavType.IntType })
           ) { navBackStackEntry ->
             val weatherUiStateIndex = navBackStackEntry.arguments?.getInt("weatherUiStateIndex")
-            val selectedWeatherUiState = favoriteCityItems[weatherUiStateIndex?: 0].weatherUiState
+            val selectedWeatherUiState = favoriteCityItems[weatherUiStateIndex ?: 0].weatherUiState
 
             if (selectedWeatherUiState != null) {
               WeatherScreen(selectedWeatherUiState) { uiAction ->
@@ -120,8 +123,9 @@ class MainActivity : ComponentActivity() {
 
             }
           }
-
-
+          composable(Route.infoScreen) {
+            InfoScreen { handleInfoScreenAction(navController, it) }
+          }
         }
       }
     }
@@ -156,6 +160,7 @@ class MainActivity : ComponentActivity() {
       }
     }
   }
+
   private fun subscribeToCoordinatesMap() {
     coordinatesJob = startStopScope?.launch {
       locationService.coordinates.mapNotNull { it }.collect { coordinates ->
@@ -169,9 +174,14 @@ class MainActivity : ComponentActivity() {
   private fun handleAction(navController: NavController, action: WeatherScreenAction) {
     when (action) {
       is AddCityAction -> navController.navigate(Route.addCityScreen)
-      is OpenMapAction -> {
-        navController.navigate(Route.openMapScreen)
-      }
+      is OpenMapAction -> navController.navigate(Route.openMapScreen)
+      is OpenInfoAction -> navController.navigate(Route.infoScreen)
+    }
+  }
+
+  private fun handleInfoScreenAction(navController: NavController, action: InfoScreenAction) {
+    when (action) {
+      is InfoScreenAction.CloseScreenAction -> navController.popBackStack()
     }
   }
 
@@ -201,9 +211,11 @@ class MainActivity : ComponentActivity() {
       is AddToFavoriteCityList -> {
         viewModel.updateFavoriteCityItems(action.cityItem)
       }
+
       is OpenSelectedCityScreen -> {
         navController.navigate("${Route.SelectedCityScreen}/${action.index}")
       }
+
       is MoveCity -> {
         viewModel.moveCity(action.fromIndex, action.toIndex)
       }
