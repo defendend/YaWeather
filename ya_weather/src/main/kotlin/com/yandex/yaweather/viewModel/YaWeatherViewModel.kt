@@ -108,6 +108,11 @@ class YaWeatherViewModel @Inject constructor(
     return ((response.main?.temp)?.minus(273))?.toInt().toString()
 }
 
+  fun moveCity(fromIndex: Int, toIndex: Int) {
+    val movedItem = _favoriteCityItems.value.removeAt(fromIndex)
+    _favoriteCityItems.value.add(toIndex, movedItem)
+  }
+
   fun updateMarkerPosition(latLng: LatLng) {
     viewModelScope.launch(Dispatchers.IO) {
       try {

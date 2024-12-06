@@ -13,9 +13,11 @@ import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -26,9 +28,9 @@ import com.yandex.yaweather.dagger.application.MainApplication
 import com.yandex.yaweather.data.diModules.LocationService
 import com.yandex.yaweather.handler.CityScreenAction
 import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
-import com.yandex.yaweather.handler.CityScreenAction.OpenMainScreen
+import com.yandex.yaweather.handler.CityScreenAction.MoveCity
+import com.yandex.yaweather.handler.CityScreenAction.OpenSelectedCityScreen
 import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
-import com.yandex.yaweather.handler.CityScreenAction.UpdateMainScreen
 import com.yandex.yaweather.handler.MapScreenAction
 import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
 import com.yandex.yaweather.handler.WeatherScreenAction
@@ -54,6 +56,7 @@ class MainActivity : ComponentActivity() {
     const val mainScreen = "MainScreen"
     const val addCityScreen = "AddCityScreen"
     const val openMapScreen = "OpenMapScreen"
+    const val SelectedCityScreen = "SelectedCityScreen"
   }
 
   @Inject
@@ -102,6 +105,23 @@ class MainActivity : ComponentActivity() {
           composable(Route.openMapScreen) {
             MapScreen(mapUIState, { action -> handleMapAction(action) })
           }
+          composable(
+            route = "${Route.SelectedCityScreen}/{weatherUiStateIndex}",
+            arguments = listOf(navArgument("weatherUiStateIndex") { type = NavType.IntType })
+          ) { navBackStackEntry ->
+            val weatherUiStateIndex = navBackStackEntry.arguments?.getInt("weatherUiStateIndex")
+            val selectedWeatherUiState = favoriteCityItems[weatherUiStateIndex?: 0].weatherUiState
+
+            if (selectedWeatherUiState != null) {
+              WeatherScreen(selectedWeatherUiState) { uiAction ->
+                handleAction(navController, uiAction)
+              }
+            } else {
+
+            }
+          }
+
+
         }
       }
     }
@@ -181,10 +201,11 @@ class MainActivity : ComponentActivity() {
       is AddToFavoriteCityList -> {
         viewModel.updateFavoriteCityItems(action.cityItem)
       }
-
-      is OpenMainScreen -> navController.navigate(Route.mainScreen)
-      is UpdateMainScreen -> {
-        viewModel.getCurrentWeather(action.cityItem.lat.toString(), action.cityItem.lon.toString())
+      is OpenSelectedCityScreen -> {
+        navController.navigate("${Route.SelectedCityScreen}/${action.index}")
+      }
+      is MoveCity -> {
+        viewModel.moveCity(action.fromIndex, action.toIndex)
       }
     }
   }
