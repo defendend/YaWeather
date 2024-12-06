@@ -1,9 +1,9 @@
 package com.yandex.yaweather
 
-import androidx.activity.ComponentActivity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -47,6 +47,7 @@ class SplashActivity : ComponentActivity() {
       SplashScreen()
     }
   }
+
   @Composable
   fun SplashScreen() {
     LaunchedEffect(Unit) {
@@ -55,17 +56,17 @@ class SplashActivity : ComponentActivity() {
       finish()
       overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
     }
-    Box(modifier = Modifier.fillMaxWidth().background(
-      brush = Brush.verticalGradient(
-      colors = listOf(
-        Color(0xFF4682B4),
-        Color(0xFF5A9BD4),
-        Color(0xFF87CEFA),
-        Color(0xFFAEDCF3),
-        Color(0xFFB0E0E6)
-      )
-      )
-    )) {
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .background(
+          brush = Brush.verticalGradient(
+            colors = listOf(
+              Color(0xFF4682B4), Color(0xFF5A9BD4), Color(0xFF87CEFA), Color(0xFFAEDCF3), Color(0xFFB0E0E6)
+            )
+          )
+        )
+    ) {
       AnimatedSun()
       MovingCloud()
     }
@@ -78,32 +79,25 @@ fun AnimatedSun() {
   val infiniteTransition = rememberInfiniteTransition(label = "")
 
   val rotation by infiniteTransition.animateFloat(
-    initialValue = 0f,
-    targetValue = 360f,
-    animationSpec = infiniteRepeatable(
+    initialValue = 0f, targetValue = 360f, animationSpec = infiniteRepeatable(
       animation = keyframes {
         durationMillis = 2500
         0f at 0 with LinearOutSlowInEasing
         180f at 2500 with FastOutSlowInEasing
         360f at 5000 with LinearOutSlowInEasing
-      },
-      repeatMode = RepeatMode.Restart
+      }, repeatMode = RepeatMode.Restart
     ), label = "rotation"
   )
 
 
   val scale by infiniteTransition.animateFloat(
-    initialValue = 0.7f,
-    targetValue = 1f,
-    animationSpec = infiniteRepeatable(
-      animation = tween(durationMillis = 1250, easing = LinearEasing),
-      repeatMode = RepeatMode.Reverse
+    initialValue = 0.7f, targetValue = 1f, animationSpec = infiniteRepeatable(
+      animation = tween(durationMillis = 1250, easing = LinearEasing), repeatMode = RepeatMode.Reverse
     ), label = ""
   )
 
   Box(
-    modifier = Modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center
+    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
   ) {
     Image(
       painter = painterResource(id = R.drawable.ic_sun),
@@ -120,8 +114,7 @@ fun AnimatedSun() {
 @Composable
 fun MovingCloud() {
 
-  Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center)
-  {
+  Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
     DrawAnimatedCloud(-350f, 290f, 2, 8000)
     DrawAnimatedCloud(-350f, 320f, 1, 5000)
   }
@@ -129,7 +122,7 @@ fun MovingCloud() {
 }
 
 @Composable
-private fun DrawAnimatedCloud(initialValue: Float, targetValue:Float, cloudId: Int, speedMillis: Int){
+private fun DrawAnimatedCloud(initialValue: Float, targetValue: Float, cloudId: Int, speedMillis: Int) {
   val infiniteTransition = rememberInfiniteTransition(label = "")
   val img = when (cloudId) {
     1 -> R.drawable.cloud_svgrepo_com
@@ -137,13 +130,9 @@ private fun DrawAnimatedCloud(initialValue: Float, targetValue:Float, cloudId: I
     else -> R.drawable.cloud_svgrepo_com
   }
   val animatedOffset by infiniteTransition.animateFloat(
-    initialValue = initialValue,
-    targetValue = targetValue,
-    animationSpec = infiniteRepeatable(
-      animation = tween(durationMillis = speedMillis, easing = LinearEasing),
-      repeatMode = RepeatMode.Restart
-    ),
-    label = ""
+    initialValue = initialValue, targetValue = targetValue, animationSpec = infiniteRepeatable(
+      animation = tween(durationMillis = speedMillis, easing = LinearEasing), repeatMode = RepeatMode.Restart
+    ), label = ""
   )
   Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
     Image(

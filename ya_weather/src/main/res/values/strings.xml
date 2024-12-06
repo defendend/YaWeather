@@ -1,6 +1,9 @@
 <resources>
   <string name="app_name">YaWeather</string>
-  <string name="appwidget_text">EXAMPLE</string>
+  <string name="appwidget_text">Current city</string>
   <string name="add_widget">Add widget</string>
   <string name="app_widget_description">This is an app widget description</string>
+  <string name="appwidget_temperature">Temperature</string>
+  <string name="app_widget_sunrise">Sunrise</string>
+  <string name="app_widget_sunset">Sunset</string>
 </resources>
