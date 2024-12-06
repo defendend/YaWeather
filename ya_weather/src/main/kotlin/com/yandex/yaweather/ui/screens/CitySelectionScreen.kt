@@ -1,5 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.AutoMirrored.Filled
@@ -51,16 +53,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
+import com.yandex.yaweather.utils.dragContainer
+import com.yandex.yaweather.utils.draggableItems
+import com.yandex.yaweather.utils.rememberDragDropState
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.ZoneOffset
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CitySelectionScreen(
   cityItems: State<MutableList<CityItem>>,
@@ -68,6 +73,16 @@ fun CitySelectionScreen(
   action: (CityScreenAction) -> Unit
 ) {
   var query by remember { mutableStateOf("") }
+  val stateList = rememberLazyListState()
+
+  val dragDropState =
+    rememberDragDropState(
+      lazyListState = stateList,
+      draggableItemsNum = favoriteCityItems.size,
+      onMove = { fromIndex, toIndex ->
+        action(CityScreenAction.MoveCity(fromIndex, toIndex))
+      }
+    )
 
   Scaffold(
     topBar = {
@@ -80,13 +95,21 @@ fun CitySelectionScreen(
         },
       )
     }
-  ) { paddingValues ->
+  ) {
     LazyColumn(
-      modifier = Modifier.fillMaxSize(),
-      contentPadding = paddingValues
+      modifier = Modifier.fillMaxSize().padding(top = 50.dp).dragContainer(dragDropState),
+      state = stateList,
     ) {
-      items(favoriteCityItems) { cityUIState ->
-        CityItem(cityUIState, action)
+      draggableItems(
+        items = favoriteCityItems,
+        dragDropState = dragDropState
+      ) { modifier, item ->
+        CityItem(
+          item,
+          favoriteCityItems.indexOf(item),
+          action,
+          modifier
+        )
       }
     }
   }
@@ -245,16 +268,21 @@ fun WeatherSearchBar(
 
 
 @Composable
-fun CityItem(citySelectionUIState: CitySelectionUIState, action: (CityScreenAction) -> Unit) {
+fun CityItem(
+  citySelectionUIState: CitySelectionUIState,
+  index: Int,
+  action: (CityScreenAction) -> Unit,
+  modifier: Modifier
+) {
   Box(
     modifier = Modifier
+      .then(modifier)
       .padding(horizontal = 16.dp, vertical = 8.dp)
       .clip(RoundedCornerShape(16.dp))
       .fillMaxWidth()
       .height(120.dp)
       .clickable {
-        action(CityScreenAction.OpenMainScreen)
-        action(CityScreenAction.UpdateMainScreen(citySelectionUIState.cityItem))
+        action(CityScreenAction.OpenSelectedCityScreen(index))
       }
   ) {
     Image(
@@ -265,9 +293,15 @@ fun CityItem(citySelectionUIState: CitySelectionUIState, action: (CityScreenActi
             citySelectionUIState.weatherUiState.description == "shower rain" -> R.drawable.fall_rain
             citySelectionUIState.weatherUiState.description.contains("rain", ignoreCase = true) -> R.drawable.rain_gif
             citySelectionUIState.weatherUiState.description.contains("clear", ignoreCase = true) -> R.drawable.clear_sky
-            citySelectionUIState.weatherUiState.description.contains("scattered", ignoreCase = true) -> R.drawable.scaffered_clouds
-            citySelectionUIState.weatherUiState.description.contains("clouds", ignoreCase = true) -> R.drawable.clouds_gif
-            citySelectionUIState.weatherUiState.description.contains("thunderstorm", ignoreCase = true) -> R.drawable.thunderstorm
+            citySelectionUIState.weatherUiState.description.contains(
+              "clouds",
+              ignoreCase = true
+            ) -> R.drawable.scaffered_clouds
+            citySelectionUIState.weatherUiState.description.contains(
+              "thunderstorm",
+              ignoreCase = true
+            ) -> R.drawable.thunderstorm
+
             citySelectionUIState.weatherUiState.description.contains("snow", ignoreCase = true) -> R.drawable.snow_gif
             citySelectionUIState.weatherUiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist
             citySelectionUIState.weatherUiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist
@@ -343,3 +377,6 @@ fun CityItem(citySelectionUIState: CitySelectionUIState, action: (CityScreenActi
     )
   }
 }
+
+
+
