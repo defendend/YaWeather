@@ -37,6 +37,7 @@ import com.yandex.yaweather.handler.WeatherScreenAction.OpenMapAction
 import com.yandex.yaweather.ui.screens.CitySelectionScreen
 import com.yandex.yaweather.ui.screens.MapScreen
 import com.yandex.yaweather.ui.screens.WeatherScreen
+import com.yandex.yaweather.viewModel.MapUIState
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +73,7 @@ class MainActivity : ComponentActivity() {
     (application as MainApplication).mainComponent.inject(this)
     setContent {
       val uiState by viewModel.userCurrentWeatherState.collectAsState()
+      val mapUIState by viewModel.mapWeatherState.collectAsState()
       val cityItems = viewModel.cities.collectAsState()
       val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
 
@@ -98,7 +100,7 @@ class MainActivity : ComponentActivity() {
             CitySelectionScreen(cityItems, favoriteCityItems) { action -> handleCityAction(navController, action) }
           }
           composable(Route.openMapScreen) {
-            MapScreen(uiState, { action -> handleMapAction(action) })
+            MapScreen(mapUIState, { action -> handleMapAction(action) })
           }
         }
       }
@@ -109,6 +111,7 @@ class MainActivity : ComponentActivity() {
     super.onStart()
     startStopScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     subscribeToCoordinates()
+    subscribeToCoordinatesMap()
   }
 
   override fun onResume() {
@@ -130,6 +133,15 @@ class MainActivity : ComponentActivity() {
         val latitude = String.format("%.2f", coordinates.first).replace(",", ".")
         val longitude = String.format("%.2f", coordinates.second).replace(",", ".")
         viewModel.getCurrentWeather(latitude, longitude)
+      }
+    }
+  }
+  private fun subscribeToCoordinatesMap() {
+    coordinatesJob = startStopScope?.launch {
+      locationService.coordinates.mapNotNull { it }.collect { coordinates ->
+        val latitude = String.format("%.2f", coordinates.first).replace(",", ".")
+        val longitude = String.format("%.2f", coordinates.second).replace(",", ".")
+        viewModel.getMapInfo(latitude, longitude)
       }
     }
   }

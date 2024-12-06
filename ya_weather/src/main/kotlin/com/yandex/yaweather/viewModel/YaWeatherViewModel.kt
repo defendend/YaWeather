@@ -1,11 +1,13 @@
 package com.yandex.yaweather.viewModel
 
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.repository.CityFinderRepository
 import com.google.android.gms.maps.model.LatLng
 import com.yandex.yaweather.repository.OpenWeatherRepository
+import data.network.Coordinates
 import data.network.CoordinatesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,10 @@ class YaWeatherViewModel @Inject constructor(
   private val _currentWeather = MutableStateFlow(WeatherUiState())
   val userCurrentWeatherState: StateFlow<WeatherUiState>
     get() = _currentWeather.asStateFlow()
+
+  private val _mapWeather = MutableStateFlow(MapUIState())
+  val mapWeatherState: StateFlow<MapUIState>
+    get() = _mapWeather.asStateFlow()
 
   private val _errorMessage = MutableStateFlow<String>("")
   val errorMessage = _errorMessage.asStateFlow()
@@ -42,7 +48,17 @@ class YaWeatherViewModel @Inject constructor(
       }
     }
   }
-
+  fun getMapInfo(lat: String, lon: String){
+    viewModelScope.launch(Dispatchers.IO){
+      viewModelScope.launch {
+        weatherRepository.getCurrentWeather(lat,lon).onSuccess {
+          _mapWeather.emit(mapScreenResponseToUiState(it))
+        }.onFailure {
+          _errorMessage.emit(it.message.toString())
+        }
+      }
+    }
+  }
   fun updateFavoriteCityItems(cityItem: CityItem) {
     viewModelScope.launch(Dispatchers.IO)
     {
@@ -72,6 +88,12 @@ class YaWeatherViewModel @Inject constructor(
       }
     }
   }
+  private fun mapScreenResponseToUiState(response: CoordinatesResponse): MapUIState {
+    return MapUIState(
+      markerPosition = response.coordinates, // CoordinatesResponse'dan olingan koordinatalar
+      temperature = response.main?.temp?.minus(273)?.toInt().toString() // Haroratni Kelvin'dan Celsius'ga o'tkazish
+    )
+  }
   private fun mapResponseToUiState(response: CoordinatesResponse): WeatherUiState {
     return WeatherUiState(
       cityName = response.name ?: "N/A",
@@ -95,7 +117,7 @@ class YaWeatherViewModel @Inject constructor(
         val response = weatherRepository.getCurrentWeather(lat, lon)
         if (response.isSuccess) {
           println("Weather fetched: ${response.getOrNull()?.main?.temp}")
-          _currentWeather.value = mapResponseToUiState(response.getOrNull()!!)
+          _mapWeather.value = mapScreenResponseToUiState(response.getOrNull()!!)
         } else {
           println("Error fetching weather: ${response.exceptionOrNull()?.message}")
           _errorMessage.value = response.exceptionOrNull()?.message.toString()
@@ -112,6 +134,12 @@ class YaWeatherViewModel @Inject constructor(
 data class CitySelectionUIState(
   val cityItem: CityItem,
   val weatherUiState: WeatherUiState
+)
+
+data class MapUIState(
+  val markerPosition: Coordinates? = null,
+  val temperature: String = "",
+
 )
 
 data class WeatherUiState(
