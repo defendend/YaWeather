@@ -22,7 +22,7 @@ class LocationService @Inject constructor(context: Context) {
   val coordinates = _coordinates.asStateFlow()
 
   fun setLocation(location: Pair<Double, Double>) {
-    _coordinates.value = location
+    _coordinates.tryEmit(location)
     saveLocationToPref(location)
   }
 

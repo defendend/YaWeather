@@ -36,9 +36,9 @@ class YaWeatherViewModel @Inject constructor(
   fun getCurrentWeather(lat: String, lon: String) {
     viewModelScope.launch(Dispatchers.IO) {
       weatherRepository.getCurrentWeather(lat, lon).onSuccess {
-        _currentWeather.value = mapResponseToUiState(it)
+        _currentWeather.emit(mapResponseToUiState(it))
       }.onFailure {
-        _errorMessage.value = it.message.toString()
+        _errorMessage.emit(it.message.toString())
       }
     }
   }
