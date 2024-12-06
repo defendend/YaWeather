@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.network.CityItem
@@ -85,7 +86,7 @@ fun CitySelectionScreen(
       contentPadding = paddingValues
     ) {
       items(favoriteCityItems) { cityUIState ->
-        CityItem(cityUIState)
+        CityItem(cityUIState, action)
       }
     }
   }
@@ -244,19 +245,34 @@ fun WeatherSearchBar(
 
 
 @Composable
-fun CityItem(citySelectionUIState: CitySelectionUIState) {
+fun CityItem(citySelectionUIState: CitySelectionUIState, action: (CityScreenAction) -> Unit) {
   Box(
     modifier = Modifier
       .padding(horizontal = 16.dp, vertical = 8.dp)
       .clip(RoundedCornerShape(16.dp))
       .fillMaxWidth()
       .height(120.dp)
+      .clickable {
+        action(CityScreenAction.OpenMainScreen)
+        action(CityScreenAction.UpdateMainScreen(citySelectionUIState.cityItem))
+      }
   ) {
     Image(
       painter = rememberDrawablePainter(
         drawable = getDrawable(
           LocalContext.current,
-          R.drawable.rain_gif
+          when (citySelectionUIState.weatherUiState.description) {
+            "clear sky" -> R.drawable.clear_sky
+            "few clouds" -> R.drawable.clouds_gif
+            "scattered clouds" -> R.drawable.scaffered_clouds
+            "broken clouds" -> R.drawable.scaffered_clouds
+            "shower rain" -> R.drawable.fall_rain
+            "rain" -> R.drawable.rain_gif
+            "thunderstorm" -> R.drawable.thunderstorm
+            "snow" -> R.drawable.snow_gif
+            "mist" -> R.drawable.mist
+            else -> R.drawable.clear_sky
+          }
         )
       ),
       contentDescription = "Loading animation",

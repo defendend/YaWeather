@@ -22,7 +22,9 @@ import com.yandex.yaweather.dagger.application.MainApplication
 import com.yandex.yaweather.data.diModules.LocationService
 import com.yandex.yaweather.handler.CityScreenAction
 import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
+import com.yandex.yaweather.handler.CityScreenAction.OpenMainScreen
 import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
+import com.yandex.yaweather.handler.CityScreenAction.UpdateMainScreen
 import com.yandex.yaweather.handler.MapScreenAction
 import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
 import com.yandex.yaweather.handler.WeatherScreenAction
@@ -79,7 +81,7 @@ class MainActivity : ComponentActivity() {
             WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
           }
           composable(Route.addCityScreen) {
-            CitySelectionScreen(cityItems, favoriteCityItems) { action -> handleCityAction(action) }
+            CitySelectionScreen(cityItems, favoriteCityItems) { action -> handleCityAction(navController, action) }
           }
           composable(Route.openMapScreen) {
             MapScreen(uiState, { action -> handleMapAction(action) })
@@ -105,7 +107,7 @@ class MainActivity : ComponentActivity() {
     }
   }
 
-  private fun handleCityAction(action: CityScreenAction) {
+  private fun handleCityAction(navController: NavController, action: CityScreenAction) {
 
     when (action) {
       is SearchCityAction -> {
@@ -113,6 +115,10 @@ class MainActivity : ComponentActivity() {
       }
       is AddToFavoriteCityList -> {
          viewModel.updateFavoriteCityItems(action.cityItem)
+      }
+      is OpenMainScreen -> navController.navigate(Route.mainScreen)
+      is UpdateMainScreen -> {
+        viewModel.getCurrentWeather(action.cityItem.lat.toString(), action.cityItem.lon.toString())
       }
     }
   }
