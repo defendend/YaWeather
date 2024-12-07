@@ -111,7 +111,18 @@ class YaWeatherViewModel @Inject constructor(
           it.cityItem0,
           it.cityItem1,
           it.cityItem2,
-          it.cityItem3
+          it.cityItem3,
+          it.cityItem4,
+          it.cityItem5,
+          it.cityItem6,
+          it.cityItem7,
+          it.cityItem8,
+          it.cityItem9,
+          it.cityItem10,
+          it.cityItem11,
+          it.cityItem12,
+          it.cityItem13,
+          it.cityItem14
         )
         _cities.value = cityList.toMutableList()
       }.onFailure {
