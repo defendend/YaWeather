@@ -1,9 +1,5 @@
 package com.yandex.yaweather.ui.screens
 
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,8 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.BitmapDescriptor
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -44,7 +38,6 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberMarkerState
 import com.yandex.yaweather.R
 import com.yandex.yaweather.handler.MapScreenAction
 import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
@@ -456,43 +449,4 @@ fun MapScreen(
   }
 
 
-  }
-@Composable
-fun CustomMarker(
-  position: LatLng,
-  title: String,
-  onClick: () -> Unit
-) {
-  val markerState = rememberMarkerState(position = position)
-
-  Marker(
-    state = markerState,
-    icon = remember { createCustomMarkerIcon(title) },
-    onClick = {
-      onClick()
-      true
-    }
-  )
-}
-
-fun createCustomMarkerIcon(title: String): BitmapDescriptor {
-  val markerWidth = 100  // Ikonka kengligi
-  val markerHeight = 100 // Ikonka balandligi
-
-  val bitmap = Bitmap.createBitmap(markerWidth, markerHeight, Bitmap.Config.ARGB_8888)
-  val canvas = Canvas(bitmap)
-
-  val paint = Paint().apply {
-    color = android.graphics.Color.BLUE
-    textSize = 20f
-    textAlign = Paint.Align.CENTER
-    isAntiAlias = true
-  }
-
-  val xPos = (markerWidth / 2).toFloat()
-  val yPos = (markerHeight / 2).toFloat() - ((paint.descent() + paint.ascent()) / 2)
-
-  canvas.drawText(title, xPos, yPos, paint)
-
-  return BitmapDescriptorFactory.fromBitmap(bitmap) // BitmapDescriptor yaratish
 }
