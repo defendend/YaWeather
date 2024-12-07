@@ -61,12 +61,15 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.UrlTileProvider
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberTileOverlayState
 import com.yandex.yaweather.R
 import com.yandex.yaweather.Theme.BackSwitch
 import com.yandex.yaweather.Theme.BackTime
@@ -79,6 +82,7 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 import kotlinx.coroutines.launch
+import java.net.URL
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -88,6 +92,7 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
   val skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
+
   LaunchedEffect(openBottomSheet) {
     if (openBottomSheet) {
       coroutineScope.launch {
@@ -712,6 +717,19 @@ fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreen
     position = currentLocation?.let { CameraPosition.fromLatLngZoom(it, 10f) }!!
   }
 
+  val tileProvider = remember {
+    object : UrlTileProvider(256, 256) {
+      override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
+        return try {
+          URL("https://tile.openweathermap.org/map/temp_new/$zoom/$x/$y.png?appid=62b18818f899c80e1d2f4285220bc90b")
+        } catch (e: Exception) {
+          null
+        }
+      }
+    }}
+  val tileOverlayState = rememberTileOverlayState()
+
+
   GoogleMap(
     modifier = Modifier
       .fillMaxWidth()
@@ -733,6 +751,10 @@ fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreen
       tiltGesturesEnabled = false
     )
   ) {
+    TileOverlay(
+      state = tileOverlayState,
+      tileProvider = tileProvider
+    )
     currentLocation?.let { MarkerState(position = it) }?.let {
       Marker(state = it, title = "", snippet = "", onClick = {
         action(WeatherScreenAction.OpenMapAction)
