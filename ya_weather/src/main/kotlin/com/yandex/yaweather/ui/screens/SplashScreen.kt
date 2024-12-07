@@ -1,11 +1,5 @@
-package com.yandex.yaweather
+package com.yandex.yaweather.ui.screens
 
-import android.annotation.SuppressLint
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -35,40 +29,29 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.yandex.yaweather.R
+import com.yandex.yaweather.handler.SplashScreenAction
 import kotlinx.coroutines.delay
 
 
-@SuppressLint("CustomSplashScreen")
-class SplashActivity : ComponentActivity() {
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    enableEdgeToEdge()
-    setContent {
-      SplashScreen()
-    }
-  }
-
-  @Composable
-  fun SplashScreen() {
-    LaunchedEffect(Unit) {
-      delay(3000)
-      startActivity(Intent(this@SplashActivity, MainActivity::class.java))
-      finish()
-      overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-    }
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .background(
-          brush = Brush.verticalGradient(
-            colors = listOf(
-              Color(0xFF4682B4), Color(0xFF5A9BD4), Color(0xFF87CEFA), Color(0xFFAEDCF3), Color(0xFFB0E0E6)
-            )
+@Composable
+fun SplashScreen(action: (SplashScreenAction) -> Unit) {
+  Box(
+    modifier = Modifier
+      .fillMaxWidth()
+      .background(
+        brush = Brush.verticalGradient(
+          colors = listOf(
+            Color(0xFF4682B4), Color(0xFF5A9BD4), Color(0xFF87CEFA), Color(0xFFAEDCF3), Color(0xFFB0E0E6)
           )
         )
-    ) {
-      AnimatedSun()
-      MovingCloud()
+      )
+  ) {
+    AnimatedSun()
+    MovingCloud()
+    LaunchedEffect(Unit) {
+      delay(3000)
+      action(SplashScreenAction.OpenMainScreen)
     }
   }
 }

@@ -34,19 +34,14 @@
         android:value="AIzaSyAU9u-OLQ-tRYAVcs_q1z8HAs4sgHBkTx0" />
 
     <activity
-        android:name=".SplashActivity"
+        android:name=".MainActivity"
         android:exported="true"
-        android:theme="@style/Theme.Splash">
+        android:theme="@style/Theme.YaWeather">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-    </activity>
-    <activity
-        android:name=".MainActivity"
-        android:exported="false">
-
     </activity>
   </application>
 

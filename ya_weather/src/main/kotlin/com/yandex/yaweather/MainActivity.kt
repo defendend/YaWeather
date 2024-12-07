@@ -8,6 +8,8 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
@@ -34,6 +36,8 @@ import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
 import com.yandex.yaweather.handler.InfoScreenAction
 import com.yandex.yaweather.handler.MapScreenAction
 import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
+import com.yandex.yaweather.handler.SplashScreenAction
+import com.yandex.yaweather.handler.SplashScreenAction.OpenMainScreen
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.handler.WeatherScreenAction.AddCityAction
 import com.yandex.yaweather.handler.WeatherScreenAction.OpenInfoAction
@@ -41,6 +45,7 @@ import com.yandex.yaweather.handler.WeatherScreenAction.OpenMapAction
 import com.yandex.yaweather.ui.screens.CitySelectionScreen
 import com.yandex.yaweather.ui.screens.InfoScreen
 import com.yandex.yaweather.ui.screens.MapScreen
+import com.yandex.yaweather.ui.screens.SplashScreen
 import com.yandex.yaweather.ui.screens.WeatherScreen
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -60,6 +65,7 @@ class MainActivity : ComponentActivity() {
     const val openMapScreen = "OpenMapScreen"
     const val SelectedCityScreen = "SelectedCityScreen"
     const val infoScreen = "InfoScreen"
+    const val splashScreen = "SplashScreen"
   }
 
   @Inject
@@ -98,9 +104,35 @@ class MainActivity : ComponentActivity() {
 
       val navController = rememberNavController()
       YaWeatherTheme {
-        NavHost(navController, startDestination = Route.mainScreen) {
+        NavHost(navController, startDestination = Route.splashScreen,
+          ) {
+
           composable(Route.mainScreen) {
             WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
+          }
+          composable(Route.splashScreen, enterTransition = {
+            when (initialState.destination.route) {
+              "details" ->
+                slideIntoContainer(
+                  AnimatedContentTransitionScope.SlideDirection.Left,
+                  animationSpec = tween(700)
+                )
+
+              else -> null
+            }
+          },
+            exitTransition = {
+              when (targetState.destination.route) {
+                "details" ->
+                  slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(700)
+                  )
+
+                else -> null
+              }
+            },) {
+            SplashScreen { action -> handleSplashScreenAction(navController, action) }
           }
           composable(Route.addCityScreen) {
             CitySelectionScreen(cityItems, favoriteCityItems) { action -> handleCityAction(navController, action) }
@@ -114,14 +146,9 @@ class MainActivity : ComponentActivity() {
           ) { navBackStackEntry ->
             val weatherUiStateIndex = navBackStackEntry.arguments?.getInt("weatherUiStateIndex")
             val selectedWeatherUiState = favoriteCityItems[weatherUiStateIndex ?: 0].weatherUiState
-
-            if (selectedWeatherUiState != null) {
               WeatherScreen(selectedWeatherUiState) { uiAction ->
                 handleAction(navController, uiAction)
               }
-            } else {
-
-            }
           }
           composable(Route.infoScreen) {
             InfoScreen { handleInfoScreenAction(navController, it) }
@@ -218,6 +245,14 @@ class MainActivity : ComponentActivity() {
 
       is MoveCity -> {
         viewModel.moveCity(action.fromIndex, action.toIndex)
+      }
+    }
+  }
+
+  private fun handleSplashScreenAction(navController: NavController, action: SplashScreenAction) {
+    when (action) {
+      OpenMainScreen -> {
+        navController.navigate(Route.mainScreen)
       }
     }
   }
