@@ -4,6 +4,7 @@ import android.content.Context
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.yandex.yaweather.data.network.CityApi
+import com.yandex.yaweather.data.network.HourlyWeatherApi
 import com.yandex.yaweather.data.network.WeatherApi
 import dagger.Module
 import dagger.Provides
@@ -43,4 +44,15 @@ class NetworkProvider {
 
   @Provides
   fun providerCityApi(@CityRetrofitQualifier retrofit: Retrofit): CityApi = retrofit.create(CityApi::class.java)
+
+  @HourlyWeatherRetrofitQualifier
+  @Provides
+  fun providesMeteostatRetrofit(okHttpClient: OkHttpClient) : Retrofit = Retrofit.Builder()
+    .baseUrl("https://api.weatherbit.io/v2.0/")
+    .client(okHttpClient)
+    .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+    .build()
+
+  @Provides
+  fun providesMeteostatApi(@HourlyWeatherRetrofitQualifier retrofit: Retrofit) : HourlyWeatherApi = retrofit.create(HourlyWeatherApi::class.java)
 }
