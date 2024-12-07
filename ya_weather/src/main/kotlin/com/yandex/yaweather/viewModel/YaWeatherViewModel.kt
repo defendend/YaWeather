@@ -1,11 +1,10 @@
 package com.yandex.yaweather.viewModel
 
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.LatLng
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.repository.CityFinderRepository
-import com.google.android.gms.maps.model.LatLng
 import com.yandex.yaweather.repository.OpenWeatherRepository
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 import data.network.Coordinates
@@ -91,8 +90,11 @@ class YaWeatherViewModel @Inject constructor(
   }
   private fun mapScreenResponseToUiState(response: CoordinatesResponse): MapUIState {
     return MapUIState(
-      markerPosition = response.coordinates, // CoordinatesResponse'dan olingan koordinatalar
-      temperature = response.main?.temp?.minus(273)?.toInt().toString() // Haroratni Kelvin'dan Celsius'ga o'tkazish
+      markerPosition = response.coordinates,
+      temperature = response.main?.temp?.minus(273)?.toInt().toString(),
+      windSpeed = response.wind?.speed.toString(),
+      humidity = response.main?.humidity.toString(),
+      airQuality = response.weather?.get(0)?.description.toString()
     )
   }
   private fun mapResponseToUiState(response: CoordinatesResponse): WeatherUiState {
@@ -102,7 +104,8 @@ class YaWeatherViewModel @Inject constructor(
       temperatureMax = ((response.main?.tempMax)?.minus(273))?.toInt().toString(),
       temperatureMin = ((response.main?.tempMin)?.minus(273))?.toInt().toString(),
       description = response.weather?.firstOrNull()?.description ?: "N/A",
-      widgetsUiState = widgetResponeToUiState(response)
+      widgetsUiState = widgetResponeToUiState(response),
+      markerPosition = response.coordinates
     )
   }
 
@@ -154,10 +157,15 @@ data class CitySelectionUIState(
 data class MapUIState(
   val markerPosition: Coordinates? = null,
   val temperature: String = "",
+  val humidity : String = "",
+  val windSpeed : String = "",
+  val airQuality : String = ""
+
 
 )
 
 data class WeatherUiState(
+  val markerPosition: Coordinates? = null,
   val cityName: String = "",
   val temperature: String = "",
   val description: String = "",

@@ -1,8 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.compose.foundation.Image
 import android.app.TimePickerDialog
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
@@ -52,8 +50,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -163,7 +159,7 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
         }
 
         item {
-          MapWidget(Modifier, action)
+          MapWidget(modifier = Modifier,uiState, action)
         }
 
         item {
@@ -710,17 +706,17 @@ fun TenDayForecast(modifier: Modifier, uiState: WeatherUiState) {
 }
 
 @Composable
-fun MapWidget(action1: Modifier, action: (WeatherScreenAction) -> Unit) {
-  val toshekent = LatLng(41.2995, 69.2401)
+fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
+  val currentLocation  = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
   val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(toshekent, 10f)
+    position = currentLocation?.let { CameraPosition.fromLatLngZoom(it, 10f) }!!
   }
 
   GoogleMap(
     modifier = Modifier
       .fillMaxWidth()
       .height(200.dp)
-      .background(Color.Gray)
+      .background(Color.Gray,RoundedCornerShape(16.dp))
       .clip(RoundedCornerShape(16.dp)),
     cameraPositionState = cameraPositionState,
     properties = MapProperties(isMyLocationEnabled = false),
@@ -737,10 +733,12 @@ fun MapWidget(action1: Modifier, action: (WeatherScreenAction) -> Unit) {
       tiltGesturesEnabled = false
     )
   ) {
-    Marker(state = MarkerState(position = toshekent), title = "", snippet = "", onClick = {
-      action(WeatherScreenAction.OpenMapAction)
-      true
-    })
+    currentLocation?.let { MarkerState(position = it) }?.let {
+      Marker(state = it, title = "", snippet = "", onClick = {
+        action(WeatherScreenAction.OpenMapAction)
+        true
+      })
+    }
   }
 
 }
