@@ -3,6 +3,7 @@ package com.yandex.yaweather.dagger.component
 import com.yandex.yaweather.MainActivity
 import com.yandex.yaweather.data.diModules.ApplicationContextProvider
 import com.yandex.yaweather.data.diModules.CityFinderProvider
+import com.yandex.yaweather.data.diModules.FavoriteCitiesModule
 import com.yandex.yaweather.data.diModules.LocationModule
 import com.yandex.yaweather.data.diModules.MeteostatRepositoryProvider
 import com.yandex.yaweather.data.diModules.NetworkProvider
@@ -17,6 +18,7 @@ import dagger.Component
     OpenWeatherRepositoryProvider::class,
     CityFinderProvider::class,
     LocationModule::class,
+    FavoriteCitiesModule::class,
     MeteostatRepositoryProvider::class
   ]
 )

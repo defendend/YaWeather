@@ -10,6 +10,7 @@ import androidx.work.WorkManager
 import com.yandex.yaweather.dagger.component.AppComponent
 import com.yandex.yaweather.dagger.component.DaggerAppComponent
 import com.yandex.yaweather.data.diModules.ApplicationContextProvider
+import com.yandex.yaweather.data.diModules.FavoriteCitiesModule
 import com.yandex.yaweather.data.diModules.LocationModule
 import com.yandex.yaweather.widget.WeatherWorker
 import java.util.concurrent.TimeUnit
@@ -21,6 +22,7 @@ class MainApplication : Application() {
     DaggerAppComponent.builder()
       .applicationContextProvider(ApplicationContextProvider(this))
       .locationModule(LocationModule(this))
+      .favoriteCitiesModule(FavoriteCitiesModule(this))
       .build()
   }
 
