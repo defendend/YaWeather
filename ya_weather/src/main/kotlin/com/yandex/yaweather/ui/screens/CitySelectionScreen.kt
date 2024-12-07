@@ -231,7 +231,7 @@ fun WeatherSearchBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
         ) {
-          val cities = cityItems.value
+          val cities = cityItems.value.filter {it.lat != null && it.lon != null}
           items(cities) { result ->
             Card(
               modifier = Modifier

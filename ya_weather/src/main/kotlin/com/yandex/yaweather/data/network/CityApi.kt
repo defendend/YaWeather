@@ -8,7 +8,7 @@ interface CityApi {
   suspend fun getCityList(
     @Query("city_name") cityName: String,
     @Query("json") json: String =  "",
-    @Query("limit") limit: Int = 4,
+    @Query("limit") limit: Int = 15,
     @Query("api_key") apiKey: String = CITY_API_KEY
   ) : CityResponse
   companion object {

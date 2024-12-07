@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CityResponse(
   @SerialName("limit")
-  val limit : Int = 4,
+  val limit: Int = 15,
   @SerialName("0")
   val cityItem0: CityItem? = null,
   @SerialName("1")
@@ -14,8 +14,31 @@ data class CityResponse(
   @SerialName("2")
   val cityItem2: CityItem? = null,
   @SerialName("3")
-  val cityItem3: CityItem? = null
+  val cityItem3: CityItem? = null,
+  @SerialName("4")
+  val cityItem4: CityItem? = null,
+  @SerialName("5")
+  val cityItem5: CityItem? = null,
+  @SerialName("6")
+  val cityItem6: CityItem? = null,
+  @SerialName("7")
+  val cityItem7: CityItem? = null,
+  @SerialName("8")
+  val cityItem8: CityItem? = null,
+  @SerialName("9")
+  val cityItem9: CityItem? = null,
+  @SerialName("10")
+  val cityItem10: CityItem? = null,
+  @SerialName("11")
+  val cityItem11: CityItem? = null,
+  @SerialName("12")
+  val cityItem12: CityItem? = null,
+  @SerialName("13")
+  val cityItem13: CityItem? = null,
+  @SerialName("14")
+  val cityItem14: CityItem? = null
 )
+
 
 @Serializable
 data class CityItem(
