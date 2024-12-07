@@ -1,6 +1,8 @@
 package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,12 +37,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -55,22 +61,36 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
   Scaffold(topBar = {
     TopBar(Modifier, action)
-  }) { innerPaddining ->
+  }) {  innerPaddining ->
+    Box(modifier = Modifier
+      .fillMaxSize()
+      .background(color = Color.Transparent)) {
+      Image(
+        painter = rememberDrawablePainter(
+          drawable = getDrawable(
+            LocalContext.current,
+            R.drawable.mist
+          )
+        ),
+        contentDescription = "Background Image",
+        modifier = Modifier.fillMaxSize().blur(10.dp), contentScale = ContentScale.Crop
+      )
+    }
     Box(
       modifier = Modifier
         .fillMaxSize()
-        .background(color = Color.Gray)
+        .background(color = Color.Transparent)
         .padding(16.dp)
-
     ) {
       LazyColumn(
         modifier = Modifier
           .fillMaxSize()
-          .background(color = Color.Gray)
+          .background(color = Color.Transparent)
           .padding(top = 54.dp)
           .alpha(0.75f),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -93,7 +113,6 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
             )
           }
         }
-
         item {
           HourlyForecast(modifier = Modifier, uiState)
         }
@@ -122,7 +141,7 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
 fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
   Column(
     modifier = modifier
-      .fillMaxWidth()
+      .fillMaxWidth().alpha(0.75f)
       .background(Color.DarkGray, RoundedCornerShape(16.dp))
       .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
   ) {
