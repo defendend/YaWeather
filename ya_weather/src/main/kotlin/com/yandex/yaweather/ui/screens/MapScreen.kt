@@ -33,15 +33,19 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.UrlTileProvider
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberTileOverlayState
 import com.yandex.yaweather.R
 import com.yandex.yaweather.handler.MapScreenAction
 import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
 import com.yandex.yaweather.viewModel.MapUIState
+import java.net.URL
 
 
 @Composable
@@ -49,6 +53,17 @@ fun MapScreen(
   uiState: MapUIState,
   action: (MapScreenAction) -> Unit
 ) {
+  val tileProvider = remember {
+    object : UrlTileProvider(256, 256) {
+      override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
+        return try {
+          URL("https://tile.openweathermap.org/map/temp_new/$zoom/$x/$y.png?appid=62b18818f899c80e1d2f4285220bc90b")
+        } catch (e: Exception) {
+          null
+        }
+      }
+    }}
+  val tileOverlayState = rememberTileOverlayState()
 
   val currentLocotion: LatLng by lazy {
     uiState.markerPosition?.let {
@@ -59,7 +74,6 @@ fun MapScreen(
       }
     } ?: LatLng(41.311081, 69.240562)
   }
-
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(currentLocotion, 10f)
   }
@@ -309,6 +323,10 @@ fun MapScreen(
 
       )
     ) {
+      TileOverlay(
+        state = tileOverlayState,
+        tileProvider = tileProvider
+      )
       Log.d("MapMode", "Night Mode Active: $isNightMode")
       markerPosition?.let { position ->
         Marker(
