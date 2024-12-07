@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -47,6 +48,7 @@ import com.yandex.yaweather.ui.screens.InfoScreen
 import com.yandex.yaweather.ui.screens.MapScreen
 import com.yandex.yaweather.ui.screens.SplashScreen
 import com.yandex.yaweather.ui.screens.WeatherScreen
+import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -84,7 +86,6 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     (application as MainApplication).mainComponent.inject(this)
     setContent {
-      val uiState by viewModel.userCurrentWeatherState.collectAsState()
       val mapUIState by viewModel.mapWeatherState.collectAsState()
       val cityItems = viewModel.cities.collectAsState()
       val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
@@ -104,10 +105,11 @@ class MainActivity : ComponentActivity() {
 
       val navController = rememberNavController()
       YaWeatherTheme {
+        val uiStateFlow = viewModel.userCurrentWeatherState.collectAsStateWithLifecycle(WeatherUiState())
         NavHost(navController, startDestination = Route.splashScreen,
           ) {
-
           composable(Route.mainScreen) {
+            val uiState = uiStateFlow.value
             WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
           }
           composable(Route.splashScreen, enterTransition = {
@@ -117,7 +119,6 @@ class MainActivity : ComponentActivity() {
                   AnimatedContentTransitionScope.SlideDirection.Left,
                   animationSpec = tween(700)
                 )
-
               else -> null
             }
           },
@@ -181,9 +182,9 @@ class MainActivity : ComponentActivity() {
   private fun subscribeToCoordinates() {
     coordinatesJob = startStopScope?.launch {
       locationService.coordinates.mapNotNull { it }.collect { coordinates ->
-        val latitude = String.format("%.2f", coordinates.first).replace(",", ".")
-        val longitude = String.format("%.2f", coordinates.second).replace(",", ".")
-        viewModel.getCurrentWeather(latitude, longitude)
+        //val latitude = String.format("%.2f", coordinates.first).replace(",", ".")
+        //val longitude = String.format("%.2f", coordinates.second).replace(",", ".")
+        viewModel.updateCurrentWeatherScreen(coordinates.first, coordinates.second)
       }
     }
   }

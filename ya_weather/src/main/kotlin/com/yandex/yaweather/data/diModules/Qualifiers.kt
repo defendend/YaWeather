@@ -9,3 +9,7 @@ annotation class WeatherRetrofitQualifier
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class CityRetrofitQualifier
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class HourlyWeatherRetrofitQualifier
