@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,7 +29,11 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.yandex.yaweather.Theme.YaWeatherTheme
 import com.yandex.yaweather.dagger.application.MainApplication
+import com.yandex.yaweather.data.diModules.FavoriteCitiesModule
+import com.yandex.yaweather.data.diModules.FavoriteCitiesModule_ProvideFavoriteCitiesServiceFactory
+import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.diModules.LocationService
+import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
 import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
 import com.yandex.yaweather.handler.CityScreenAction.MoveCity
@@ -74,6 +79,9 @@ class MainActivity : ComponentActivity() {
   lateinit var viewModel: YaWeatherViewModel
 
   @Inject
+  lateinit var favoriteCitiesService: FavoriteCitiesService
+
+  @Inject
   lateinit var locationService: LocationService
 
   private var coordinatesJob: Job? = null
@@ -84,12 +92,17 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    favoriteCitiesService = FavoriteCitiesService(this)
     (application as MainApplication).mainComponent.inject(this)
     setContent {
       val mapUIState by viewModel.mapWeatherState.collectAsState()
       val cityItems = viewModel.cities.collectAsState()
       val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
-
+      favoriteCitiesService.getAllCities().forEach{
+          item ->
+        val itemS = CityItem(item.name, item.engName, item.fullName, item.lat, item.lon, item.timeZone)
+        viewModel.updateFavoriteCityItems(itemS)
+      }
       fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
       if (ContextCompat.checkSelfPermission(
@@ -136,7 +149,7 @@ class MainActivity : ComponentActivity() {
             SplashScreen { action -> handleSplashScreenAction(navController, action) }
           }
           composable(Route.addCityScreen) {
-            CitySelectionScreen(cityItems, favoriteCityItems) { action -> handleCityAction(navController, action) }
+            CitySelectionScreen(cityItems, favoriteCitiesService, favoriteCityItems) { action -> handleCityAction(navController, action) }
           }
           composable(Route.openMapScreen) {
             MapScreen(mapUIState, { action -> handleMapAction(action) })

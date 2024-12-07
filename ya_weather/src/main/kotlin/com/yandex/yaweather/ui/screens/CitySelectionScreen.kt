@@ -1,6 +1,7 @@
 package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -55,8 +57,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.yandex.yaweather.R
+import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
+import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
 import com.yandex.yaweather.utils.dragContainer
 import com.yandex.yaweather.utils.draggableItems
 import com.yandex.yaweather.utils.rememberDragDropState
@@ -69,18 +73,19 @@ import java.time.ZoneOffset
 @Composable
 fun CitySelectionScreen(
   cityItems: State<MutableList<CityItem>>,
+  favoriteCitiesService: FavoriteCitiesService,
   favoriteCityItems: MutableList<CitySelectionUIState>,
   action: (CityScreenAction) -> Unit
 ) {
   var query by remember { mutableStateOf("") }
   val stateList = rememberLazyListState()
-
   val dragDropState =
     rememberDragDropState(
       lazyListState = stateList,
       draggableItemsNum = favoriteCityItems.size,
       onMove = { fromIndex, toIndex ->
         action(CityScreenAction.MoveCity(fromIndex, toIndex))
+        favoriteCitiesService.moveCity(fromIndex, toIndex)
       }
     )
 
@@ -90,6 +95,7 @@ fun CitySelectionScreen(
         query = query,
         cityItems = cityItems,
         action = action,
+        favoriteCitiesService = favoriteCitiesService,
         onQueryChange = {
           query = it
         },
@@ -121,6 +127,7 @@ fun CitySelectionScreen(
 fun WeatherSearchBar(
   query: String,
   cityItems: State<MutableList<CityItem>>,
+  favoriteCitiesService: FavoriteCitiesService,
   action: (CityScreenAction) -> Unit,
   onQueryChange: (String) -> Unit
 ) {
@@ -232,6 +239,9 @@ fun WeatherSearchBar(
                 .padding(vertical = 8.dp)
                 .clickable {
                   action(CityScreenAction.AddToFavoriteCityList(result))
+                  favoriteCitiesService.addCity(
+                    com.yandex.yaweather.data.diModules.CityItem(result.name, result.engName, result.fullName, result.lat, result.lon, result.timeZone))
+
                   if (!recentSearches.contains(result.name)) {
                     recentSearches.add(0, result.name ?: "")
                   }
