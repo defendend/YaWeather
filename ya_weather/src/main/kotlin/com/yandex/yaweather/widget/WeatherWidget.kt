@@ -29,20 +29,30 @@ class WeatherWidget : AppWidgetProvider() {
 internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
   val preferences = context.getSharedPreferences("widget", Context.MODE_PRIVATE)
   val name = preferences.getString("name", "Unknown City")
-  val description = preferences.getString("description", "No description")
+  var description = preferences.getString("description", "No description")
   val temperature = preferences.getInt("temp", 0)
   val sunrise = preferences.getLong("sunrise", 0L)
   val sunset = preferences.getLong("sunset", 0L)
-
   val sunriseTime = formatTime(sunrise)
   val sunsetTime = formatTime(sunset)
-
+  val backgroundResource = when {
+    description == "shower rain" -> R.drawable.fall_rain
+    description?.contains("rain", ignoreCase = true) == true -> R.drawable.rain_gif
+    description?.contains("clear", ignoreCase = true) == true -> R.drawable.clear_sky
+    description?.contains("clouds", ignoreCase = true) == true -> R.drawable.clouds_gif
+    description?.contains("thunderstorm", ignoreCase = true) == true -> R.drawable.thunderstorm
+    description?.contains("snow", ignoreCase = true) == true -> R.drawable.snow_gif
+    description?.contains("fog", ignoreCase = true) == true -> R.drawable.mist
+    description?.contains("mist", ignoreCase = true) == true -> R.drawable.mist
+    else -> R.drawable.clear_sky
+  }
   val views = RemoteViews(context.packageName, R.layout.weather_widget).apply {
     setTextViewText(R.id.tv_name, name)
     setTextViewText(R.id.tv_description, description)
     setTextViewText(R.id.tv_temperature, kelvinToCelsius(temperature).toString() + '\u00B0' + "C")
     setTextViewText(R.id.tv_sunrise, "Sunrise: $sunriseTime")
     setTextViewText(R.id.tv_sunset, "Sunset: $sunsetTime")
+    setInt(R.id.container_layout, "setBackgroundResource", backgroundResource)
   }
 
   appWidgetManager.updateAppWidget(appWidgetId, views)
