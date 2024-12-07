@@ -7,6 +7,7 @@ import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.repository.CityFinderRepository
 import com.google.android.gms.maps.model.LatLng
 import com.yandex.yaweather.repository.OpenWeatherRepository
+import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 import data.network.Coordinates
 import data.network.CoordinatesResponse
 import kotlinx.coroutines.Dispatchers
@@ -101,9 +102,19 @@ class YaWeatherViewModel @Inject constructor(
       temperatureMax = ((response.main?.tempMax)?.minus(273))?.toInt().toString(),
       temperatureMin = ((response.main?.tempMin)?.minus(273))?.toInt().toString(),
       description = response.weather?.firstOrNull()?.description ?: "N/A",
-
+      widgetsUiState = widgetResponeToUiState(response)
     )
   }
+
+  private fun widgetResponeToUiState(response: CoordinatesResponse): WeatherUiState.WidgetsUiState {
+    return WidgetsUiState(
+      feelsLike = response.main?.feelsLike?.minus(273)?.toInt().toString(), // Преобразование из Кельвинов в Цельсии
+      humidity = response.main?.humidity?.toString() ?: "-",
+      windSpeed = response.wind?.speed?.toString() ?: "-",
+      sealevel = response.main?.seaLevel?.toString() ?: "-"
+    )
+  }
+
   private fun getCurrentTemperature(response: CoordinatesResponse): String {
     return ((response.main?.temp)?.minus(273))?.toInt().toString()
 }
@@ -135,7 +146,6 @@ class YaWeatherViewModel @Inject constructor(
     }
   }
 }
-
 data class CitySelectionUIState(
   val cityItem: CityItem,
   val weatherUiState: WeatherUiState
@@ -158,6 +168,11 @@ data class WeatherUiState(
 ) {
 
   data class WidgetsUiState(
-    val id: String = ""
+    val id: String = "",
+    val sealevel: String = "",
+    val windSpeed: String = "",
+    val feelsLike: String = "",
+    val humidity: String = ""
   )
 }
+

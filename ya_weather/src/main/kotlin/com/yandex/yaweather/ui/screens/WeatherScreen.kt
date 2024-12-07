@@ -1,5 +1,3 @@
-@file:Suppress("UNUSED_EXPRESSION")
-
 package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
@@ -17,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -35,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -55,23 +55,24 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
   Scaffold(topBar = {
     TopBar(Modifier, action)
-  }) { innerPadding ->
+  }) { innerPaddining ->
     Box(
       modifier = Modifier
         .fillMaxSize()
         .background(color = Color.Gray)
         .padding(16.dp)
+
     ) {
       LazyColumn(
         modifier = Modifier
           .fillMaxSize()
           .background(color = Color.Gray)
-          .padding(top = 54.dp),
+          .padding(top = 54.dp)
+          .alpha(0.75f),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
@@ -88,7 +89,7 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = "Макс. 14° Мин. 11°", fontSize = 16.sp, color = Color.LightGray
+              text = "Макс. ${uiState.temperatureMax}°  Мин. ${uiState.temperatureMin}°", fontSize = 16.sp, color = Color.LightGray
             )
           }
         }
@@ -98,19 +99,25 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
         }
 
         item {
-          TenDayForecast()
+          TenDayForecast(modifier = Modifier, uiState)
         }
+
         item {
-          MapWidget(action)
+          MapWidget(Modifier, action)
+        }
+
+        item {
+          Widgets(modifier = Modifier, uiState.widgetsUiState)
         }
       }
     }
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(Color.Gray.copy(alpha = 0.75f))
+    systemUiController.setNavigationBarColor(Color.Gray.copy(alpha = 0.75f))
   }
-  val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(Color.Gray)
-  systemUiController.setNavigationBarColor(Color.Gray)
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
   Column(
@@ -136,7 +143,7 @@ fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
           horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.padding(start = 8.dp)
         ) {
           Spacer(modifier = modifier.height(4.dp))
-          Text(text = "10°", color = Color.White, fontSize = 18.sp)
+          Text(uiState.temperature, color = Color.White, fontSize = 18.sp)
           Icon(
             painter = painterResource(id = R.drawable.heavy_showers_fill),
             contentDescription = null,
@@ -185,7 +192,7 @@ fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit) {
 }
 
 @Composable
-fun TenDayForecast() {
+fun TenDayForecast(modifier: Modifier, uiState: WeatherUiState) {
   var itemCount by remember { mutableIntStateOf(5) }
   var showMoreButton by remember { mutableStateOf(true) }
 
@@ -196,7 +203,7 @@ fun TenDayForecast() {
       .padding(16.dp)
   ) {
     Text(
-      text = "10-ДНЕВНЫЙ ПРОГНОЗ", fontSize = 16.sp, color = Color.LightGray, fontWeight = FontWeight.Bold
+      text = "5-ДНЕВНЫЙ ПРОГНОЗ", fontSize = 16.sp, color = Color.LightGray, fontWeight = FontWeight.Bold
     )
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -260,7 +267,7 @@ fun TenDayForecast() {
 }
 
 @Composable
-fun MapWidget(action: (WeatherScreenAction) -> Unit) {
+fun MapWidget(action1: Modifier, action: (WeatherScreenAction) -> Unit) {
   val toshekent = LatLng(41.2995, 69.2401)
   val cameraPositionState = rememberCameraPositionState {
     position = CameraPosition.fromLatLngZoom(toshekent, 10f)
@@ -294,17 +301,51 @@ fun MapWidget(action: (WeatherScreenAction) -> Unit) {
   }
 
 }
-
-
 @Composable
-fun Wigets(modifier: Modifier = Modifier, uiState: WidgetsUiState) {
-  // Placeholder для будущей реализации
-  Box(
+fun Widgets(modifier: Modifier = Modifier, uiState: WidgetsUiState) {
+  val widgetData = listOf(
+    "Влажность" to uiState.humidity,
+    "Ощущается" to uiState.feelsLike,
+    "Ветер" to uiState.windSpeed,
+    "Давление" to uiState.sealevel
+  )
+
+  LazyRow(
     modifier = modifier
       .fillMaxWidth()
-      .height(100.dp)
-      .background(Color.Gray), contentAlignment = Alignment.Center
+      .padding(8.dp),
+    horizontalArrangement = Arrangement.spacedBy(16.dp)
   ) {
-    Text(text = "Widgets Placeholder", color = Color.White)
+    items(widgetData) { (title, value) ->
+      WidgetBox(title = title, value = value)
+    }
+  }
+}
+
+@Composable
+fun WidgetBox(title: String, value: String?) {
+  Column(
+    modifier = Modifier
+      .height(150.dp)
+      .width(150.dp)
+      .background(Color.DarkGray.copy(alpha = 0.75f), RoundedCornerShape(16.dp))
+      .padding(8.dp),
+
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.SpaceEvenly
+  ) {
+    Text(
+      text = title,
+      fontSize = 16.sp,
+      color = Color.White,
+      fontWeight = FontWeight.SemiBold
+
+    )
+    Text(
+      text = value ?: "-",
+      fontSize = 28.sp,
+      color = Color.White,
+      fontWeight = FontWeight.Bold
+    )
   }
 }
