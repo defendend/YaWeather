@@ -2,6 +2,7 @@ package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
+import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,6 +52,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -81,6 +83,7 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
+import data.network.CoordinatesResponse
 import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.Calendar
@@ -130,35 +133,16 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
 
     ) {
       Image(
-        painter = rememberDrawablePainter(
-          drawable = getDrawable(
-            LocalContext.current,
-            when {
-              uiState.weatherUiState.description == "shower rain" -> R.drawable.fall_rain
-              uiState.weatherUiState.description.contains("rain", ignoreCase = true) -> R.drawable.rain_gif
-              uiState.weatherUiState.description.contains("clear", ignoreCase = true) -> R.drawable.clear_sky
-              uiState.weatherUiState.description.contains(
-                "clouds",
-                ignoreCase = true
-              ) -> R.drawable.scaffered_clouds
-
-              uiState.weatherUiState.description.contains(
-                "thunderstorm",
-                ignoreCase = true
-              ) -> R.drawable.thunderstorm
-
-              uiState.weatherUiState.description.contains("snow", ignoreCase = true) -> R.drawable.snow_gif
-              uiState.weatherUiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist
-              uiState.weatherUiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist
-              else -> R.drawable.clear_sky
-            }
-
-          )
-        ),
-        contentDescription = stringResource(R.string.weather_screen_background_image),
+        painter = rememberDrawablePainter(drawable = getDrawable(
+          LocalContext.current, weatherBackground(uiState.weatherUiState.weatherId))),
+        contentDescription = "Weather background",
         modifier = Modifier
           .fillMaxSize()
-          .blur(10.dp), contentScale = ContentScale.Crop
+          .graphicsLayer {
+            alpha = 1f
+          }
+          .blur(10.dp),
+        contentScale = ContentScale.Crop
       )
     }
     Box(
@@ -1091,6 +1075,20 @@ fun weatherIconForForecast(weatherByHour: WeatherByHour): Int {
     800 -> R.drawable.sun_fill
     in 801..804 -> R.drawable.cloudy_fill
     else -> R.drawable.blaze_fill    // Неизвестный код
+  }
+}
+
+fun weatherBackground(code: Int): Int {
+  return when (code){
+    in 200..202 -> R.drawable.fall_rain
+    in 230..233 ->R.drawable.thunderstorm
+    in 300..302 ->R.drawable.fall_rain
+    in 500..522 ->R.drawable.fall_rain
+    in 600..623 ->R.drawable.snow_gif
+    in 700..751 ->R.drawable.mist
+    800 ->R.drawable.clear_sky
+    in 801..804 ->R.drawable.scaffered_clouds
+    else ->  R.drawable.scaffered_clouds   // Неизвестный код
   }
 }
 
