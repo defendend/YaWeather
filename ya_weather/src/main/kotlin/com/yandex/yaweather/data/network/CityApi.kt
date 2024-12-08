@@ -12,12 +12,13 @@ interface CityApi {
     @Query("api_key") apiKey: String = CITY_API_KEY
   ) : CityListResponse
 
-  @GET("geo/city_coming/")
+  @GET("api/geo/city_coming")
   suspend fun getCity(
     @Query("latitude") latitude: Double,
     @Query("longitude") longitude: Double,
     @Query("length") length: Int = 500,
     @Query("level") level: Int = 2,
+    @Query("json") json: String = "",
     @Query("perpage") perpage: Int = 1,
     @Query("api_key") apiKey: String = CITY_API_KEY
   ) : CityResponse

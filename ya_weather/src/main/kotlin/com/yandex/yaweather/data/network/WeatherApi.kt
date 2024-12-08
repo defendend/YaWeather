@@ -9,6 +9,7 @@ interface WeatherApi {
   suspend fun current(
     @Query("lat") lat: String,
     @Query("lon") lon: String,
+    @Query("lang") lang: String = "ru",
     @Query("appid") appid: String = WEATHER_API_KEY
   ): CoordinatesResponse
 

@@ -7,10 +7,13 @@ import javax.inject.Inject
 
 class HourlyWeatherRepositoryImp @Inject constructor(private val hourlyWeatherApi: HourlyWeatherApi) : HourlyWeatherRepository {
   override suspend fun getHourlyWeather(
-    lat: Double,
-    lon: Double,
+    lat: Double?,
+    lon: Double?,
   ): Result<HourlyWeatherResponse> {
     return try {
+      if(lat == null || lon == null) {
+        throw IllegalArgumentException()
+      }
       val response = hourlyWeatherApi.getHourlyWeather(lat = lat, lon = lon)
       if (response.data != null) {
         Result.success(response)
