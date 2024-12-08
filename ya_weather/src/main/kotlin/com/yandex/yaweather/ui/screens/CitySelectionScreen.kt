@@ -239,8 +239,7 @@ fun WeatherSearchBar(
                 .padding(vertical = 8.dp)
                 .clickable {
                   action(CityScreenAction.AddToFavoriteCityList(result))
-                  favoriteCitiesService.addCity(
-                    com.yandex.yaweather.data.diModules.CityItem(result.name, result.engName, result.fullName, result.lat, result.lon, result.timeZone))
+                  favoriteCitiesService.addCity(result)
 
                   if (!recentSearches.contains(result.name)) {
                     recentSearches.add(0, result.name ?: "")
@@ -378,7 +377,7 @@ fun CityItem(
     )
 
     Text(
-      text = "H:${citySelectionUIState.weatherUiState.temperatureMax}° L:${citySelectionUIState.weatherUiState.temperatureMin}°",
+      text = "ощущается: ${citySelectionUIState.weatherUiState.feelsLike}°",
       modifier = Modifier
         .align(Alignment.BottomEnd)
         .padding(16.dp),

@@ -100,8 +100,7 @@ class MainActivity : ComponentActivity() {
       val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
       favoriteCitiesService.getAllCities().forEach{
           item ->
-        val itemS = CityItem(item.name, item.engName, item.fullName, item.lat, item.lon, item.timeZone)
-        viewModel.updateFavoriteCityItems(itemS)
+        viewModel.updateFavoriteCityItems(item)
       }
       fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
