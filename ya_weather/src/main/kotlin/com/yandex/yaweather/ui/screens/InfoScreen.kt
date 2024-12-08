@@ -16,12 +16,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.yandex.yaweather.R
-import com.yandex.yaweather.Theme.InfoScreenText
 import com.yandex.yaweather.handler.InfoScreenAction
 
 @Composable
@@ -48,7 +52,7 @@ fun InfoScreen(action: (InfoScreenAction) -> Unit) {
   Column(
     modifier = Modifier
       .fillMaxSize()
-      .background(color = Color.White)
+      .background(color = MaterialTheme.colorScheme.primaryContainer)
       .padding(16.dp)
   ) {
     Row(
@@ -56,14 +60,17 @@ fun InfoScreen(action: (InfoScreenAction) -> Unit) {
       horizontalArrangement = Arrangement.Start,
       verticalAlignment = Alignment.CenterVertically
     ) {
-      Image(painter = painterResource(R.drawable.back),
-        contentDescription = stringResource(R.string.back_button),
-        modifier = Modifier
-          .size(36.dp)
-          .clip(shape = CircleShape)
-          .clickable {
-            action.invoke(InfoScreenAction.CloseScreenAction)
-          })
+      IconButton(onClick = {
+        action.invoke(InfoScreenAction.CloseScreenAction)
+      }, colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)) {
+        Icon(
+          modifier = Modifier
+            .size(36.dp)
+            .clip(shape = CircleShape),
+          imageVector = Icons.Default.KeyboardArrowLeft,
+          contentDescription = stringResource(R.string.back_button)
+        )
+      }
     }
     Row(
       modifier = Modifier.fillMaxWidth(),
@@ -77,65 +84,107 @@ fun InfoScreen(action: (InfoScreenAction) -> Unit) {
       )
     }
     Text(
-      text = "YaWeather", color = InfoScreenText, fontSize = 20.sp, fontWeight = FontWeight.Bold
+      text = stringResource(R.string.app_name),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 20.sp,
+      fontWeight = FontWeight.Bold
     )
     Text(
-      text = "Информация о приложении",
-      color = InfoScreenText,
+      text = stringResource(R.string.info_screen_about),
+      color = MaterialTheme.colorScheme.inversePrimary,
       fontSize = 20.sp,
       modifier = Modifier.padding(top = 10.dp)
     )
     Text(
-      text = "- Jetpack Navigation Component",
-      color = InfoScreenText,
+      text = stringResource(R.string.info_jetpack),
+      color = MaterialTheme.colorScheme.inversePrimary,
       fontSize = 16.sp,
       modifier = Modifier.padding(start = 4.dp, top = 4.dp)
     )
-    Text(text = "- Dagger 2", color = InfoScreenText, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp))
-    Text(text = "- Room", color = InfoScreenText, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp))
-    Text(text = "- Compose", color = InfoScreenText, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp))
-    Text(text = "- Retrofit", color = InfoScreenText, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp))
-    Text(text = "- Coroutines", color = InfoScreenText, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp))
-    Text(text = "- Google Map", color = InfoScreenText, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp))
-    Text(text = "- WorkManager", color = InfoScreenText, fontSize = 16.sp, modifier = Modifier.padding(start = 4.dp))
-
     Text(
-      text = "Использованные ресурсы",
-      color = InfoScreenText,
-      fontSize = 20.sp,
-      modifier = Modifier.padding(top = 10.dp)
-    )
-    Text(
-      text = "- https://openweathermap.org",
-      color = InfoScreenText,
+      text = stringResource(R.string.info_dagger2),
+      color = MaterialTheme.colorScheme.inversePrimary,
       fontSize = 16.sp,
       modifier = Modifier.padding(start = 4.dp)
     )
     Text(
-      text = "Связаться с нами", color = InfoScreenText, fontSize = 20.sp, modifier = Modifier.padding(top = 10.dp)
+      text = stringResource(R.string.info_room),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 16.sp,
+      modifier = Modifier.padding(start = 4.dp)
+    )
+    Text(
+      text = stringResource(R.string.info_compose),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 16.sp,
+      modifier = Modifier.padding(start = 4.dp)
+    )
+    Text(
+      text = stringResource(R.string.info_retrofit),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 16.sp,
+      modifier = Modifier.padding(start = 4.dp)
+    )
+    Text(
+      text = stringResource(R.string.info_coroutines),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 16.sp,
+      modifier = Modifier.padding(start = 4.dp)
+    )
+    Text(
+      text = stringResource(R.string.info_map),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 16.sp,
+      modifier = Modifier.padding(start = 4.dp)
+    )
+    Text(
+      text = stringResource(R.string.info_work_manager),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 16.sp,
+      modifier = Modifier.padding(start = 4.dp)
+    )
+
+    Text(
+      text = stringResource(R.string.info_used_resources),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 20.sp,
+      modifier = Modifier.padding(top = 10.dp)
+    )
+    Text(
+      text = stringResource(R.string.info_uri),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 16.sp,
+      modifier = Modifier.padding(start = 4.dp)
+    )
+    Text(
+      text = stringResource(R.string.info_contact_us),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 20.sp,
+      modifier = Modifier.padding(top = 10.dp)
     )
     creatorsList.forEachIndexed { index, item ->
       Creator(item.name, item.uri, context)
     }
     Text(
-      text = "Спасибо за внимание!", color = InfoScreenText, fontSize = 20.sp, modifier = Modifier.padding(top = 20.dp)
+      text = stringResource(R.string.info_thanks),
+      color = MaterialTheme.colorScheme.inversePrimary,
+      fontSize = 20.sp,
+      modifier = Modifier.padding(top = 20.dp)
     )
   }
   val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(Color.White)
-  systemUiController.setNavigationBarColor(Color.White)
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primaryContainer)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primaryContainer)
 }
 
 private fun openTelegram(url: String, context: Context) {
   val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-    // Указываем пакет Telegram для предотвращения открытия других приложений
     setPackage("org.telegram.messenger")
   }
   try {
     context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
   } catch (e: ActivityNotFoundException) {
     e.printStackTrace()
-    // Если Telegram не установлен, можно уведомить пользователя или открыть в браузере
     val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     context.startActivity(fallbackIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
   }
@@ -144,7 +193,7 @@ private fun openTelegram(url: String, context: Context) {
 @Composable
 private fun Creator(name: String, uri: String, context: Context) {
   Text(text = name,
-    color = Color.Blue,
+    color = MaterialTheme.colorScheme.tertiaryContainer,
     fontSize = 16.sp,
     modifier = Modifier
       .clip(shape = RoundedCornerShape(10.dp))

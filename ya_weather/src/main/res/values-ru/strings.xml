@@ -26,8 +26,8 @@
   <string name="settings_bottom_sheet_wind_speed1">км/ч</string>
   <string name="settings_bottom_sheet_wind_speed2">м/с</string>
   <string name="settings_bottom_sheet_pressure">Давление</string>
-  <string name="settings_bottom_sheet_pressure1">hPa</string>
-  <string name="settings_bottom_sheet_pressure2">mmHg</string>
+  <string name="settings_bottom_sheet_pressure1">гПa</string>
+  <string name="settings_bottom_sheet_pressure2">ммРс</string>
   <string name="settings_Bottom_sheet_precipitation">Осадки</string>
   <string name="settings_bottom_sheet_precipitaion1">Дюймы</string>
   <string name="settings_bottom_sheet_precipitaion2">Миллиметры</string>
@@ -42,4 +42,17 @@
   <string name="uz">УЗ</string>
   <string name="ru">РУ</string>
   <string name="en">ЭН</string>
+  <string name="info_screen_about">Информация о приложении</string>
+  <string name="info_jetpack">- Jetpack Navigation Component</string>
+  <string name="info_dagger2">- Dagger 2</string>
+  <string name="info_room">- Room</string>
+  <string name="info_compose">- Compose</string>
+  <string name="info_retrofit">- Retrofit</string>
+  <string name="info_coroutines">- Coroutines</string>
+  <string name="info_map">- Google Map</string>
+  <string name="info_work_manager">- WorkManager</string>
+  <string name="info_used_resources">Использованные ресурсы</string>
+  <string name="info_uri">- https://openweathermap.org</string>
+  <string name="info_contact_us">Связаться с нами</string>
+  <string name="info_thanks">Спасибо за внимание!</string>
 </resources>

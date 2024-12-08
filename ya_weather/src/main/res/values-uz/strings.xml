@@ -27,7 +27,7 @@
   <string name="settings_bottom_sheet_wind_speed2">m/s</string>
   <string name="settings_bottom_sheet_pressure">Bosim</string>
   <string name="settings_bottom_sheet_pressure1">hPa</string>
-  <string name="settings_bottom_sheet_pressure2">mmHg</string>
+  <string name="settings_bottom_sheet_pressure2">mmSu</string>
   <string name="settings_Bottom_sheet_precipitation">Yog\'ingarchilik</string>
   <string name="settings_bottom_sheet_precipitaion1">Dyuym</string>
   <string name="settings_bottom_sheet_precipitaion2">Millimetr</string>
@@ -42,4 +42,17 @@
   <string name="uz">UZ</string>
   <string name="ru">RU</string>
   <string name="en">EN</string>
+  <string name="info_screen_about">Ilova ma\'lumotlari</string>
+  <string name="info_jetpack">- Jetpack Navigation Component</string>
+  <string name="info_dagger2">- Dagger 2</string>
+  <string name="info_used_resources">Foydalanilgan ma\'lumotlar</string>
+  <string name="info_uri">- https://openweathermap.org</string>
+  <string name="info_coroutines">- Coroutines</string>
+  <string name="info_map">- Google Map</string>
+  <string name="info_work_manager">- WorkManager</string>
+  <string name="info_room">- Room</string>
+  <string name="info_compose">- Compose</string>
+  <string name="info_retrofit">- Retrofit</string>
+  <string name="info_contact_us">Biz bilan bog\'lanish</string>
+  <string name="info_thanks">E\'tibor uchun rahmat</string>
 </resources>
