@@ -52,7 +52,7 @@ import java.net.URL
 @Composable
 fun MapScreen(
   uiState: MapUIState,
-  action: (MapScreenAction) -> Unit
+  action: (MapScreenAction) -> Unit,
 ) {
   var selectedMenuItem by remember { mutableStateOf<String?>("Temperature") }
 
@@ -470,6 +470,4 @@ fun MapScreen(
       }
     }
   }
-
-
 }

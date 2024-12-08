@@ -27,7 +27,7 @@ import javax.inject.Inject
 class YaWeatherViewModel @Inject constructor(
   private val weatherRepository: OpenWeatherRepository,
   private val cityFinderRepository: CityFinderRepository,
-  private  val hourlyWeatherRepository: HourlyWeatherRepository
+  private val hourlyWeatherRepository: HourlyWeatherRepository
 ) : ViewModel() {
 
   private val _currentWeatherUIState = MutableStateFlow(CitySelectionUIState(CityItem(), WeatherUiState()))
@@ -45,13 +45,13 @@ class YaWeatherViewModel @Inject constructor(
   val cities = _cities.asStateFlow()
 
   private val _favoriteCityItems = MutableStateFlow<MutableList<CitySelectionUIState>>(mutableListOf())
-  val  favoriteCityItems = _favoriteCityItems.asStateFlow()
+  val favoriteCityItems = _favoriteCityItems.asStateFlow()
 
   private val _currentWeather = MutableStateFlow<CoordinatesResponse>(CoordinatesResponse(cod = 404))
   private val _currentCity = MutableStateFlow<List<CityItem>>(emptyList())
   private val _currentHourlyWeather = MutableStateFlow<List<WeatherByHour>>(emptyList())
 
-  private fun getCurrentWeather(lat: Double, lon: Double) : Job {
+  private fun getCurrentWeather(lat: Double, lon: Double): Job {
     return viewModelScope.launch(Dispatchers.IO) {
       weatherRepository.getCurrentWeather(lat.toString(), lon.toString()).onSuccess {
         _currentWeather.emit(it)
@@ -62,10 +62,10 @@ class YaWeatherViewModel @Inject constructor(
   }
 
 
-  private fun getCurrentCity(lat: Double, lon: Double) : Job {
+  private fun getCurrentCity(lat: Double, lon: Double): Job {
     return viewModelScope.launch(Dispatchers.IO) {
       cityFinderRepository.getCity(lat, lon).onSuccess {
-        if(it.items != null) {
+        if (it.items != null) {
           _currentCity.emit(it.items)
         }
       }.onFailure {
@@ -74,10 +74,10 @@ class YaWeatherViewModel @Inject constructor(
     }
   }
 
-  private fun getCurrentHourlyWeather(lat: Double, lon: Double) : Job {
+  private fun getCurrentHourlyWeather(lat: Double, lon: Double): Job {
     return viewModelScope.launch(Dispatchers.IO) {
       hourlyWeatherRepository.getHourlyWeather(lat, lon).onSuccess {
-        if(it.data != null) {
+        if (it.data != null) {
           _currentHourlyWeather.emit(it.data)
         }
       }.onFailure {
@@ -89,45 +89,58 @@ class YaWeatherViewModel @Inject constructor(
   fun getCurrentData(lat: Double, lon: Double) {
     viewModelScope.launch(Dispatchers.IO) {
       val currentWeather = getCurrentWeather(lat, lon)
-      val currentHourlyWeather =getCurrentHourlyWeather(lat, lon)
+      val currentHourlyWeather = getCurrentHourlyWeather(lat, lon)
       val currentCity = getCurrentCity(lat, lon)
 
       currentWeather.join()
       currentHourlyWeather.join()
       currentCity.join()
 
-      _currentWeatherUIState.emit(CitySelectionUIState(_currentCity.value[0], mapResponseToUiState(_currentWeather.value), _currentHourlyWeather.value))
+      _currentWeatherUIState.emit(
+        CitySelectionUIState(
+          _currentCity.value[0], mapResponseToUiState(_currentWeather.value), _currentHourlyWeather.value
+        )
+      )
+      _mapWeather.emit(
+        MapUIState(
+          Coordinates(
+            _currentWeather.value.coordinates?.lat,
+            _currentWeather.value.coordinates?.lon
+          )
+        )
+      )
     }
   }
 
 
-  fun getMapInfo(lat: String, lon: String){
-    viewModelScope.launch(Dispatchers.IO){
-      viewModelScope.launch {
-        weatherRepository.getCurrentWeather(lat,lon).onSuccess {
+  fun getMapInfo(lat: String, lon: String) {
+    viewModelScope.launch(Dispatchers.IO) {
+        weatherRepository.getCurrentWeather(lat, lon).onSuccess {
           _mapWeather.emit(mapScreenResponseToUiState(it))
         }.onFailure {
           _errorMessage.emit(it.message.toString())
         }
       }
     }
-  }
+
+
   fun updateFavoriteCityItems(cityItem: CityItem) {
-    viewModelScope.launch(Dispatchers.IO)
-    {
-      weatherRepository.getCurrentWeather(cityItem.lat.toString(), cityItem.lon.toString()).onSuccess {
-        coordinatesResponse ->
-          _favoriteCityItems.update { (it + CitySelectionUIState(cityItem, mapResponseToUiState(coordinatesResponse))).toMutableList() }
-      }.onFailure {
-        _errorMessage.value = it.message.toString()
-      }
+    viewModelScope.launch(Dispatchers.IO) {
+      weatherRepository.getCurrentWeather(cityItem.lat.toString(), cityItem.lon.toString())
+        .onSuccess { coordinatesResponse ->
+          _favoriteCityItems.update {
+            (it + CitySelectionUIState(
+              cityItem, mapResponseToUiState(coordinatesResponse)
+            )).toMutableList()
+          }
+        }.onFailure {
+          _errorMessage.value = it.message.toString()
+        }
     }
   }
 
-  fun getCitiesByName(query: String)
-  {
-    viewModelScope.launch(Dispatchers.IO)
-    {
+  fun getCitiesByName(query: String) {
+    viewModelScope.launch(Dispatchers.IO) {
       cityFinderRepository.getCities(query).onSuccess {
         val cityList = listOfNotNull(
           it.cityItem0,
@@ -152,6 +165,7 @@ class YaWeatherViewModel @Inject constructor(
       }
     }
   }
+
   private fun mapScreenResponseToUiState(response: CoordinatesResponse): MapUIState {
     return MapUIState(
       markerPosition = response.coordinates,
@@ -161,6 +175,7 @@ class YaWeatherViewModel @Inject constructor(
       pressure = response.main?.pressure.toString()
     )
   }
+
   private fun mapResponseToUiState(response: CoordinatesResponse): WeatherUiState {
     return WeatherUiState(
       cityName = response.name ?: "N/A",
@@ -182,12 +197,12 @@ class YaWeatherViewModel @Inject constructor(
       windSpeed = response.wind?.speed?.toString() ?: "-",
       sealevel = response.main?.seaLevel?.toString() ?: "-",
 
-    )
+      )
   }
 
   private fun getCurrentTemperature(response: CoordinatesResponse): String {
     return ((response.main?.temp)?.minus(273))?.toInt().toString()
-}
+  }
 
   fun moveCity(fromIndex: Int, toIndex: Int) {
     val movedItem = _favoriteCityItems.value.removeAt(fromIndex)
@@ -215,13 +230,16 @@ class YaWeatherViewModel @Inject constructor(
       }
     }
   }
+
   fun loadFavoriteCities(service: FavoriteCitiesService) {
     viewModelScope.launch {
-      service.getAllCities().forEach {
-          item ->
-        weatherRepository.getCurrentWeather(item.lat.toString(), item.lon.toString()).onSuccess {
-            coordinatesResponse ->
-          _favoriteCityItems.update { (it + CitySelectionUIState(item, mapResponseToUiState(coordinatesResponse))).toMutableList() }
+      service.getAllCities().forEach { item ->
+        weatherRepository.getCurrentWeather(item.lat.toString(), item.lon.toString()).onSuccess { coordinatesResponse ->
+          _favoriteCityItems.update {
+            (it + CitySelectionUIState(
+              item, mapResponseToUiState(coordinatesResponse)
+            )).toMutableList()
+          }
         }.onFailure {
           _errorMessage.value = it.message.toString()
         }
@@ -229,20 +247,19 @@ class YaWeatherViewModel @Inject constructor(
     }
   }
 }
+
 data class CitySelectionUIState(
-  val cityItem: CityItem,
-  val weatherUiState: WeatherUiState,
-  val hourlyWeather: List<WeatherByHour> = emptyList()
+  val cityItem: CityItem, val weatherUiState: WeatherUiState, val hourlyWeather: List<WeatherByHour> = emptyList()
 )
 
 data class MapUIState(
   val markerPosition: Coordinates? = null,
   val temperature: String = "",
-  val humidity : String = "",
-  val windSpeed : String = "",
-  val pressure : String = "",
+  val humidity: String = "",
+  val windSpeed: String = "",
+  val pressure: String = "",
 
-)
+  )
 
 data class WeatherUiState(
   val markerPosition: Coordinates? = null,
