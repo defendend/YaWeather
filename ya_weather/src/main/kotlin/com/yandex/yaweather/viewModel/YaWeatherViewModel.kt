@@ -169,6 +169,7 @@ class YaWeatherViewModel @Inject constructor(
       temperatureMax = ((response.main?.tempMax)?.minus(273))?.toInt().toString(),
       temperatureMin = ((response.main?.tempMin)?.minus(273))?.toInt().toString(),
       description = response.weather?.firstOrNull()?.description ?: "N/A",
+      weatherId = response.weather?.firstOrNull()?.id ?: 0,
       widgetsUiState = widgetResponeToUiState(response),
       markerPosition = response.coordinates
     )
@@ -253,7 +254,8 @@ data class WeatherUiState(
   val temperatureMin: String = "",
   val temperatureMax: String = "",
   val widgetsUiState: WidgetsUiState = WidgetsUiState(),
-  val code: String = ""
+  val code: String = "",
+  val weatherId: Int = 0
 ) {
 
   data class WidgetsUiState(
