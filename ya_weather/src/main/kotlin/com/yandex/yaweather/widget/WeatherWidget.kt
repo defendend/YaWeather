@@ -40,7 +40,7 @@ internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManage
     description?.contains("rain", ignoreCase = true) == true -> R.drawable.rain_gif
     description?.contains("clear", ignoreCase = true) == true -> R.drawable.clear_sky
     description?.contains("clouds", ignoreCase = true) == true -> R.drawable.clouds_gif
-    description?.contains("thunderstorm", ignoreCase = true) == true -> R.drawable.thunderstorm
+    description?.contains("thunderstorm", ignoreCase = true) == true -> R.drawable.thunderstormm
     description?.contains("snow", ignoreCase = true) == true -> R.drawable.snow_gif
     description?.contains("fog", ignoreCase = true) == true -> R.drawable.mist
     description?.contains("mist", ignoreCase = true) == true -> R.drawable.mist

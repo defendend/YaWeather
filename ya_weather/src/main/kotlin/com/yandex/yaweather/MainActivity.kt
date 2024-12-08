@@ -105,12 +105,12 @@ class MainActivity : ComponentActivity() {
     favoriteCitiesService = FavoriteCitiesService(this)
     (application as MainApplication).mainComponent.inject(this)
     setContent {
+      val weatherUiState by viewModel.userCurrentWeatherState.collectAsState()
       val mapUIState by viewModel.mapWeatherState.collectAsState()
       val cityItems = viewModel.cities.collectAsState()
       val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
       viewModel.loadFavoriteCities(favoriteCitiesService)
       fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
       if (ContextCompat.checkSelfPermission(
           this, permission.ACCESS_COARSE_LOCATION
         ) != PackageManager.PERMISSION_GRANTED
@@ -136,8 +136,7 @@ class MainActivity : ComponentActivity() {
         NavHost(navController, startDestination = Route.splashScreen,
           ) {
           composable(Route.mainScreen) {
-            val uiState by viewModel.userCurrentWeatherState.collectAsState()
-            WeatherScreen(uiState) { uiAction -> handleAction(navController, uiAction) }
+            WeatherScreen(weatherUiState) { uiAction -> handleAction(navController, uiAction) }
           }
           composable(
             Route.splashScreen,
@@ -170,7 +169,7 @@ class MainActivity : ComponentActivity() {
             }
           }
           composable(Route.openMapScreen) {
-            MapScreen(mapUIState, { action -> handleMapAction(action) })
+            MapScreen(mapUIState, { action -> handleMapAction(action)})
           }
           composable(
             route = "${Route.SelectedCityScreen}/{weatherUiStateIndex}",
@@ -212,8 +211,6 @@ class MainActivity : ComponentActivity() {
   private fun subscribeToCoordinates() {
     coordinatesJob = startStopScope?.launch {
       locationService.coordinates.mapNotNull { it }.collect { coordinates ->
-        //val latitude = String.format("%.2f", coordinates.first).replace(",", ".")
-        //val longitude = String.format("%.2f", coordinates.second).replace(",", ".")
         viewModel.getCurrentData(coordinates.first, coordinates.second)
       }
     }
@@ -389,4 +386,5 @@ class MainActivity : ComponentActivity() {
       }
     }
   }
+
 }

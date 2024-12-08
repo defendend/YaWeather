@@ -8,6 +8,7 @@ import com.yandex.yaweather.data.diModules.LocationModule
 import com.yandex.yaweather.data.diModules.MeteostatRepositoryProvider
 import com.yandex.yaweather.data.diModules.NetworkProvider
 import com.yandex.yaweather.data.diModules.OpenWeatherRepositoryProvider
+import com.yandex.yaweather.notification.NotificationWorker
 import com.yandex.yaweather.widget.WeatherWorker
 import dagger.Component
 
@@ -25,4 +26,5 @@ import dagger.Component
 interface AppComponent {
   fun inject(activity: MainActivity)
   fun inject(worker: WeatherWorker)
+  fun inject(worker: NotificationWorker)
 }

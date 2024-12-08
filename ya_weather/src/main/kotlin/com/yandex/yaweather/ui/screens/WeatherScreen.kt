@@ -2,7 +2,6 @@ package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
-import android.graphics.drawable.Drawable
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -83,7 +82,6 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
-import data.network.CoordinatesResponse
 import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.Calendar
@@ -1081,7 +1079,7 @@ fun weatherIconForForecast(weatherByHour: WeatherByHour): Int {
 fun weatherBackground(code: Int): Int {
   return when (code){
     in 200..202 -> R.drawable.fall_rain
-    in 230..233 ->R.drawable.thunderstorm
+    in 230..233 ->R.drawable.thunderstormm
     in 300..302 ->R.drawable.fall_rain
     in 500..522 ->R.drawable.fall_rain
     in 600..623 ->R.drawable.snow_gif
