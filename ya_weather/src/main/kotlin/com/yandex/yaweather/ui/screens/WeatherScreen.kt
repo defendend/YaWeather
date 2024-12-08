@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -53,6 +55,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -70,32 +73,39 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.TileOverlay
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberTileOverlayState
+import com.yandex.yaweather.Lang
 import com.yandex.yaweather.R
-import com.yandex.yaweather.Theme.BackSwitch
-import com.yandex.yaweather.Theme.BackTime
-import com.yandex.yaweather.Theme.Green
-import com.yandex.yaweather.Theme.SettingsAnotherBack
-import com.yandex.yaweather.Theme.SettingsBack
-import com.yandex.yaweather.Theme.SettingsItemBack
-import com.yandex.yaweather.Theme.SettingsSelected
+import com.yandex.yaweather.appLanguage
+import com.yandex.yaweather.darkTheme
 import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
-import java.util.Calendar
 import kotlinx.coroutines.launch
 import java.net.URL
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
 fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -> Unit) {
+  val context = LocalContext.current
   var openBottomSheet by rememberSaveable { mutableStateOf(false) }
   val skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
-
+  var selectedIconIndex = remember {
+    mutableIntStateOf(
+      if (appLanguage.value == Lang.uz) {
+        1
+      } else if (appLanguage.value == Lang.ru) {
+        2
+      } else {
+        3
+      }
+    )
+  }
   LaunchedEffect(openBottomSheet) {
     if (openBottomSheet) {
       coroutineScope.launch {
@@ -107,8 +117,9 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
       }
     }
   }
+
   Scaffold(topBar = {
-    TopBar(Modifier, action) {
+    TopBar(action) {
       openBottomSheet = !openBottomSheet
     }
   }) { innerPadding ->
@@ -143,7 +154,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
 
           )
         ),
-        contentDescription = "Background Image",
+        contentDescription = stringResource(R.string.weather_screen_background_image),
         modifier = Modifier
           .fillMaxSize()
           .blur(10.dp), contentScale = ContentScale.Crop
@@ -169,11 +180,17 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
           ) {
             Text(
-              text = uiState.cityItem.name ?: "Not found", fontSize = 24.sp, color = Color.White, fontWeight = FontWeight.Bold
+              text = uiState.cityItem.name ?: "Not found",
+              fontSize = 24.sp,
+              color = Color.White,
+              fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = uiState.weatherUiState.temperature, fontSize = 64.sp, color = Color.White, fontWeight = FontWeight.ExtraBold
+              text = uiState.weatherUiState.temperature,
+              fontSize = 64.sp,
+              color = Color.White,
+              fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -208,7 +225,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
     ModalBottomSheet(
       onDismissRequest = { openBottomSheet = false },
       sheetState = bottomSheetState,
-      containerColor = SettingsBack,
+      containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
       Column(modifier = Modifier.fillMaxSize()) {
         Row(
@@ -217,27 +234,35 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
           verticalAlignment = Alignment.CenterVertically
         ) {
           Text(
-            text = "Настройки", color = Color.White, fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp)
+            text = stringResource(R.string.settings_bottom_sheet),
+            color = MaterialTheme.colorScheme.inversePrimary,
+            fontSize = 24.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
           )
         }
-        Text(text = "Температура", color = Color.White, fontSize = 20.sp, modifier = Modifier.padding(start = 16.dp))
+        Text(
+          text = stringResource(R.string.settings_bottom_sheet_temperature),
+          color = MaterialTheme.colorScheme.inversePrimary,
+          fontSize = 20.sp,
+          modifier = Modifier.padding(start = 16.dp)
+        )
         Row(
           modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 4.dp)
-            .background(color = SettingsItemBack, shape = RoundedCornerShape(10.dp)),
+            .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(10.dp)),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-          Text(text = "по Фаренгейту",
-            color = Color.White,
+          Text(text = stringResource(R.string.settings_bottom_sheet_fahrenheit),
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 16.sp,
             modifier = Modifier
               .weight(1f)
               .clip(shape = RoundedCornerShape(10.dp))
               .background(
                 color = if (temperatureFahrenheit.value) {
-                  SettingsSelected
+                  MaterialTheme.colorScheme.onPrimaryContainer
                 } else {
                   Color.Transparent
                 }
@@ -247,8 +272,8 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
-          Text(text = "Цельсия",
-            color = Color.White,
+          Text(text = stringResource(R.string.settings_bottom_sheet_selcuim),
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 16.sp,
             modifier = Modifier
               .weight(1f)
@@ -257,7 +282,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
                 color = if (temperatureFahrenheit.value) {
                   Color.Transparent
                 } else {
-                  SettingsSelected
+                  MaterialTheme.colorScheme.onPrimaryContainer
                 }
               )
               .clickable {
@@ -270,25 +295,28 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
           mutableStateOf(true)
         }
         Text(
-          text = "Ветер", color = Color.White, fontSize = 20.sp, modifier = Modifier.padding(start = 16.dp, top = 20.dp)
+          text = stringResource(R.string.settings_bottom_sheet_wind),
+          color = MaterialTheme.colorScheme.inversePrimary,
+          fontSize = 20.sp,
+          modifier = Modifier.padding(start = 16.dp, top = 20.dp)
         )
         Row(
           modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 4.dp)
-            .background(color = SettingsItemBack, shape = RoundedCornerShape(10.dp)),
+            .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(10.dp)),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-          Text(text = "km/h",
-            color = Color.White,
+          Text(text = stringResource(R.string.settings_bottom_sheet_wind_speed1),
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 16.sp,
             modifier = Modifier
               .weight(1f)
               .clip(shape = RoundedCornerShape(10.dp))
               .background(
                 color = if (windSpeedKm.value) {
-                  SettingsSelected
+                  MaterialTheme.colorScheme.onPrimaryContainer
                 } else {
                   Color.Transparent
                 }
@@ -298,8 +326,8 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
-          Text(text = "m/s",
-            color = Color.White,
+          Text(text = stringResource(R.string.settings_bottom_sheet_wind_speed2),
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 16.sp,
             modifier = Modifier
               .weight(1f)
@@ -308,7 +336,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
                 color = if (windSpeedKm.value) {
                   Color.Transparent
                 } else {
-                  SettingsSelected
+                  MaterialTheme.colorScheme.onPrimaryContainer
                 }
               )
               .clickable {
@@ -321,8 +349,8 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
           mutableStateOf(true)
         }
         Text(
-          text = "Давление",
-          color = Color.White,
+          text = stringResource(R.string.settings_bottom_sheet_pressure),
+          color = MaterialTheme.colorScheme.inversePrimary,
           fontSize = 20.sp,
           modifier = Modifier.padding(start = 16.dp, top = 20.dp)
         )
@@ -330,19 +358,19 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
           modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 4.dp)
-            .background(color = SettingsItemBack, shape = RoundedCornerShape(10.dp)),
+            .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(10.dp)),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-          Text(text = "hPa",
-            color = Color.White,
+          Text(text = stringResource(R.string.settings_bottom_sheet_pressure1),
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 16.sp,
             modifier = Modifier
               .weight(1f)
               .clip(shape = RoundedCornerShape(10.dp))
               .background(
                 color = if (pressureHPa.value) {
-                  SettingsSelected
+                  MaterialTheme.colorScheme.onPrimaryContainer
                 } else {
                   Color.Transparent
                 }
@@ -352,8 +380,8 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
-          Text(text = "mmHg",
-            color = Color.White,
+          Text(text = stringResource(R.string.settings_bottom_sheet_pressure2),
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 16.sp,
             modifier = Modifier
               .weight(1f)
@@ -362,7 +390,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
                 color = if (pressureHPa.value) {
                   Color.Transparent
                 } else {
-                  SettingsSelected
+                  MaterialTheme.colorScheme.onPrimaryContainer
                 }
               )
               .clickable {
@@ -376,8 +404,8 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
           mutableStateOf(false)
         }
         Text(
-          text = "Осадки",
-          color = Color.White,
+          text = stringResource(R.string.settings_Bottom_sheet_precipitation),
+          color = MaterialTheme.colorScheme.inversePrimary,
           fontSize = 20.sp,
           modifier = Modifier.padding(start = 16.dp, top = 20.dp)
         )
@@ -385,19 +413,19 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
           modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 4.dp)
-            .background(color = SettingsItemBack, shape = RoundedCornerShape(10.dp)),
+            .background(color = MaterialTheme.colorScheme.onPrimary, shape = RoundedCornerShape(10.dp)),
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-          Text(text = "Дюймы",
-            color = Color.White,
+          Text(text = stringResource(R.string.settings_bottom_sheet_precipitaion1),
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 16.sp,
             modifier = Modifier
               .weight(1f)
               .clip(shape = RoundedCornerShape(10.dp))
               .background(
                 color = if (precipitationMillis.value) {
-                  SettingsSelected
+                  MaterialTheme.colorScheme.onPrimaryContainer
                 } else {
                   Color.Transparent
                 }
@@ -407,8 +435,8 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
-          Text(text = "Миллиметры",
-            color = Color.White,
+          Text(text = stringResource(R.string.settings_bottom_sheet_precipitaion2),
+            color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 16.sp,
             modifier = Modifier
               .weight(1f)
@@ -417,7 +445,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
                 color = if (precipitationMillis.value) {
                   Color.Transparent
                 } else {
-                  SettingsSelected
+                  MaterialTheme.colorScheme.onPrimaryContainer
                 }
               )
               .clickable {
@@ -445,7 +473,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
           modifier = Modifier
             .padding(16.dp)
             .clip(shape = RoundedCornerShape(10.dp))
-            .background(color = SettingsAnotherBack)
+            .background(color = MaterialTheme.colorScheme.secondary)
         ) {
           Row(
             modifier = Modifier
@@ -456,19 +484,27 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             horizontalArrangement = Arrangement.SpaceBetween
           ) {
             Column {
-              Text(text = "Утренний отчёт", color = Color.White, fontSize = 16.sp)
-              Text(text = "Информация о погоде каждый день", color = Color.White, fontSize = 12.sp)
+              Text(
+                text = stringResource(R.string.settings_bottom_sheet_morning_notification),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 16.sp
+              )
+              Text(
+                text = stringResource(R.string.settings_bottom_sheet_every_day_notification),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 12.sp
+              )
             }
             Switch(
               checked = checked1.value, onCheckedChange = {
                 checked1.value = it
               }, colors = SwitchColors(
                 checkedThumbColor = Color.White,
-                checkedTrackColor = Green,
+                checkedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                 checkedBorderColor = Color.Transparent,
                 checkedIconColor = Color.Transparent,
                 uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = BackSwitch,
+                uncheckedTrackColor = MaterialTheme.colorScheme.onSecondary,
                 uncheckedBorderColor = Color.Transparent,
                 uncheckedIconColor = Color.Transparent,
                 disabledCheckedThumbColor = Color.Transparent,
@@ -491,14 +527,22 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             horizontalArrangement = Arrangement.SpaceBetween
           ) {
             Column {
-              Text(text = "Час", color = Color.White, fontSize = 16.sp)
-              Text(text = "Выберите время уведомления", color = Color.White, fontSize = 12.sp)
+              Text(
+                text = stringResource(R.string.settings_bottom_sheet_hour),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 16.sp
+              )
+              Text(
+                text = stringResource(R.string.settings_bottom_sheet_choose_time),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 12.sp
+              )
             }
             Text(text = time1.value,
-              color = Color.White,
+              color = MaterialTheme.colorScheme.inversePrimary,
               modifier = Modifier
                 .clip(shape = RoundedCornerShape(4.dp))
-                .background(color = BackTime)
+                .background(color = MaterialTheme.colorScheme.primary)
                 .padding(10.dp)
                 .clickable {
                   isTimePickerOpen1.value = true
@@ -522,19 +566,27 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             horizontalArrangement = Arrangement.SpaceBetween
           ) {
             Column {
-              Text(text = "Вечерний отчёт", color = Color.White, fontSize = 16.sp)
-              Text(text = "Получить уведомление за день", color = Color.White, fontSize = 12.sp)
+              Text(
+                text = stringResource(R.string.settings_bottom_sheet_night_report),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 16.sp
+              )
+              Text(
+                text = stringResource(R.string.settings_bottom_sheet_for_day_notification),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 12.sp
+              )
             }
             Switch(
               checked = checked2.value, onCheckedChange = {
                 checked2.value = it
               }, colors = SwitchColors(
                 checkedThumbColor = Color.White,
-                checkedTrackColor = Green,
+                checkedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                 checkedBorderColor = Color.Transparent,
                 checkedIconColor = Color.Transparent,
                 uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = BackSwitch,
+                uncheckedTrackColor = MaterialTheme.colorScheme.onSecondary,
                 uncheckedBorderColor = Color.Transparent,
                 uncheckedIconColor = Color.Transparent,
                 disabledCheckedThumbColor = Color.Transparent,
@@ -557,14 +609,22 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             horizontalArrangement = Arrangement.SpaceBetween
           ) {
             Column {
-              Text(text = "Час", color = Color.White, fontSize = 16.sp)
-              Text(text = "Выберите время уведомления", color = Color.White, fontSize = 12.sp)
+              Text(
+                text = stringResource(R.string.settings_bottom_sheet_hour),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 16.sp
+              )
+              Text(
+                text = stringResource(R.string.settings_bottom_sheet_choose_time),
+                color = MaterialTheme.colorScheme.inversePrimary,
+                fontSize = 12.sp
+              )
             }
             Text(text = time2.value,
-              color = Color.White,
+              color = MaterialTheme.colorScheme.inversePrimary,
               modifier = Modifier
                 .clip(shape = RoundedCornerShape(4.dp))
-                .background(color = BackTime)
+                .background(color = MaterialTheme.colorScheme.primary)
                 .padding(10.dp)
                 .clickable {
                   isTimePickerOpen2.value = true
@@ -579,12 +639,150 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             ).show()
           }
         }
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+          Text(
+            text = stringResource(R.string.settings_bottom_sheet_change_theme),
+            color = MaterialTheme.colorScheme.inversePrimary,
+            fontSize = 20.sp
+          )
+          Switch(
+            checked = darkTheme.value, onCheckedChange = {
+              darkTheme.value = it
+              action.invoke(WeatherScreenAction.SetTheme(it))
+            }, colors = SwitchColors(
+              checkedThumbColor = Color.White,
+              checkedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+              checkedBorderColor = Color.Transparent,
+              checkedIconColor = Color.Transparent,
+              uncheckedThumbColor = Color.White,
+              uncheckedTrackColor = MaterialTheme.colorScheme.onSecondary,
+              uncheckedBorderColor = Color.Transparent,
+              uncheckedIconColor = Color.Transparent,
+              disabledCheckedThumbColor = Color.Transparent,
+              disabledCheckedTrackColor = Color.Transparent,
+              disabledCheckedBorderColor = Color.Transparent,
+              disabledCheckedIconColor = Color.Transparent,
+              disabledUncheckedThumbColor = Color.Transparent,
+              disabledUncheckedTrackColor = Color.Transparent,
+              disabledUncheckedBorderColor = Color.Transparent,
+              disabledUncheckedIconColor = Color.Transparent
+            )
+          )
+        }
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp, top = 4.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+          Text(
+            text = stringResource(R.string.settings_bottom_sheet_language),
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.inversePrimary
+          )
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+              .clip(shape = RoundedCornerShape(10.dp))
+              .background(color = MaterialTheme.colorScheme.onSecondaryContainer)
+          ) {
+            Text(text = stringResource(R.string.uz),
+              modifier = Modifier
+                .padding(top = 2.dp, bottom = 2.dp, start = 2.dp)
+                .clip(shape = RoundedCornerShape(10.dp))
+                .background(
+                  color = if (selectedIconIndex.intValue == 1) {
+                    MaterialTheme.colorScheme.tertiary
+                  } else {
+                    Color.Transparent
+                  }
+                )
+                .clickable(
+                  enabled = selectedIconIndex.intValue != 1
+                ) {
+                  action.invoke(WeatherScreenAction.SetLanguage(Lang.uz))
+                  selectedIconIndex.intValue = 1
+                }
+                .padding(vertical = 10.dp, horizontal = 16.dp),
+              textAlign = TextAlign.Center,
+              color = MaterialTheme.colorScheme.inversePrimary)
+            Box(
+              modifier = Modifier
+                .size(width = 1.dp, height = 24.dp)
+                .background(
+                  color = if (selectedIconIndex.intValue == 3 || selectedIconIndex.intValue == -1) {
+                    MaterialTheme.colorScheme.onTertiary
+                  } else {
+                    Color.Transparent
+                  }
+                )
+            )
+            Text(text = stringResource(R.string.ru),
+              modifier = Modifier
+                .padding(vertical = 2.dp)
+                .clip(shape = RoundedCornerShape(10.dp))
+                .background(
+                  color = if (selectedIconIndex.intValue == 2) {
+                    MaterialTheme.colorScheme.tertiary
+                  } else {
+                    Color.Transparent
+                  }
+                )
+                .clickable(
+                  enabled = selectedIconIndex.intValue != 2
+                ) {
+                  selectedIconIndex.intValue = 2
+                  action.invoke(WeatherScreenAction.SetLanguage(Lang.ru))
+                }
+                .padding(vertical = 10.dp, horizontal = 16.dp),
+              color = MaterialTheme.colorScheme.inversePrimary,
+              textAlign = TextAlign.Center)
+            Box(
+              modifier = Modifier
+                .size(width = 1.dp, height = 24.dp)
+                .background(
+                  color = if (selectedIconIndex.intValue == 1 || selectedIconIndex.intValue == -1) {
+                    MaterialTheme.colorScheme.onTertiary
+                  } else {
+                    Color.Transparent
+                  }
+                )
+            )
+            Text(text = stringResource(R.string.en),
+              modifier = Modifier
+                .padding(top = 2.dp, bottom = 2.dp, end = 2.dp)
+                .clip(shape = RoundedCornerShape(10.dp))
+                .background(
+                  color = if (selectedIconIndex.intValue == 3) {
+                    MaterialTheme.colorScheme.tertiary
+                  } else {
+                    Color.Transparent
+                  }
+                )
+                .clickable(
+                  enabled = selectedIconIndex.intValue != 3
+                ) {
+                  selectedIconIndex.intValue = 3
+                  action.invoke(WeatherScreenAction.SetLanguage(Lang.en))
+                }
+                .padding(vertical = 10.dp, horizontal = 16.dp),
+              color = MaterialTheme.colorScheme.inversePrimary,
+              textAlign = TextAlign.Center)
+          }
+        }
       }
     }
   }
   val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(Color.Gray)
-  systemUiController.setNavigationBarColor(Color.Gray)
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
 }
 
 @SuppressLint("DefaultLocale")
@@ -637,9 +835,9 @@ fun HourlyForecast(modifier: Modifier, weatherByHour: List<WeatherByHour>) {
 }
 
 @Composable
-fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit, bottomSheet: (Unit) -> Unit) {
+fun TopBar(action: (WeatherScreenAction) -> Unit, bottomSheet: (Unit) -> Unit) {
   Row(
-    modifier = modifier
+    modifier = Modifier
       .fillMaxWidth()
       .padding(start = 8.dp, end = 8.dp, top = 36.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
@@ -648,22 +846,26 @@ fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit, bottomShee
     Row {
       IconButton(onClick = {
         bottomSheet.invoke(Unit)
-      }) {
+      }, colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)) {
         Icon(
-          imageVector = Icons.Default.Settings, contentDescription = "Settings"
+          imageVector = Icons.Default.Settings,
+          contentDescription = stringResource(R.string.weather_screen_settings_icon),
         )
       }
       IconButton(onClick = {
         action.invoke(WeatherScreenAction.OpenInfoAction)
-      }) {
+      }, colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)) {
         Icon(
-          imageVector = Icons.Default.Info, contentDescription = "Info"
+          imageVector = Icons.Default.Info, contentDescription = stringResource(R.string.weather_screen_info_icon)
         )
       }
     }
-    IconButton(onClick = { action(WeatherScreenAction.AddCityAction) }) {
+    IconButton(
+      onClick = { action(WeatherScreenAction.AddCityAction) },
+      colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+    ) {
       Icon(
-        imageVector = Icons.Default.Menu, contentDescription = "Menu"
+        imageVector = Icons.Default.Menu, contentDescription = stringResource(R.string.weather_screen_add_icon)
       )
     }
   }
@@ -780,15 +982,15 @@ fun getDayOfWeek(dayIndex: Int): String {
 }
 
 @Composable
-fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
+fun MapWidget(modifier: Modifier, uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
 
-  val currentLocation  = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
+  val currentLocation = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
 
-    val cameraPositionState = rememberCameraPositionState {
-      position = if(currentLocation != null)
-        CameraPosition.fromLatLngZoom(currentLocation, 10f)
-      else  CameraPosition.fromLatLngZoom(LatLng(0.0,0.0), 1f)
-    }
+  val cameraPositionState = rememberCameraPositionState {
+    position = if (currentLocation != null)
+      CameraPosition.fromLatLngZoom(currentLocation, 10f)
+    else CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 1f)
+  }
 
 
   val tileProvider = remember {
@@ -827,8 +1029,7 @@ fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreen
     )
   ) {
     TileOverlay(
-      state = tileOverlayState,
-      tileProvider = tileProvider
+      state = tileOverlayState, tileProvider = tileProvider
     )
     currentLocation?.let { MarkerState(position = it) }?.let {
       Marker(state = it, title = "", snippet = "", onClick = {
@@ -870,27 +1071,20 @@ fun WidgetBox(title: String, value: String?) {
       .background(Color.DarkGray.copy(alpha = 0.75f), RoundedCornerShape(16.dp)),
 
 
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.SpaceEvenly
+    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly
   ) {
     Text(
-      text = title,
-      fontSize = 16.sp,
-      color = Color.White,
-      fontWeight = FontWeight.SemiBold
+      text = title, fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.SemiBold
 
     )
     Text(
-      text = value ?: "-",
-      fontSize = 28.sp,
-      color = Color.White,
-      fontWeight = FontWeight.Bold
+      text = value ?: "-", fontSize = 28.sp, color = Color.White, fontWeight = FontWeight.Bold
     )
   }
 }
 
 
-fun weatherIconForForecast(weatherByHour: WeatherByHour) : Int{
+fun weatherIconForForecast(weatherByHour: WeatherByHour): Int {
   return when (weatherByHour.weather?.code) {
     in 200..202 -> R.drawable.hail_fill
     in 230..233 -> R.drawable.thunderstorms_fill

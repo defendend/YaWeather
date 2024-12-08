@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">YaWeather</string>
+  <string name="appwidget_text">Текущий город</string>
+  <string name="add_widget">Добавить виджет</string>
+  <string name="app_widget_description">Это описание виджета приложения</string>
+  <string name="appwidget_temperature">Температура</string>
+  <string name="app_widget_sunrise">Восход</string>
+  <string name="app_widget_sunset">Закат</string>
+  <string name="splash_screen_cloud_icon">Иконка Облака</string>
+  <string name="back_button">Кнопка назад</string>
+  <string name="info_screen_image">Картинка на Инфо скрине</string>
+  <string name="splash_screen_rotation">Вращение</string>
+  <string name="splash_screen_sun_icon">Иконка Солнца</string>
+  <string name="splash_screen_scale">Шкала</string>
+  <string name="splash_screen_offset">Смещение</string>
+  <string name="weather_screen_settings_icon">Настройки</string>
+  <string name="weather_screen_info_icon">Информация</string>
+  <string name="weather_screen_add_icon">Добавить</string>
+  <string name="weather_screen_background_image">Задняя иконка</string>
+  <string name="settings_bottom_sheet">Настройки</string>
+  <string name="settings_bottom_sheet_temperature">Температурa</string>
+  <string name="settings_bottom_sheet_fahrenheit">по Фаренгейту</string>
+  <string name="settings_bottom_sheet_selcuim">Цельсия</string>
+  <string name="settings_bottom_sheet_wind">Ветер</string>
+  <string name="settings_bottom_sheet_wind_speed1">км/ч</string>
+  <string name="settings_bottom_sheet_wind_speed2">м/с</string>
+  <string name="settings_bottom_sheet_pressure">Давление</string>
+  <string name="settings_bottom_sheet_pressure1">hPa</string>
+  <string name="settings_bottom_sheet_pressure2">mmHg</string>
+  <string name="settings_Bottom_sheet_precipitation">Осадки</string>
+  <string name="settings_bottom_sheet_precipitaion1">Дюймы</string>
+  <string name="settings_bottom_sheet_precipitaion2">Миллиметры</string>
+  <string name="settings_bottom_sheet_morning_notification">Утренний отчёт</string>
+  <string name="settings_bottom_sheet_every_day_notification">Информация о погоде каждый день</string>
+  <string name="settings_bottom_sheet_hour">Час</string>
+  <string name="settings_bottom_sheet_choose_time">Выберите время уведомления</string>
+  <string name="settings_bottom_sheet_night_report">Вечерний отчёт</string>
+  <string name="settings_bottom_sheet_for_day_notification">Получить уведомление за день</string>
+  <string name="settings_bottom_sheet_change_theme">Сменить тему</string>
+  <string name="settings_bottom_sheet_language">Выбрать язык</string>
+  <string name="uz">УЗ</string>
+  <string name="ru">РУ</string>
+  <string name="en">ЭН</string>
+</resources>

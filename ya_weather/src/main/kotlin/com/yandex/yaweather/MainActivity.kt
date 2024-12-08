@@ -2,6 +2,7 @@ package com.yandex.yaweather
 
 import android.Manifest.permission
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
@@ -13,9 +14,11 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,6 +47,8 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.handler.WeatherScreenAction.AddCityAction
 import com.yandex.yaweather.handler.WeatherScreenAction.OpenInfoAction
 import com.yandex.yaweather.handler.WeatherScreenAction.OpenMapAction
+import com.yandex.yaweather.handler.WeatherScreenAction.SetLanguage
+import com.yandex.yaweather.handler.WeatherScreenAction.SetTheme
 import com.yandex.yaweather.ui.screens.CitySelectionScreen
 import com.yandex.yaweather.ui.screens.InfoScreen
 import com.yandex.yaweather.ui.screens.MapScreen
@@ -58,6 +63,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+enum class Lang {
+  uz, ru, en
+}
+
+val darkTheme = mutableStateOf(false)
+val appLanguage = mutableStateOf(Lang.ru)
+private const val LOCATION_FILE = "_location"
 
 class MainActivity : ComponentActivity() {
 
@@ -108,9 +121,17 @@ class MainActivity : ComponentActivity() {
       } else {
         fetchLocation()
       }
-
       val navController = rememberNavController()
-      YaWeatherTheme {
+      val preferences =
+        applicationContext.getSharedPreferences(applicationContext.packageName + LOCATION_FILE, MODE_PRIVATE)
+      darkTheme.value = preferences.getBoolean("lightTheme", true)
+      appLanguage.value = if (preferences.getString("lang", "ru") == "ru") {
+        Lang.ru
+      } else if (preferences.getString("lang", "uz") == "uz") {
+        Lang.uz
+      } else Lang.en
+      setLanguage(appLanguage.value, this)
+      YaWeatherTheme(darkTheme.value) {
 
         NavHost(navController, startDestination = Route.splashScreen,
           ) {
@@ -118,31 +139,35 @@ class MainActivity : ComponentActivity() {
             val uiState by viewModel.userCurrentWeatherState.collectAsState()
             WeatherScreen(uiState) { uiAction -> handleAction(navController, uiAction) }
           }
-          composable(Route.splashScreen, enterTransition = {
-            when (initialState.destination.route) {
-              "details" ->
-                slideIntoContainer(
-                  AnimatedContentTransitionScope.SlideDirection.Left,
-                  animationSpec = tween(700)
+          composable(
+            Route.splashScreen,
+            enterTransition = {
+              when (initialState.destination.route) {
+                "details" -> slideIntoContainer(
+                  AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(700)
                 )
-              else -> null
-            }
-          },
-            exitTransition = {
-              when (targetState.destination.route) {
-                "details" ->
-                  slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(700)
-                  )
 
                 else -> null
               }
-            },) {
+            },
+            exitTransition = {
+              when (targetState.destination.route) {
+                "details" -> slideOutOfContainer(
+                  AnimatedContentTransitionScope.SlideDirection.Left, animationSpec = tween(700)
+                )
+
+                else -> null
+              }
+            },
+          ) {
             SplashScreen { action -> handleSplashScreenAction(navController, action) }
           }
           composable(Route.addCityScreen) {
-            CitySelectionScreen(cityItems, favoriteCitiesService, favoriteCityItems) { action -> handleCityAction(navController, action) }
+            CitySelectionScreen(cityItems, favoriteCitiesService, favoriteCityItems) { action ->
+              handleCityAction(
+                navController, action
+              )
+            }
           }
           composable(Route.openMapScreen) {
             MapScreen(mapUIState, { action -> handleMapAction(action) })
@@ -209,6 +234,44 @@ class MainActivity : ComponentActivity() {
       is AddCityAction -> navController.navigate(Route.addCityScreen)
       is OpenMapAction -> navController.navigate(Route.openMapScreen)
       is OpenInfoAction -> navController.navigate(Route.infoScreen)
+      is SetTheme -> setTheme(action.lightTheme)
+      is SetLanguage -> setLanguage(action.language, this)
+    }
+  }
+
+
+  private fun setTheme(lightTheme: Boolean) {
+    val preferences =
+      applicationContext.getSharedPreferences(applicationContext.packageName + LOCATION_FILE, MODE_PRIVATE)
+    preferences.edit().apply {
+      putBoolean("lightTheme", lightTheme)
+    }.apply()
+  }
+
+  fun setLanguage(language: Lang, context: Context) {
+    val config = context.resources.configuration
+    val locale = java.util.Locale(language.name)
+    java.util.Locale.setDefault(locale)
+    config.setLocale(locale)
+    context.createConfigurationContext(config)
+    context.resources.updateConfiguration(config, context.resources.displayMetrics)
+    val preferences =
+      applicationContext.getSharedPreferences(applicationContext.packageName + LOCATION_FILE, MODE_PRIVATE)
+    if (language == Lang.uz) {
+      preferences.edit().apply {
+        putString("lang", "uz")
+      }.apply()
+      appLanguage.value = Lang.uz
+    } else if (language == Lang.ru) {
+      preferences.edit().apply {
+        putString("lang", "ru")
+      }.apply()
+      appLanguage.value = Lang.ru
+    } else {
+      preferences.edit().apply {
+        putString("lang", "en")
+      }.apply()
+      appLanguage.value = Lang.en
     }
   }
 

@@ -10,33 +10,87 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-  primary = Purple80,
-  secondary = PurpleGrey80,
-  tertiary = Pink80
-)
-
 private val LightColorScheme = lightColorScheme(
-  primary = Purple40,
-  secondary = PurpleGrey40,
-  tertiary = Pink40
-
-  /* Other default colors to override
-  background = Color(0xFFFFFBFE),
-  surface = Color(0xFFFFFBFE),
-  onPrimary = Color.White,
-  onSecondary = Color.White,
-  onTertiary = Color.White,
-  onBackground = Color(0xFF1C1B1F),
-  onSurface = Color(0xFF1C1B1F),
-  */
+  primary = StatusBarLight,
+  onPrimary = SettingsTextBackLight,
+  primaryContainer = BottomSheetBackLight,
+  onPrimaryContainer = SettingsTextSelectedLight,
+  inversePrimary = SettingsTextLight,
+  secondary = SettingsAnotherBackLight,
+  onSecondary = SettingsSwitchBackLight,
+  secondaryContainer = SettingsSwitchTrackLight,
+  onSecondaryContainer = SupportLightOverlay,
+  tertiary = BackLightElevated,
+  onTertiary = ColorLightGray,
+//  tertiaryContainer =,
+//  onTertiaryContainer =,
+//  background =,
+//  onBackground =,
+//  surface =,
+//  onSurface =
+//  surfaceVariant =,
+//  onSurfaceVariant =,
+//  surfaceTint =,
+//  inverseSurface =,
+//  inverseOnSurface =,
+//  error =,
+//  onError =,
+//  errorContainer =,
+//  onErrorContainer =,
+//  outline =,
+//  outlineVariant =,
+//  scrim =,
+//  surfaceBright =,
+//  surfaceContainer =,
+//  surfaceContainerHigh =,
+//  surfaceContainerHighest =,
+//  surfaceContainerLow =,
+//  surfaceContainerLowest =,
+//  surfaceDim =,
 )
+
+private val DarkColorScheme = darkColorScheme(
+  primary = StatusBarDark,
+  onPrimary = SettingsTextBackDark,
+  primaryContainer = BottomSheetBackDark,
+  onPrimaryContainer = SettingsTextSelectedDark,
+  inversePrimary = SettingsTextDark,
+  secondary = SettingsAnotherBackDark,
+  onSecondary = SettingsSwitchBackDark,
+  secondaryContainer = SettingsSwitchTrackDark,
+  onSecondaryContainer = SupportDarkOverlay,
+  tertiary = BackDarkElevated,
+  onTertiary = ColorDarkGrey,
+//  tertiaryContainer =,
+//  onTertiaryContainer =,
+//  background =,
+//  onBackground =,
+//  surface =,
+//  onSurface =
+//  surfaceVariant =,
+//  onSurfaceVariant =,
+//  surfaceTint =,
+//  inverseSurface =,
+//  inverseOnSurface =,
+//  error =,
+//  onError =,
+//  errorContainer =,
+//  onErrorContainer =,
+//  outline =,
+//  outlineVariant =,
+//  scrim =,
+//  surfaceBright =,
+//  surfaceContainer =,
+//  surfaceContainerHigh =,
+//  surfaceContainerHighest =,
+//  surfaceContainerLow =,
+//  surfaceContainerLowest =,
+//  surfaceDim =,
+)
+
 @Composable
 fun YaWeatherTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
-  // Dynamic color is available on Android 12+
-  dynamicColor: Boolean = true,
-  content: @Composable () -> Unit
+  darkTheme: Boolean = isSystemInDarkTheme(), dynamicColor: Boolean = false, content: @Composable () -> Unit
 ) {
   val colorScheme = when {
     dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -49,8 +103,6 @@ fun YaWeatherTheme(
   }
 
   MaterialTheme(
-    colorScheme = colorScheme,
-    typography = Typography,
-    content = content
+    colorScheme = colorScheme, typography = Typography, content = content
   )
 }
