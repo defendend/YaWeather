@@ -22,13 +22,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -52,7 +50,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,8 +59,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.android.gms.maps.model.CameraPosition
@@ -79,13 +74,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberTileOverlayState
 import com.yandex.yaweather.Lang
 import com.yandex.yaweather.R
-import com.yandex.yaweather.Theme.BackSwitch
-import com.yandex.yaweather.Theme.BackTime
-import com.yandex.yaweather.Theme.Green
-import com.yandex.yaweather.Theme.SettingsAnotherBack
-import com.yandex.yaweather.Theme.SettingsBack
-import com.yandex.yaweather.Theme.SettingsItemBack
-import com.yandex.yaweather.Theme.SettingsSelected
 import com.yandex.yaweather.appLanguage
 import com.yandex.yaweather.darkTheme
 import com.yandex.yaweather.data.network.WeatherByHour
@@ -93,9 +81,9 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
-import java.util.Calendar
 import kotlinx.coroutines.launch
 import java.net.URL
+import java.util.Calendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
