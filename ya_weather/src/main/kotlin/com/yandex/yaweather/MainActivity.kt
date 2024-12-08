@@ -97,10 +97,7 @@ class MainActivity : ComponentActivity() {
       val mapUIState by viewModel.mapWeatherState.collectAsState()
       val cityItems = viewModel.cities.collectAsState()
       val favoriteCityItems by viewModel.favoriteCityItems.collectAsState()
-      favoriteCitiesService.getAllCities().forEach{
-          item ->
-        viewModel.updateFavoriteCityItems(item)
-      }
+      viewModel.loadFavoriteCities(favoriteCitiesService)
       fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
       if (ContextCompat.checkSelfPermission(

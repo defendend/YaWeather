@@ -3,6 +3,7 @@ package com.yandex.yaweather.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
+import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.repository.CityFinderRepository
 import com.yandex.yaweather.data.network.WeatherByHour
@@ -189,6 +190,19 @@ class YaWeatherViewModel @Inject constructor(
       } catch (e: Exception) {
         println("Exception: ${e.message}")
         _errorMessage.value = e.message.toString()
+      }
+    }
+  }
+  fun loadFavoriteCities(service: FavoriteCitiesService) {
+    viewModelScope.launch {
+      service.getAllCities().forEach {
+          item ->
+        weatherRepository.getCurrentWeather(item.lat.toString(), item.lon.toString()).onSuccess {
+            coordinatesResponse ->
+          _favoriteCityItems.update { (it + CitySelectionUIState(item, mapResponseToUiState(coordinatesResponse))).toMutableList() }
+        }.onFailure {
+          _errorMessage.value = it.message.toString()
+        }
       }
     }
   }
