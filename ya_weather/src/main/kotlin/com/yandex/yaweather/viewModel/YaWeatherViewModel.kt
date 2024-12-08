@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class YaWeatherViewModel @Inject constructor(
@@ -61,6 +59,7 @@ class YaWeatherViewModel @Inject constructor(
         }
     }
   }
+
 
   private fun getCurrentWeather(lat: String, lon: String) : Job {
     return viewModelScope.launch(Dispatchers.IO) {
@@ -154,12 +153,13 @@ class YaWeatherViewModel @Inject constructor(
     )
   }
 
-  private fun widgetResponeToUiState(response: CoordinatesResponse): WeatherUiState.WidgetsUiState {
+  private fun widgetResponeToUiState(response: CoordinatesResponse): WidgetsUiState {
     return WidgetsUiState(
       feelsLike = response.main?.feelsLike?.minus(273)?.toInt().toString(), // Преобразование из Кельвинов в Цельсии
       humidity = response.main?.humidity?.toString() ?: "-",
       windSpeed = response.wind?.speed?.toString() ?: "-",
-      sealevel = response.main?.seaLevel?.toString() ?: "-"
+      sealevel = response.main?.seaLevel?.toString() ?: "-",
+
     )
   }
 
@@ -225,12 +225,14 @@ data class WeatherUiState(
   val markerPosition: Coordinates? = null,
   val cityName: String = "",
   val temperature: String = "",
+  val temperaturePerHour: String = "",
   val description: String = "",
   val feelsLike: String = "",
   val temperatureMin: String = "",
   val temperatureMax: String = "",
   val widgetsUiState: WidgetsUiState = WidgetsUiState(),
-  val hourlyWeather: List<WeatherByHour> = emptyList()
+  val hourlyWeather: List<WeatherByHour> = emptyList(),
+  val code: String = ""
 ) {
 
   data class WidgetsUiState(

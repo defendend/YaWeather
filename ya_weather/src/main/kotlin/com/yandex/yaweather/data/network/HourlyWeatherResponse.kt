@@ -8,6 +8,7 @@ data class HourlyWeatherResponse(
   @SerialName("data")
   val data: List<WeatherByHour>? = null
 )
+
 @Serializable
 data class WeatherByHour(
   @SerialName("temp")
@@ -19,11 +20,13 @@ data class WeatherByHour(
   @SerialName("datetime")
   val dataTime: String? = null,
   @SerialName("weather")
-  val weather: Weather? = null
+  val weather: Weather? = null,
 )
 
 @Serializable
 data class Weather(
   @SerialName("description")
-  val description: String? = null
+  val description: String? = null,
+  @SerialName("code")
+  val code: Int? = null
 )
