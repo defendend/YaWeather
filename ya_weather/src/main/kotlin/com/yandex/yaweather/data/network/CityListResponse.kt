@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CityResponse(
+data class CityListResponse(
   @SerialName("limit")
   val limit: Int = 15,
   @SerialName("0")
@@ -39,6 +39,13 @@ data class CityResponse(
   val cityItem14: CityItem? = null
 )
 
+@Serializable
+data class CityResponse(
+  @SerialName("status")
+  val status: Int,
+  @SerialName("items")
+  val items: List<CityItem>? = null
+)
 
 @Serializable
 data class CityItem(
