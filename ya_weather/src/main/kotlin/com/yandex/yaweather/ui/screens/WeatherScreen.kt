@@ -75,29 +75,21 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberTileOverlayState
 import com.yandex.yaweather.Lang
 import com.yandex.yaweather.R
-import com.yandex.yaweather.Theme.BackSwitch
-import com.yandex.yaweather.Theme.BackTime
-import com.yandex.yaweather.Theme.Green
-import com.yandex.yaweather.Theme.SettingsAnotherBack
-import com.yandex.yaweather.Theme.SettingsBack
-import com.yandex.yaweather.Theme.SettingsItemBack
-import com.yandex.yaweather.Theme.SettingsSelected
-import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.appLanguage
 import com.yandex.yaweather.darkTheme
+import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
-import java.util.Calendar
 import kotlinx.coroutines.launch
 import java.net.URL
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
 fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -> Unit) {
-fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
   val context = LocalContext.current
   var openBottomSheet by rememberSaveable { mutableStateOf(false) }
   val skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
@@ -188,11 +180,17 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
             modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
           ) {
             Text(
-              text = uiState.cityItem.name ?: "Not found", fontSize = 24.sp, color = Color.White, fontWeight = FontWeight.Bold
+              text = uiState.cityItem.name ?: "Not found",
+              fontSize = 24.sp,
+              color = Color.White,
+              fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = uiState.weatherUiState.temperature, fontSize = 64.sp, color = Color.White, fontWeight = FontWeight.ExtraBold
+              text = uiState.weatherUiState.temperature,
+              fontSize = 64.sp,
+              color = Color.White,
+              fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -984,15 +982,15 @@ fun getDayOfWeek(dayIndex: Int): String {
 }
 
 @Composable
-fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
+fun MapWidget(modifier: Modifier, uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
 
-  val currentLocation  = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
+  val currentLocation = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
 
-    val cameraPositionState = rememberCameraPositionState {
-      position = if(currentLocation != null)
-        CameraPosition.fromLatLngZoom(currentLocation, 10f)
-      else  CameraPosition.fromLatLngZoom(LatLng(0.0,0.0), 1f)
-    }
+  val cameraPositionState = rememberCameraPositionState {
+    position = if (currentLocation != null)
+      CameraPosition.fromLatLngZoom(currentLocation, 10f)
+    else CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 1f)
+  }
 
 
   val tileProvider = remember {
@@ -1086,7 +1084,7 @@ fun WidgetBox(title: String, value: String?) {
 }
 
 
-fun weatherIconForForecast(weatherByHour: WeatherByHour) : Int{
+fun weatherIconForForecast(weatherByHour: WeatherByHour): Int {
   return when (weatherByHour.weather?.code) {
     in 200..202 -> R.drawable.hail_fill
     in 230..233 -> R.drawable.thunderstorms_fill
