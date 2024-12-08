@@ -2,9 +2,6 @@ package com.yandex.yaweather.Theme
 
 import androidx.compose.ui.graphics.Color
 
-val InfoScreenText = Color(0xFF45200b)
-
-
 //Light
 val StatusBarLight = Color(0xFFFFFFFF)
 val BottomSheetBackLight = Color(0xFFFFFFFF)
@@ -17,6 +14,7 @@ val SettingsSwitchTrackLight = Color(0xFF34C759)
 val SupportLightOverlay = Color(0x0F000000)
 val BackLightElevated = Color(0xFFFFFFFF)
 val ColorLightGray = Color(0xFF8E8E93)
+val InfoContactsLight = Color(0xFF0000FF)
 
 //Dark
 val StatusBarDark = Color(0xFF000000)
@@ -30,3 +28,4 @@ val SettingsSwitchTrackDark = Color(0xFF34C759)
 val SupportDarkOverlay = Color(0x52FFFFFF)
 val BackDarkElevated = Color(0xFF3C3C3F)
 val ColorDarkGrey = Color(0xFF8E8E93)
+val InfoContactsDark = Color(0xFFFFFF00)
