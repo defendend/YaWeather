@@ -22,13 +22,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -36,6 +34,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -86,6 +85,7 @@ import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.Calendar
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
@@ -119,14 +119,15 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   }
 
   Scaffold(topBar = {
-    TopBar(action) {
-      openBottomSheet = !openBottomSheet
-    }
+    CustomTopAppBar(onMenuClick = {
+      action(WeatherScreenAction.AddCityAction)
+    }, onSettingsClick = {openBottomSheet = !openBottomSheet})
   }) { innerPadding ->
     Box(
       modifier = Modifier
         .fillMaxSize()
         .background(color = Color.Transparent)
+
     ) {
       Image(
         painter = rememberDrawablePainter(
@@ -177,7 +178,9 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
       ) {
         item {
           Column(
-            modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(top =64.dp),
+
+            horizontalAlignment = Alignment.CenterHorizontally
           ) {
             Text(
               text = uiState.cityItem.name ?: "Not found",
@@ -793,7 +796,7 @@ fun HourlyForecast(modifier: Modifier, weatherByHour: List<WeatherByHour>) {
       .fillMaxWidth()
       .alpha(0.75f)
       .background(Color.DarkGray, RoundedCornerShape(16.dp))
-      .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
+      .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 16.dp)
   ) {
     Text(
       modifier = modifier.padding(start = 8.dp),
@@ -834,41 +837,33 @@ fun HourlyForecast(modifier: Modifier, weatherByHour: List<WeatherByHour>) {
   }
 }
 
+
+@ExperimentalMaterial3Api
 @Composable
-fun TopBar(action: (WeatherScreenAction) -> Unit, bottomSheet: (Unit) -> Unit) {
-  Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(start = 8.dp, end = 8.dp, top = 36.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically
-  ) {
-    Row {
-      IconButton(onClick = {
-        bottomSheet.invoke(Unit)
-      }, colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)) {
+fun CustomTopAppBar(
+  onMenuClick: () -> Unit,
+  onSettingsClick: (Unit) -> Unit
+) {
+  TopAppBar(
+    modifier = Modifier.alpha(0.5f).background(color = Color.Gray),
+    title = { Text(text = "") },
+    navigationIcon = {
+      IconButton(onClick = onMenuClick) {
+        Icon(
+          imageVector = Icons.Default.Menu,
+          contentDescription = "Menu"
+        )
+      }
+    },
+    actions = {
+      IconButton(onClick = {onSettingsClick.invoke(Unit)}) {
         Icon(
           imageVector = Icons.Default.Settings,
-          contentDescription = stringResource(R.string.weather_screen_settings_icon),
-        )
-      }
-      IconButton(onClick = {
-        action.invoke(WeatherScreenAction.OpenInfoAction)
-      }, colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)) {
-        Icon(
-          imageVector = Icons.Default.Info, contentDescription = stringResource(R.string.weather_screen_info_icon)
+          contentDescription = "Settings"
         )
       }
     }
-    IconButton(
-      onClick = { action(WeatherScreenAction.AddCityAction) },
-      colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.primary)
-    ) {
-      Icon(
-        imageVector = Icons.Default.Menu, contentDescription = stringResource(R.string.weather_screen_add_icon)
-      )
-    }
-  }
+  )
 }
 
 @Composable
@@ -1068,10 +1063,11 @@ fun WidgetBox(title: String, value: String?) {
     modifier = Modifier
       .height(150.dp)
       .width(150.dp)
+      .padding(bottom = 16.dp)
       .background(Color.DarkGray.copy(alpha = 0.75f), RoundedCornerShape(16.dp)),
 
-
-    horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceEvenly
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.SpaceEvenly
   ) {
     Text(
       text = title, fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.SemiBold
