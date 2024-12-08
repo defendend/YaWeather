@@ -5,7 +5,6 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -265,10 +264,16 @@ class MainActivity : ComponentActivity() {
   private fun handleSplashScreenAction(navController: NavController, action: SplashScreenAction) {
     when (action) {
       OpenMainScreen -> {
-        navController.navigate(Route.mainScreen)
+        navController.navigate(Route.mainScreen) {
+          popUpTo(navController.graph.startDestinationId) {
+            inclusive = true
+          }
+          launchSingleTop = true
+        }
       }
     }
   }
+
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
