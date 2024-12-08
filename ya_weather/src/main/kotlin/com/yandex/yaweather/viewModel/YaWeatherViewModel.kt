@@ -143,6 +143,7 @@ class YaWeatherViewModel @Inject constructor(
     return WeatherUiState(
       cityName = response.name ?: "N/A",
       temperature = getCurrentTemperature(response),
+      feelsLike = ((response.main?.feelsLike)?.minus(273))?.toInt().toString(),
       temperatureMax = ((response.main?.tempMax)?.minus(273))?.toInt().toString(),
       temperatureMin = ((response.main?.tempMin)?.minus(273))?.toInt().toString(),
       description = response.weather?.firstOrNull()?.description ?: "N/A",
@@ -212,6 +213,7 @@ data class WeatherUiState(
   val cityName: String = "",
   val temperature: String = "",
   val description: String = "",
+  val feelsLike: String = "",
   val temperatureMin: String = "",
   val temperatureMax: String = "",
   val widgetsUiState: WidgetsUiState = WidgetsUiState(),
