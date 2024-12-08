@@ -136,7 +136,7 @@ class YaWeatherViewModel @Inject constructor(
       temperature = response.main?.temp?.minus(273)?.toInt().toString(),
       windSpeed = response.wind?.speed.toString(),
       humidity = response.main?.humidity.toString(),
-      airQuality = response.weather?.get(0)?.description.toString()
+      pressure = response.main?.pressure.toString()
     )
   }
   private fun mapResponseToUiState(response: CoordinatesResponse): WeatherUiState {
@@ -203,8 +203,7 @@ data class MapUIState(
   val temperature: String = "",
   val humidity : String = "",
   val windSpeed : String = "",
-  val airQuality : String = ""
-
+  val pressure : String = "",
 
 )
 
