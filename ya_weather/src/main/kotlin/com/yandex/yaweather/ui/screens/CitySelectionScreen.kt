@@ -100,7 +100,10 @@ fun CitySelectionScreen(
     }
   ) {
     LazyColumn(
-      modifier = Modifier.fillMaxSize().padding(top = 70.dp).dragContainer(dragDropState),
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 70.dp)
+        .dragContainer(dragDropState),
       state = stateList,
     ) {
       draggableItems(
@@ -228,7 +231,7 @@ fun WeatherSearchBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
         ) {
-          val cities = cityItems.value.filter {it.lat != null && it.lon != null}
+          val cities = cityItems.value.filter { it.lat != null && it.lon != null }
           items(cities) { result ->
             Card(
               modifier = Modifier
@@ -295,25 +298,7 @@ fun CityItem(
       painter = rememberDrawablePainter(
         drawable = getDrawable(
           LocalContext.current,
-          when {
-            citySelectionUIState.weatherUiState.description == "shower rain" -> R.drawable.fall_rain
-            citySelectionUIState.weatherUiState.description.contains("rain", ignoreCase = true) -> R.drawable.rain_gif
-            citySelectionUIState.weatherUiState.description.contains("clear", ignoreCase = true) -> R.drawable.clear_sky
-            citySelectionUIState.weatherUiState.description.contains(
-              "clouds",
-              ignoreCase = true
-            ) -> R.drawable.scaffered_clouds
-            citySelectionUIState.weatherUiState.description.contains(
-              "thunderstorm",
-              ignoreCase = true
-            ) -> R.drawable.thunderstorm
-
-            citySelectionUIState.weatherUiState.description.contains("snow", ignoreCase = true) -> R.drawable.snow_gif
-            citySelectionUIState.weatherUiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist
-            citySelectionUIState.weatherUiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist
-            else -> R.drawable.clear_sky
-          }
-
+          weatherBackground(citySelectionUIState.weatherUiState.weatherId)
         )
       ),
       contentDescription = "Loading animation",
@@ -383,6 +368,7 @@ fun CityItem(
     )
   }
 }
+
 
 
 
