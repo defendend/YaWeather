@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">YaWeather</string>
+  <string name="appwidget_text">Joriy shahar</string>
+  <string name="add_widget">Vidjet qo\'shish</string>
+  <string name="app_widget_description">Bu ilova vidjetining tavsifi</string>
+  <string name="appwidget_temperature">Harorat</string>
+  <string name="app_widget_sunrise">Quyosh chiqishi</string>
+  <string name="app_widget_sunset">Quyosh botishi</string>
+  <string name="info_screen_image">Ma\'lumot ekranidagi rasm</string>
+  <string name="splash_screen_rotation">Aylanish</string>
+  <string name="splash_screen_sun_icon">Quyosh belgisi</string>
+  <string name="splash_screen_scale">Masshtab</string>
+  <string name="splash_screen_offset">Siljish</string>
+  <string name="splash_screen_cloud_icon">Bulut belgisi</string>
+  <string name="back_button">Orqaga tugmasi</string>
+  <string name="weather_screen_settings_icon">Sozlamalar</string>
+  <string name="weather_screen_info_icon">Ma\'lumot</string>
+  <string name="weather_screen_add_icon">Qo\'shish</string>
+  <string name="weather_screen_background_image">Orqa rasm</string>
+  <string name="settings_bottom_sheet">Sozlamalar</string>
+  <string name="settings_bottom_sheet_temperature">Harorat</string>
+  <string name="settings_bottom_sheet_fahrenheit">Farengeyt bo\'yicha</string>
+  <string name="settings_bottom_sheet_selcuim">Selsiy bo\'yicha</string>
+  <string name="settings_bottom_sheet_wind">Shamol</string>
+  <string name="settings_bottom_sheet_wind_speed1">km/s</string>
+  <string name="settings_bottom_sheet_wind_speed2">m/s</string>
+  <string name="settings_bottom_sheet_pressure">Bosim</string>
+  <string name="settings_bottom_sheet_pressure1">hPa</string>
+  <string name="settings_bottom_sheet_pressure2">mmHg</string>
+  <string name="settings_Bottom_sheet_precipitation">Yog\'ingarchilik</string>
+  <string name="settings_bottom_sheet_precipitaion1">Dyuym</string>
+  <string name="settings_bottom_sheet_precipitaion2">Millimetr</string>
+  <string name="settings_bottom_sheet_morning_notification">Tongi xabar</string>
+  <string name="settings_bottom_sheet_every_day_notification">Har kungi ob-havo ma\'lumoti</string>
+  <string name="settings_bottom_sheet_hour">Vaqt</string>
+  <string name="settings_bottom_sheet_choose_time">Bildirishnoma vaqtini tanlang</string>
+  <string name="settings_bottom_sheet_night_report">Tungi xabar</string>
+  <string name="settings_bottom_sheet_for_day_notification">Bir kunlik xabar oling</string>
+  <string name="settings_bottom_sheet_change_theme">Temani o\'zgartirish</string>
+  <string name="settings_bottom_sheet_language">Tilni tanlash</string>
+  <string name="uz">UZ</string>
+  <string name="ru">RU</string>
+  <string name="en">EN</string>
+</resources>

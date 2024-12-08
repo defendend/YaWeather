@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,7 +29,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.yandex.yaweather.R
 import com.yandex.yaweather.handler.SplashScreenAction
 import kotlinx.coroutines.delay
@@ -54,6 +57,9 @@ fun SplashScreen(action: (SplashScreenAction) -> Unit) {
       action(SplashScreenAction.OpenMainScreen)
     }
   }
+  val systemUiController = rememberSystemUiController()
+  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
 }
 
 
@@ -69,14 +75,14 @@ fun AnimatedSun() {
         180f at 2500 with FastOutSlowInEasing
         360f at 5000 with LinearOutSlowInEasing
       }, repeatMode = RepeatMode.Restart
-    ), label = "rotation"
+    ), label = stringResource(R.string.splash_screen_rotation)
   )
 
 
   val scale by infiniteTransition.animateFloat(
     initialValue = 0.7f, targetValue = 1f, animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = 1250, easing = LinearEasing), repeatMode = RepeatMode.Reverse
-    ), label = ""
+    ), label = stringResource(R.string.splash_screen_scale)
   )
 
   Box(
@@ -84,7 +90,7 @@ fun AnimatedSun() {
   ) {
     Image(
       painter = painterResource(id = R.drawable.ic_sun),
-      contentDescription = "Sun Icon",
+      contentDescription = stringResource(R.string.splash_screen_sun_icon),
       modifier = Modifier
         .size(150.dp)
         .scale(scale)
@@ -115,12 +121,12 @@ private fun DrawAnimatedCloud(initialValue: Float, targetValue: Float, cloudId: 
   val animatedOffset by infiniteTransition.animateFloat(
     initialValue = initialValue, targetValue = targetValue, animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = speedMillis, easing = LinearEasing), repeatMode = RepeatMode.Restart
-    ), label = ""
+    ), label = stringResource(R.string.splash_screen_offset)
   )
   Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
     Image(
       painter = painterResource(id = img),
-      contentDescription = "Cloud Icon",
+      contentDescription = stringResource(R.string.splash_screen_cloud_icon),
       modifier = Modifier
         .size(100.dp)
         .offset(animatedOffset.dp, 0.dp)
