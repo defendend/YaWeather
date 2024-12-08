@@ -80,6 +80,7 @@ import com.yandex.yaweather.Theme.SettingsItemBack
 import com.yandex.yaweather.Theme.SettingsSelected
 import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.handler.WeatherScreenAction
+import com.yandex.yaweather.viewModel.CitySelectionUIState
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 import java.util.Calendar
@@ -89,7 +90,7 @@ import java.net.URL
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
-fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
+fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -> Unit) {
   var openBottomSheet by rememberSaveable { mutableStateOf(false) }
   val skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
@@ -121,22 +122,22 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
           drawable = getDrawable(
             LocalContext.current,
             when {
-              uiState.description == "shower rain" -> R.drawable.fall_rain
-              uiState.description.contains("rain", ignoreCase = true) -> R.drawable.rain_gif
-              uiState.description.contains("clear", ignoreCase = true) -> R.drawable.clear_sky
-              uiState.description.contains(
+              uiState.weatherUiState.description == "shower rain" -> R.drawable.fall_rain
+              uiState.weatherUiState.description.contains("rain", ignoreCase = true) -> R.drawable.rain_gif
+              uiState.weatherUiState.description.contains("clear", ignoreCase = true) -> R.drawable.clear_sky
+              uiState.weatherUiState.description.contains(
                 "clouds",
                 ignoreCase = true
               ) -> R.drawable.scaffered_clouds
 
-              uiState.description.contains(
+              uiState.weatherUiState.description.contains(
                 "thunderstorm",
                 ignoreCase = true
               ) -> R.drawable.thunderstorm
 
-              uiState.description.contains("snow", ignoreCase = true) -> R.drawable.snow_gif
-              uiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist
-              uiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist
+              uiState.weatherUiState.description.contains("snow", ignoreCase = true) -> R.drawable.snow_gif
+              uiState.weatherUiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist
+              uiState.weatherUiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist
               else -> R.drawable.clear_sky
             }
 
@@ -168,34 +169,34 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
             modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
           ) {
             Text(
-              text = uiState.cityName, fontSize = 24.sp, color = Color.White, fontWeight = FontWeight.Bold
+              text = uiState.cityItem.name ?: "Not found", fontSize = 24.sp, color = Color.White, fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = uiState.temperature, fontSize = 64.sp, color = Color.White, fontWeight = FontWeight.ExtraBold
+              text = uiState.weatherUiState.temperature, fontSize = 64.sp, color = Color.White, fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = "Макс. ${uiState.temperatureMax}°  Мин. ${uiState.temperatureMin}°",
+              text = "Макс. ${uiState.weatherUiState.temperatureMax}°  Мин. ${uiState.weatherUiState.temperatureMin}°",
               fontSize = 16.sp,
               color = Color.LightGray
             )
           }
         }
         item {
-          HourlyForecast(modifier = Modifier, uiState)
+          HourlyForecast(modifier = Modifier, uiState.hourlyWeather)
         }
 
         item {
-          TenDayForecast(modifier = Modifier, uiState)
+          TenDayForecast(modifier = Modifier, uiState.weatherUiState)
         }
 
         item {
-          MapWidget(modifier = Modifier, uiState, action)
+          MapWidget(modifier = Modifier, uiState.weatherUiState, action)
         }
 
         item {
-          Widgets(modifier = Modifier, uiState.widgetsUiState)
+          Widgets(modifier = Modifier, uiState.weatherUiState.widgetsUiState)
         }
       }
     }
@@ -588,7 +589,7 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
 
 @SuppressLint("DefaultLocale")
 @Composable
-fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
+fun HourlyForecast(modifier: Modifier, weatherByHour: List<WeatherByHour>) {
   Column(
     modifier = modifier
       .fillMaxWidth()
@@ -608,7 +609,7 @@ fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
     LazyRow(
       horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier.fillMaxWidth()
     ) {
-      items(uiState.hourlyWeather) { index ->
+      items(weatherByHour) { index ->
         Column(
           horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.padding(start = 8.dp)
         ) {

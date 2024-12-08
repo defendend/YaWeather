@@ -1,10 +1,13 @@
 package com.yandex.yaweather.viewModel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
+import com.yandex.yaweather.data.network.CityResponse
+import com.yandex.yaweather.data.network.HourlyWeatherResponse
 import com.yandex.yaweather.repository.CityFinderRepository
 import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.repository.HourlyWeatherRepository
@@ -27,9 +30,9 @@ class YaWeatherViewModel @Inject constructor(
   private  val hourlyWeatherRepository: HourlyWeatherRepository
 ) : ViewModel() {
 
-  private val _currentWeather = MutableStateFlow(WeatherUiState())
-  val userCurrentWeatherState: StateFlow<WeatherUiState>
-    get() = _currentWeather.asStateFlow()
+  private val _currentWeatherUIState = MutableStateFlow(CitySelectionUIState(CityItem(), WeatherUiState()))
+  val userCurrentWeatherState: StateFlow<CitySelectionUIState>
+    get() = _currentWeatherUIState.asStateFlow()
 
   private val _mapWeather = MutableStateFlow(MapUIState())
   val mapWeatherState: StateFlow<MapUIState>
@@ -44,40 +47,59 @@ class YaWeatherViewModel @Inject constructor(
   private val _favoriteCityItems = MutableStateFlow<MutableList<CitySelectionUIState>>(mutableListOf())
   val  favoriteCityItems = _favoriteCityItems.asStateFlow()
 
-  private val _currentHourlyData = MutableStateFlow<List<WeatherByHour>>(emptyList())
-  private val currentHourlyData = _currentHourlyData.asStateFlow()
+  private val _currentWeather = MutableStateFlow<CoordinatesResponse>(CoordinatesResponse(cod = 404))
+  private val _currentCity = MutableStateFlow<List<CityItem>>(emptyList())
+  private val _currentHourlyWeather = MutableStateFlow<List<WeatherByHour>>(emptyList())
 
-  private fun getCurrentHourlyWeather(lat: Double, lon: Double) : Job
-  {
-    return viewModelScope.launch(Dispatchers.IO)
-    {
-      hourlyWeatherRepository.getHourlyWeather(lat, lon)
-        .onSuccess {
-          it.data?.let { it1 -> _currentHourlyData.emit(it1) }
-        }.onFailure {
-          _errorMessage.emit(it.message.toString())
-        }
-    }
-  }
-
-
-  private fun getCurrentWeather(lat: String, lon: String) : Job {
+  private fun getCurrentWeather(lat: Double, lon: Double) : Job {
     return viewModelScope.launch(Dispatchers.IO) {
-      weatherRepository.getCurrentWeather(lat, lon).onSuccess {
-        _currentWeather.emit(mapResponseToUiState(it))
+      weatherRepository.getCurrentWeather(lat.toString(), lon.toString()).onSuccess {
+        _currentWeather.emit(it)
       }.onFailure {
         _errorMessage.emit(it.message.toString())
       }
     }
   }
 
-  fun updateCurrentWeatherScreen(lat: Double, lon: Double)
-  {
-    viewModelScope.launch(Dispatchers.IO) {
-      getCurrentHourlyWeather(lat, lon).join()
-      getCurrentWeather(lat.toString(), lon.toString()).join()
+
+  private fun getCurrentCity(lat: Double, lon: Double) : Job {
+    return viewModelScope.launch(Dispatchers.IO) {
+      cityFinderRepository.getCity(lat, lon).onSuccess {
+        if(it.items != null) {
+          _currentCity.emit(it.items)
+        }
+      }.onFailure {
+        _errorMessage.emit(it.message.toString())
+      }
     }
   }
+
+  private fun getCurrentHourlyWeather(lat: Double, lon: Double) : Job {
+    return viewModelScope.launch(Dispatchers.IO) {
+      hourlyWeatherRepository.getHourlyWeather(lat, lon).onSuccess {
+        if(it.data != null) {
+          _currentHourlyWeather.emit(it.data)
+        }
+      }.onFailure {
+        _errorMessage.emit(it.message.toString())
+      }
+    }
+  }
+
+  fun getCurrentData(lat: Double, lon: Double) {
+    viewModelScope.launch(Dispatchers.IO) {
+      val currentWeather = getCurrentWeather(lat, lon)
+      val currentHourlyWeather =getCurrentHourlyWeather(lat, lon)
+      val currentCity = getCurrentCity(lat, lon)
+
+      currentWeather.join()
+      currentHourlyWeather.join()
+      currentCity.join()
+
+      _currentWeatherUIState.emit(CitySelectionUIState(_currentCity.value[0], mapResponseToUiState(_currentWeather.value), _currentHourlyWeather.value))
+    }
+  }
+
 
   fun getMapInfo(lat: String, lon: String){
     viewModelScope.launch(Dispatchers.IO){
@@ -95,7 +117,7 @@ class YaWeatherViewModel @Inject constructor(
     {
       weatherRepository.getCurrentWeather(cityItem.lat.toString(), cityItem.lon.toString()).onSuccess {
         coordinatesResponse ->
-        _favoriteCityItems.update { (it + CitySelectionUIState(cityItem, mapResponseToUiState(coordinatesResponse))).toMutableList() }
+          _favoriteCityItems.update { (it + CitySelectionUIState(cityItem, mapResponseToUiState(coordinatesResponse))).toMutableList() }
       }.onFailure {
         _errorMessage.value = it.message.toString()
       }
@@ -148,7 +170,6 @@ class YaWeatherViewModel @Inject constructor(
       temperatureMin = ((response.main?.tempMin)?.minus(273))?.toInt().toString(),
       description = response.weather?.firstOrNull()?.description ?: "N/A",
       widgetsUiState = widgetResponeToUiState(response),
-      hourlyWeather = _currentHourlyData.value,
       markerPosition = response.coordinates
     )
   }
@@ -209,7 +230,8 @@ class YaWeatherViewModel @Inject constructor(
 }
 data class CitySelectionUIState(
   val cityItem: CityItem,
-  val weatherUiState: WeatherUiState
+  val weatherUiState: WeatherUiState,
+  val hourlyWeather: List<WeatherByHour> = emptyList()
 )
 
 data class MapUIState(
@@ -231,7 +253,6 @@ data class WeatherUiState(
   val temperatureMin: String = "",
   val temperatureMax: String = "",
   val widgetsUiState: WidgetsUiState = WidgetsUiState(),
-  val hourlyWeather: List<WeatherByHour> = emptyList(),
   val code: String = ""
 ) {
 

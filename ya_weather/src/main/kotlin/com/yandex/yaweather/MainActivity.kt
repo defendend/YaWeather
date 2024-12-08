@@ -15,7 +15,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -50,7 +49,6 @@ import com.yandex.yaweather.ui.screens.InfoScreen
 import com.yandex.yaweather.ui.screens.MapScreen
 import com.yandex.yaweather.ui.screens.SplashScreen
 import com.yandex.yaweather.ui.screens.WeatherScreen
-import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -113,12 +111,12 @@ class MainActivity : ComponentActivity() {
 
       val navController = rememberNavController()
       YaWeatherTheme {
-        val uiStateFlow = viewModel.userCurrentWeatherState.collectAsStateWithLifecycle(WeatherUiState())
+
         NavHost(navController, startDestination = Route.splashScreen,
           ) {
           composable(Route.mainScreen) {
-            val uiState = uiStateFlow.value
-            WeatherScreen(uiState, { uiAction -> handleAction(navController, uiAction) })
+            val uiState by viewModel.userCurrentWeatherState.collectAsState()
+            WeatherScreen(uiState) { uiAction -> handleAction(navController, uiAction) }
           }
           composable(Route.splashScreen, enterTransition = {
             when (initialState.destination.route) {
@@ -154,8 +152,7 @@ class MainActivity : ComponentActivity() {
             arguments = listOf(navArgument("weatherUiStateIndex") { type = NavType.IntType })
           ) { navBackStackEntry ->
             val weatherUiStateIndex = navBackStackEntry.arguments?.getInt("weatherUiStateIndex")
-            val selectedWeatherUiState = favoriteCityItems[weatherUiStateIndex ?: 0].weatherUiState
-              WeatherScreen(selectedWeatherUiState) { uiAction ->
+              WeatherScreen(favoriteCityItems[weatherUiStateIndex ?: 0]) { uiAction ->
                 handleAction(navController, uiAction)
               }
           }
@@ -192,7 +189,7 @@ class MainActivity : ComponentActivity() {
       locationService.coordinates.mapNotNull { it }.collect { coordinates ->
         //val latitude = String.format("%.2f", coordinates.first).replace(",", ".")
         //val longitude = String.format("%.2f", coordinates.second).replace(",", ".")
-        viewModel.updateCurrentWeatherScreen(coordinates.first, coordinates.second)
+        viewModel.getCurrentData(coordinates.first, coordinates.second)
       }
     }
   }
