@@ -1,7 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,7 +34,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -60,7 +58,6 @@ import com.yandex.yaweather.R
 import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
-import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
 import com.yandex.yaweather.utils.dragContainer
 import com.yandex.yaweather.utils.draggableItems
 import com.yandex.yaweather.utils.rememberDragDropState
@@ -103,7 +100,7 @@ fun CitySelectionScreen(
     }
   ) {
     LazyColumn(
-      modifier = Modifier.fillMaxSize().padding(top = 50.dp).dragContainer(dragDropState),
+      modifier = Modifier.fillMaxSize().padding(top = 70.dp).dragContainer(dragDropState),
       state = stateList,
     ) {
       draggableItems(

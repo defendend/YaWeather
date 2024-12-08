@@ -8,6 +8,7 @@ import android.os.Looper
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.collectAsState
@@ -28,11 +29,8 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.yandex.yaweather.Theme.YaWeatherTheme
 import com.yandex.yaweather.dagger.application.MainApplication
-import com.yandex.yaweather.data.diModules.FavoriteCitiesModule
-import com.yandex.yaweather.data.diModules.FavoriteCitiesModule_ProvideFavoriteCitiesServiceFactory
 import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.diModules.LocationService
-import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
 import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
 import com.yandex.yaweather.handler.CityScreenAction.MoveCity
@@ -91,6 +89,8 @@ class MainActivity : ComponentActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+
     favoriteCitiesService = FavoriteCitiesService(this)
     (application as MainApplication).mainComponent.inject(this)
     setContent {

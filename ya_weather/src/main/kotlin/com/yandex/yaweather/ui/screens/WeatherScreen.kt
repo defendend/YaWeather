@@ -22,8 +22,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -78,14 +78,16 @@ import com.yandex.yaweather.Theme.SettingsAnotherBack
 import com.yandex.yaweather.Theme.SettingsBack
 import com.yandex.yaweather.Theme.SettingsItemBack
 import com.yandex.yaweather.Theme.SettingsSelected
+import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
+import java.util.Calendar
 import kotlinx.coroutines.launch
 import java.net.URL
 
 @OptIn(ExperimentalMaterial3Api::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
 @Composable
 fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
   var openBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -109,18 +111,41 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
       openBottomSheet = !openBottomSheet
     }
   }) { innerPadding ->
-    Box(modifier = Modifier
-      .fillMaxSize()
-      .background(color = Color.Transparent)) {
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .background(color = Color.Transparent)
+    ) {
       Image(
         painter = rememberDrawablePainter(
           drawable = getDrawable(
             LocalContext.current,
-            R.drawable.mist
+            when {
+              uiState.description == "shower rain" -> R.drawable.fall_rain
+              uiState.description.contains("rain", ignoreCase = true) -> R.drawable.rain_gif
+              uiState.description.contains("clear", ignoreCase = true) -> R.drawable.clear_sky
+              uiState.description.contains(
+                "clouds",
+                ignoreCase = true
+              ) -> R.drawable.scaffered_clouds
+
+              uiState.description.contains(
+                "thunderstorm",
+                ignoreCase = true
+              ) -> R.drawable.thunderstorm
+
+              uiState.description.contains("snow", ignoreCase = true) -> R.drawable.snow_gif
+              uiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist
+              uiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist
+              else -> R.drawable.clear_sky
+            }
+
           )
         ),
         contentDescription = "Background Image",
-        modifier = Modifier.fillMaxSize().blur(10.dp), contentScale = ContentScale.Crop
+        modifier = Modifier
+          .fillMaxSize()
+          .blur(10.dp), contentScale = ContentScale.Crop
       )
     }
     Box(
@@ -151,7 +176,9 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = "Макс. ${uiState.temperatureMax}°  Мин. ${uiState.temperatureMin}°", fontSize = 16.sp, color = Color.LightGray
+              text = "Макс. ${uiState.temperatureMax}°  Мин. ${uiState.temperatureMin}°",
+              fontSize = 16.sp,
+              color = Color.LightGray
             )
           }
         }
@@ -164,7 +191,7 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
         }
 
         item {
-          MapWidget(modifier = Modifier,uiState, action)
+          MapWidget(modifier = Modifier, uiState, action)
         }
 
         item {
@@ -564,13 +591,14 @@ fun WeatherScreen(uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit
 fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
   Column(
     modifier = modifier
-      .fillMaxWidth().alpha(0.75f)
+      .fillMaxWidth()
+      .alpha(0.75f)
       .background(Color.DarkGray, RoundedCornerShape(16.dp))
       .padding(start = 16.dp, top = 16.dp, bottom = 16.dp)
   ) {
     Text(
       modifier = modifier.padding(start = 8.dp),
-      text = "3 ЧАСОВОЙ ПРОГНОЗ",
+      text = "ЧАСОВОЙ ПРОГНОЗ",
       fontSize = 16.sp,
       color = Color.LightGray,
       fontWeight = FontWeight.Bold
@@ -580,22 +608,27 @@ fun HourlyForecast(modifier: Modifier, uiState: WeatherUiState) {
     LazyRow(
       horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier.fillMaxWidth()
     ) {
-      items(50) { index ->
+      items(uiState.hourlyWeather) { index ->
         Column(
           horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.padding(start = 8.dp)
         ) {
           Spacer(modifier = modifier.height(4.dp))
-          Text(uiState.temperature, color = Color.White, fontSize = 18.sp)
+          index.temp?.let {
+            val temperatureInCelsius = (it - 273.15).toInt()
+            Text("$temperatureInCelsius°", color = Color.White, fontSize = 18.sp)
+          }
+
           Icon(
-            painter = painterResource(id = R.drawable.heavy_showers_fill),
+            painter = painterResource(weatherIconForForecast(index)),
             contentDescription = null,
             tint = Color.LightGray,
             modifier = modifier.size(24.dp)
           )
           Spacer(modifier = modifier.height(4.dp))
-          Text(
-            text = "${String.format("%02d", (index + 1) % 24)} h", color = Color.LightGray, fontSize = 14.sp
-          )
+          index.timeStamp?.let {
+            val formattedTime = it.split("T").getOrNull(1)?.split(":")?.getOrNull(0)?.plus("h") ?: "N/A"
+            Text(formattedTime, color = Color.LightGray, fontSize = 12.sp)
+          }
         }
       }
     }
@@ -629,7 +662,7 @@ fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit, bottomShee
     }
     IconButton(onClick = { action(WeatherScreenAction.AddCityAction) }) {
       Icon(
-        imageVector = Icons.Default.Add, contentDescription = "Add"
+        imageVector = Icons.Default.Menu, contentDescription = "Menu"
       )
     }
   }
@@ -639,6 +672,9 @@ fun TopBar(modifier: Modifier, action: (WeatherScreenAction) -> Unit, bottomShee
 fun TenDayForecast(modifier: Modifier, uiState: WeatherUiState) {
   var itemCount by remember { mutableIntStateOf(5) }
   var showMoreButton by remember { mutableStateOf(true) }
+
+
+  val currentDay = remember { getCurrentDayOfWeek() }
 
   Column(
     modifier = Modifier
@@ -651,7 +687,9 @@ fun TenDayForecast(modifier: Modifier, uiState: WeatherUiState) {
     )
     Spacer(modifier = Modifier.height(8.dp))
 
-    repeat(itemCount) {
+
+    repeat(itemCount) { index ->
+      val dayOfWeek = getDayOfWeek(currentDay + index)
       Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -661,21 +699,41 @@ fun TenDayForecast(modifier: Modifier, uiState: WeatherUiState) {
       ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
           Spacer(modifier = Modifier.width(4.dp))
-          Text(text = "Сб", color = Color.White, fontSize = 16.sp)
+          Text(text = dayOfWeek, color = Color.White, fontSize = 16.sp)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
           Icon(
-            painter = painterResource(id = R.drawable.heavy_showers_fill),
+            painter = painterResource(
+              when {
+                uiState.description == "shower rain" -> R.drawable.showers_fill
+                uiState.description.contains("rain", ignoreCase = true) -> R.drawable.rainy_fill
+                uiState.description.contains("clear", ignoreCase = true) -> R.drawable.sun_fill
+                uiState.description.contains(
+                  "clouds",
+                  ignoreCase = true
+                ) -> R.drawable.cloud_windy_fill
+
+                uiState.description.contains(
+                  "thunderstorm",
+                  ignoreCase = true
+                ) -> R.drawable.thunderstorms_fill
+
+                uiState.description.contains("snow", ignoreCase = true) -> R.drawable.snowy_fill
+                uiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist_fill
+                uiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist_fill
+                else -> R.drawable.sun_fill
+              }
+            ),
             contentDescription = null,
             tint = Color.LightGray,
             modifier = Modifier.size(14.dp)
           )
           Spacer(modifier = Modifier.width(4.dp))
-          Text(text = "11°", color = Color.LightGray, fontSize = 14.sp)
+          Text(uiState.temperatureMin, color = Color.LightGray, fontSize = 14.sp)
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
           Spacer(modifier = Modifier.width(4.dp))
-          Text(text = "14°", color = Color.White, fontSize = 16.sp)
+          Text(uiState.temperatureMax, color = Color.White, fontSize = 16.sp)
         }
       }
     }
@@ -710,6 +768,16 @@ fun TenDayForecast(modifier: Modifier, uiState: WeatherUiState) {
   }
 }
 
+fun getCurrentDayOfWeek(): Int {
+  return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1
+}
+
+
+fun getDayOfWeek(dayIndex: Int): String {
+  val daysOfWeek = listOf("Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб")
+  return daysOfWeek[dayIndex % 7]
+}
+
 @Composable
 fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
 
@@ -731,7 +799,8 @@ fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreen
           null
         }
       }
-    }}
+    }
+  }
   val tileOverlayState = rememberTileOverlayState()
 
 
@@ -739,7 +808,7 @@ fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreen
     modifier = Modifier
       .fillMaxWidth()
       .height(200.dp)
-      .background(Color.Gray,RoundedCornerShape(16.dp))
+      .background(Color.Gray, RoundedCornerShape(16.dp))
       .clip(RoundedCornerShape(16.dp)),
     cameraPositionState = cameraPositionState,
     properties = MapProperties(isMyLocationEnabled = false),
@@ -769,6 +838,7 @@ fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreen
   }
 
 }
+
 @Composable
 fun Widgets(modifier: Modifier = Modifier, uiState: WidgetsUiState) {
   val widgetData = listOf(
@@ -780,8 +850,8 @@ fun Widgets(modifier: Modifier = Modifier, uiState: WidgetsUiState) {
 
   LazyRow(
     modifier = modifier
-      .fillMaxWidth()
-      .padding(8.dp),
+      .fillMaxWidth(),
+
     horizontalArrangement = Arrangement.spacedBy(16.dp)
   ) {
     items(widgetData) { (title, value) ->
@@ -796,8 +866,8 @@ fun WidgetBox(title: String, value: String?) {
     modifier = Modifier
       .height(150.dp)
       .width(150.dp)
-      .background(Color.DarkGray.copy(alpha = 0.75f), RoundedCornerShape(16.dp))
-      .padding(8.dp),
+      .background(Color.DarkGray.copy(alpha = 0.75f), RoundedCornerShape(16.dp)),
+
 
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.SpaceEvenly
@@ -817,3 +887,20 @@ fun WidgetBox(title: String, value: String?) {
     )
   }
 }
+
+
+fun weatherIconForForecast(weatherByHour: WeatherByHour) : Int{
+  return when (weatherByHour.weather?.code) {
+    in 200..202 -> R.drawable.hail_fill
+    in 230..233 -> R.drawable.thunderstorms_fill
+    in 300..302 -> R.drawable.rainy_fill
+    in 500..522 -> R.drawable.showers_fill
+    in 600..623 -> R.drawable.snowy_fill
+    in 700..751 -> R.drawable.mist_fill
+    800 -> R.drawable.sun_fill
+    in 801..804 -> R.drawable.cloudy_fill
+    else -> R.drawable.blaze_fill    // Неизвестный код
+  }
+}
+
+
