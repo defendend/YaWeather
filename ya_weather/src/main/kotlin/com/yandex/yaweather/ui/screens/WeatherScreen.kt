@@ -712,10 +712,15 @@ fun TenDayForecast(modifier: Modifier, uiState: WeatherUiState) {
 
 @Composable
 fun MapWidget(modifier: Modifier,uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
+
   val currentLocation  = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
-  val cameraPositionState = rememberCameraPositionState {
-    position = currentLocation?.let { CameraPosition.fromLatLngZoom(it, 10f) }!!
-  }
+
+    val cameraPositionState = rememberCameraPositionState {
+      position = if(currentLocation != null)
+        CameraPosition.fromLatLngZoom(currentLocation, 10f)
+      else  CameraPosition.fromLatLngZoom(LatLng(0.0,0.0), 1f)
+    }
+
 
   val tileProvider = remember {
     object : UrlTileProvider(256, 256) {

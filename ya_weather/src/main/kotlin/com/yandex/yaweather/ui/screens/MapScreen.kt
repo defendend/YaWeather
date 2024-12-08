@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
@@ -53,35 +54,36 @@ fun MapScreen(
   uiState: MapUIState,
   action: (MapScreenAction) -> Unit
 ) {
+  var selectedMenuItem by remember { mutableStateOf<String?>("Temperature") }
+
   val tileProvider = remember {
     object : UrlTileProvider(256, 256) {
       override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
+        val layer = when (selectedMenuItem) {
+          "Temperature" -> "temp_new"
+          "Precipition" -> "precipitation_new"
+          "Pressue" -> "pressure_new"
+          "Wind" -> "wind_new"
+          else -> "temp_new"
+        }
         return try {
-          URL("https://tile.openweathermap.org/map/temp_new/$zoom/$x/$y.png?appid=62b18818f899c80e1d2f4285220bc90b")
+          URL("https://tile.openweathermap.org/map/$layer/$zoom/$x/$y.png?appid=62b18818f899c80e1d2f4285220bc90b")
         } catch (e: Exception) {
           null
         }
       }
     }}
   val tileOverlayState = rememberTileOverlayState()
+  val currentLocation  = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
 
-  val currentLocotion: LatLng by lazy {
-    uiState.markerPosition?.let {
-      it.lat?.let { it1 ->
-        it.lon?.let { it2 ->
-          LatLng(it1, it2)
-        }
-      }
-    } ?: LatLng(41.311081, 69.240562)
-  }
   val cameraPositionState = rememberCameraPositionState {
-    position = CameraPosition.fromLatLngZoom(currentLocotion, 10f)
+    position = if(currentLocation != null)
+      CameraPosition.fromLatLngZoom(currentLocation, 10f)
+    else  CameraPosition.fromLatLngZoom(LatLng(0.0,0.0), 1f)
   }
-
   var isMenuExpanded by remember { mutableStateOf(false) }
   val markerTitle: String
-  var selectedMenuItem by remember { mutableStateOf<String?>("Temperature") }
-  var markerPosition by remember { mutableStateOf<LatLng?>(currentLocotion) }
+  var markerPosition by remember { mutableStateOf(currentLocation) }
   var isNightMode by remember { mutableStateOf(false) }
 
   when (selectedMenuItem) {
@@ -95,8 +97,8 @@ fun MapScreen(
 
     }
 
-    "Air Quality" -> {
-      markerTitle = "Air Quality: ${uiState.airQuality}"
+    "Pressue" -> {
+      markerTitle = "Pressue: ${uiState.pressure} Pa"
 
 
     }
@@ -317,6 +319,7 @@ fun MapScreen(
       onMapClick = { latLng ->
         markerPosition = latLng
         action(UpdateMarkerPositionAction(latLng))
+
       },
       properties = MapProperties(
         mapStyleOptions = if (isNightMode) nightModeStyleOptions else null
@@ -331,7 +334,9 @@ fun MapScreen(
       markerPosition?.let { position ->
         Marker(
           state = MarkerState(position = position),
-          title = markerTitle
+          title = markerTitle,
+         icon =
+         BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
         )
       }
     }
@@ -422,8 +427,8 @@ fun MapScreen(
               }
             )
             DropdownMenuItem(
-              text = { Text("Air Quality") },
-              onClick = { selectedMenuItem = "Air Quality" },
+              text = { Text("Pressue") },
+              onClick = { selectedMenuItem = "Pressue" },
               leadingIcon = {
                 Icon(
                   painter = painterResource(id = R.drawable.haze_2_line),
@@ -431,7 +436,7 @@ fun MapScreen(
                 )
               },
               trailingIcon = {
-                if (selectedMenuItem == "Air Quality") {
+                if (selectedMenuItem == "Pressue") {
                   Icon(
                     imageVector = Icons.Filled.Done,
                     contentDescription = null,
