@@ -211,7 +211,9 @@ class MainActivity : ComponentActivity() {
   private fun subscribeToCoordinates() {
     coordinatesJob = startStopScope?.launch {
       locationService.coordinates.mapNotNull { it }.collect { coordinates ->
-        viewModel.getCurrentData(coordinates.first, coordinates.second)
+        val latitude = kotlin.math.floor(coordinates.first * 10) / 10
+        val longitude = kotlin.math.floor(coordinates.second * 10) / 10
+        viewModel.getCurrentData(latitude, longitude)
       }
     }
   }
