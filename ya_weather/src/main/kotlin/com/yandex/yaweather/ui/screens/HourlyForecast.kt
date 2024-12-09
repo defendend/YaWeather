@@ -61,7 +61,7 @@ fun HourlyForecast(weatherByHour: List<WeatherByHour>) {
           Icon(
             painter = painterResource(weatherIconForForecast(index)),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
+            tint = MaterialTheme.colorScheme.inversePrimary,
             modifier = Modifier.size(24.dp)
           )
           Spacer(modifier = Modifier.height(4.dp))
