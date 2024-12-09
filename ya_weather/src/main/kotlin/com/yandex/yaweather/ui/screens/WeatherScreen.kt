@@ -993,8 +993,6 @@ fun MapWidget(
   uiState: WeatherUiState,
   action: (WeatherScreenAction) -> Unit
 ) {
-  var googleMap: GoogleMap? by remember { mutableStateOf(null) }
-
   val currentLocation = uiState.markerPosition?.lon?.let {
     uiState.markerPosition.lat?.let { lat ->
       LatLng(lat, it)
@@ -1019,9 +1017,6 @@ fun MapWidget(
     }
   }
   val tileOverlayState = rememberTileOverlayState()
-
-  var mapBitmap by remember { mutableStateOf<Bitmap?>(null) } // snapshot uchun state
-
   GoogleMap(
     modifier = Modifier
       .fillMaxWidth()
@@ -1057,25 +1052,6 @@ fun MapWidget(
         }
       )
     }
-
-    // Google Map snapshotni olish
-    LaunchedEffect(Unit) {
-      googleMap?.snapshot { bitmap ->
-        mapBitmap = bitmap
-      }
-    }
-  }
-
-  // UI orqali snapshotni ko'rsatish
-  mapBitmap?.let {
-    Image(
-      painter = BitmapPainter(it.asImageBitmap()),
-      contentDescription = null,
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(200.dp)
-        .clip(RoundedCornerShape(16.dp))
-    )
   }
 }
 
