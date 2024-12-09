@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.widget.RemoteViews
 import com.yandex.yaweather.R
+import com.yandex.yaweather.utils.getWeatherDescription
+import com.yandex.yaweather.utils.weatherBackground
 
 class WeatherWidget : AppWidgetProvider() {
   override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
@@ -29,26 +31,16 @@ class WeatherWidget : AppWidgetProvider() {
 private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
   val preferences = context.getSharedPreferences("widget", Context.MODE_PRIVATE)
   val name = preferences.getString("name", "Unknown City")
-  var description = preferences.getString("description", "No description")
+  var code = preferences.getInt("code", 0)
   val temperature = preferences.getInt("temp", 0)
   val sunrise = preferences.getLong("sunrise", 0L)
   val sunset = preferences.getLong("sunset", 0L)
   val sunriseTime = formatTime(sunrise)
   val sunsetTime = formatTime(sunset)
-  val backgroundResource = when {
-    description == "shower rain" -> R.drawable.fall_rain
-    description?.contains("rain", ignoreCase = true) == true -> R.drawable.rain_gif
-    description?.contains("clear", ignoreCase = true) == true -> R.drawable.clear_sky
-    description?.contains("clouds", ignoreCase = true) == true -> R.drawable.clouds_gif
-    description?.contains("thunderstorm", ignoreCase = true) == true -> R.drawable.thunderstormm
-    description?.contains("snow", ignoreCase = true) == true -> R.drawable.snow_gif
-    description?.contains("fog", ignoreCase = true) == true -> R.drawable.mist
-    description?.contains("mist", ignoreCase = true) == true -> R.drawable.mist
-    else -> R.drawable.clear_sky
-  }
+  val backgroundResource = weatherBackground(code)
   val views = RemoteViews(context.packageName, R.layout.weather_widget).apply {
     setTextViewText(R.id.tv_name, name)
-    setTextViewText(R.id.tv_description, description)
+    setTextViewText(R.id.tv_description, getWeatherDescription(code, context))
     setTextViewText(R.id.tv_temperature, kelvinToCelsius(temperature).toString() + '\u00B0' + "C")
     setTextViewText(R.id.tv_sunrise, "Sunrise: $sunriseTime")
     setTextViewText(R.id.tv_sunset, "Sunset: $sunsetTime")
