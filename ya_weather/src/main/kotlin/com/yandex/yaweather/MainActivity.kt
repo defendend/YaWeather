@@ -215,8 +215,8 @@ class MainActivity : ComponentActivity() {
   private fun subscribeToCoordinates() {
     coordinatesJob = startStopScope?.launch {
       locationService.coordinates.mapNotNull { it }.collect { coordinates ->
-        val latitude = kotlin.math.floor(coordinates.first * 10) / 10
-        val longitude = kotlin.math.floor(coordinates.second * 10) / 10
+        val latitude = String.format("%.2f", coordinates.first).replace(",", ".").toDouble()
+        val longitude = String.format("%.2f", coordinates.second).replace(",", ".").toDouble()
         viewModel.getCurrentData(latitude, longitude)
       }
     }
@@ -323,6 +323,7 @@ class MainActivity : ComponentActivity() {
       }
 
       is OpenSelectedCityScreen -> {
+        viewModel.getWeatherDataToCityById(action.index)
         navController.navigate("${Route.SelectedCityScreen}/${action.index}")
       }
 

@@ -17,7 +17,7 @@ interface CityApi {
     @Query("latitude") latitude: Double,
     @Query("longitude") longitude: Double,
     @Query("length") length: Int = 500,
-    @Query("level") level: Int = 2,
+    @Query("level") level: Int = 1,
     @Query("json") json: String = "",
     @Query("perpage") perpage: Int = 1,
     @Query("api_key") apiKey: String = CITY_API_KEY

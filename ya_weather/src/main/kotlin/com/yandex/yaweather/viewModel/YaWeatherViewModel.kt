@@ -1,13 +1,10 @@
 package com.yandex.yaweather.viewModel
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
-import com.yandex.yaweather.data.network.CityResponse
-import com.yandex.yaweather.data.network.HourlyWeatherResponse
 import com.yandex.yaweather.repository.CityFinderRepository
 import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.repository.HourlyWeatherRepository
@@ -17,6 +14,7 @@ import data.network.Coordinates
 import data.network.CoordinatesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -209,6 +207,35 @@ class YaWeatherViewModel @Inject constructor(
     _favoriteCityItems.value.add(toIndex, movedItem)
   }
 
+  fun getWeatherDataToCityById(index: Int) {
+    viewModelScope.launch {
+      val currentList = _favoriteCityItems.value.toMutableList()
+      val cityItem = currentList[index]
+
+      if (cityItem.hourlyWeather.isEmpty()) {
+        val weather = async { getHourlyWeather(cityItem.cityItem.lat, cityItem.cityItem.lon) }.await()
+        val updatedCityItem = cityItem.copy(hourlyWeather = weather)
+        currentList[index] = updatedCityItem
+        _favoriteCityItems.value = currentList
+      }
+    }
+  }
+
+  private suspend fun getHourlyWeather(lat: Double?, lon: Double?): List<WeatherByHour> {
+    return try {
+      val response = hourlyWeatherRepository.getHourlyWeather(lat, lon)
+      if (response.isSuccess) {
+        response.getOrNull()?.data ?: emptyList()
+      } else {
+        println(response)
+        emptyList()
+      }
+    } catch (e: Exception) {
+      println(e.message)
+      emptyList()
+    }
+  }
+
   fun updateMarkerPosition(latLng: LatLng) {
     viewModelScope.launch(Dispatchers.IO) {
       try {
@@ -232,7 +259,7 @@ class YaWeatherViewModel @Inject constructor(
   }
 
   fun loadFavoriteCities(service: FavoriteCitiesService) {
-    viewModelScope.launch {
+    viewModelScope.launch(Dispatchers.IO) {
       service.getAllCities().forEach { item ->
         weatherRepository.getCurrentWeather(item.lat.toString(), item.lon.toString()).onSuccess { coordinatesResponse ->
           _favoriteCityItems.update {
@@ -247,9 +274,8 @@ class YaWeatherViewModel @Inject constructor(
     }
   }
 }
-
 data class CitySelectionUIState(
-  val cityItem: CityItem, val weatherUiState: WeatherUiState, val hourlyWeather: List<WeatherByHour> = emptyList()
+  val cityItem: CityItem, val weatherUiState: WeatherUiState, var hourlyWeather: List<WeatherByHour> = emptyList()
 )
 
 data class MapUIState(
