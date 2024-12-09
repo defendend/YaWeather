@@ -56,6 +56,8 @@
   <string name="info_thanks">Thank you for attention!</string>
   <string name="humidity">Humidity</string>
   <string name="feelsLike">Feels like</string>
+  <string name="sunrise">sunrise</string>
+  <string name="sunset">sunset</string>
   <string name="max">Max.</string>
   <string name="min">Min.</string>
   <string name="hourly_forecast">HOURLY FORECAST</string>
