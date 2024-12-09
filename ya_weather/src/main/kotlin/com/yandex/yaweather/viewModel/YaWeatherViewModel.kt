@@ -7,7 +7,6 @@ import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.repository.CityFinderRepository
 import com.yandex.yaweather.data.network.WeatherByHour
-import com.yandex.yaweather.repository.CityFinderRepository
 import com.yandex.yaweather.repository.HourlyWeatherRepository
 import com.yandex.yaweather.repository.OpenWeatherRepository
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState

@@ -24,6 +24,6 @@ interface CityApi {
   ): CityResponse
 
   companion object {
-    private const val CITY_API_KEY = "30dc5a8e20658c5eff865816e65eb46c"
+    private const val CITY_API_KEY = "7083ec4aed7944afcc3d3ecb09cb53ac"
   }
 }
