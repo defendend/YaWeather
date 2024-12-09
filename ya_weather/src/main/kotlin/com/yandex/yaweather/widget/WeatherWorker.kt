@@ -47,7 +47,7 @@ class WeatherWorker @Inject constructor(
     val data = WidgetData(
       response.name,
       response.main.temp?.toInt(),
-      response.weather?.get(0)?.description,
+      response.weather?.get(0)?.id,
       response.sys.sunrise,
       response.sys.sunset
     )
@@ -59,7 +59,7 @@ class WeatherWorker @Inject constructor(
     prefs.edit().apply {
       putString("name", data.name)
       putInt("temp", data.temp ?: 0)
-      putString("description", data.description)
+      putInt("code", data.code?: 0)
       putLong("sunrise", data.sunrise ?: 0L)
       putLong("sunset", data.sunset ?: 0L)
     }.apply()
@@ -87,7 +87,7 @@ class WeatherWorker @Inject constructor(
 data class WidgetData(
   val name: String? = null,
   val temp: Int? = null,
-  val description: String? = null,
+  val code: Int? = null,
   val sunrise: Long? = null,
   val sunset: Long? = null
 )
