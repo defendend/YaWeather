@@ -54,4 +54,15 @@
   <string name="info_uri">- https://openweathermap.org</string>
   <string name="info_contact_us">Contact us</string>
   <string name="info_thanks">Thank you for attention!</string>
+  <string name="humidity">Humidity</string>
+  <string name="feelsLike">Feels like</string>
+  <string name="max">Max.</string>
+  <string name="min">Min.</string>
+  <string name="hourly_forecast">HOURLY FORECAST</string>
+  <string name="fivedayforecast">5-DAY FORECAST</string>
+  <string name="showmore">Show more</string>
+  <string name="hide">Hide</string>
+  <string name="menu">Menu</string>
+  <string name="share">Share</string>
+  <string name="settings">Settings</string>
 </resources>

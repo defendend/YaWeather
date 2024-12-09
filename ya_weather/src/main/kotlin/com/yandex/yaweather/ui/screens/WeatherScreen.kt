@@ -2,8 +2,6 @@ package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
-import android.graphics.Bitmap
-import android.util.Log
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,26 +16,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,12 +47,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,31 +57,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.UrlTileProvider
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapProperties
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.TileOverlay
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.google.maps.android.compose.rememberTileOverlayState
 import com.yandex.yaweather.Lang
 import com.yandex.yaweather.R
 import com.yandex.yaweather.appLanguage
 import com.yandex.yaweather.darkTheme
-import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.share.shareWeatherInfo
+import com.yandex.yaweather.utils.weatherBackground
 import com.yandex.yaweather.viewModel.CitySelectionUIState
-import com.yandex.yaweather.viewModel.WeatherUiState
-import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 import kotlinx.coroutines.launch
-import java.net.URL
-import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
@@ -102,7 +76,8 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   val skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
-  val weatherInfo ="Погодная информация:\nГород :${uiState.cityItem.name}\nТемпература:${uiState.weatherUiState.temperature}°C\nОписание: снежно:${uiState.weatherUiState.description}\nПриложение: Yaweather.\n"
+  val weatherInfo =
+    "Погодная информация:\nГород :${uiState.cityItem.name}\nТемпература:${uiState.weatherUiState.temperature}°C\nОписание: снежно:${uiState.weatherUiState.description}\nПриложение: Yaweather.\n"
 
   var selectedIconIndex = remember {
     mutableIntStateOf(
@@ -130,33 +105,25 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   Scaffold(topBar = {
     CustomTopAppBar(onMenuClick = {
       action(WeatherScreenAction.AddCityAction)
-    }, onSettingsClick = { openBottomSheet = !openBottomSheet },
-      onShareClick = {
-        shareWeatherInfo(context, weatherInfo)
-
-      })
+    },
+      onSettingsClick = { openBottomSheet = !openBottomSheet },
+      onShareClick = { shareWeatherInfo(context, weatherInfo) })
   }) { innerPadding ->
     Box(
       modifier = Modifier
         .fillMaxSize()
         .background(color = Color.Transparent)
-
     ) {
-      Image(
-        painter = rememberDrawablePainter(
-          drawable = getDrawable(
-            LocalContext.current, weatherBackground(uiState.weatherUiState.weatherId)
-          )
-        ),
-        contentDescription = "Weather background",
-        modifier = Modifier
-          .fillMaxSize()
-          .graphicsLayer {
-            alpha = 1f
-          }
-          .blur(10.dp),
-        contentScale = ContentScale.Crop
-      )
+      Image(painter = rememberDrawablePainter(
+        drawable = getDrawable(
+          LocalContext.current, weatherBackground(uiState.weatherUiState.weatherId)
+        )
+      ), contentDescription = "Weather background", modifier = Modifier
+        .fillMaxSize()
+        .graphicsLayer {
+          alpha = 1f
+        }
+        .blur(10.dp), contentScale = ContentScale.Crop)
     }
     Box(
       modifier = Modifier
@@ -175,15 +142,14 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
       ) {
         item {
           Column(
-            modifier = Modifier.padding(top = 64.dp),
-
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.padding(top = 64.dp), horizontalAlignment = Alignment.CenterHorizontally
           ) {
             Text(
-              text = uiState.cityItem.name ?: "Not found",
-              fontSize = 24.sp,
-              color = Color.White,
-              fontWeight = FontWeight.Bold
+              text = if (appLanguage.value == Lang.ru) {
+                uiState.cityItem.name ?: "Not found"
+              } else {
+                uiState.cityItem.engName ?: "Not found"
+              }, fontSize = 24.sp, color = Color.White, fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -194,26 +160,26 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = "Макс. ${uiState.weatherUiState.temperatureMax}°  Мин. ${uiState.weatherUiState.temperatureMin}°",
+              text = stringResource(R.string.max) + "${uiState.weatherUiState.temperatureMax}°" + stringResource(R.string.min) + "${uiState.weatherUiState.temperatureMin}°",
               fontSize = 16.sp,
               color = Color.LightGray
             )
           }
         }
         item {
-          HourlyForecast(modifier = Modifier, uiState.hourlyWeather)
+          HourlyForecast(uiState.hourlyWeather)
         }
 
         item {
-          TenDayForecast(modifier = Modifier, uiState.weatherUiState)
+          TenDayForecast(uiState.weatherUiState)
         }
 
         item {
-          MapWidget(modifier = Modifier, uiState.weatherUiState, action)
+          MapWidget(uiState.weatherUiState, action)
         }
 
         item {
-          Widgets(modifier = Modifier, uiState.weatherUiState.widgetsUiState)
+          Widgets(uiState.weatherUiState.widgetsUiState)
         }
       }
     }
@@ -233,12 +199,26 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
           horizontalArrangement = Arrangement.Center,
           verticalAlignment = Alignment.CenterVertically
         ) {
+          Spacer(modifier = Modifier.weight(1f))
           Text(
             text = stringResource(R.string.settings_bottom_sheet),
             color = MaterialTheme.colorScheme.inversePrimary,
             fontSize = 24.sp,
             modifier = Modifier.padding(bottom = 16.dp)
           )
+          Spacer(modifier = Modifier.weight(1f))
+          IconButton(
+            onClick = { action.invoke(WeatherScreenAction.OpenInfoAction) },
+            colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)
+          ) {
+            Icon(
+              imageVector = Icons.Default.Info,
+              contentDescription = stringResource(R.string.weather_screen_info_icon),
+              modifier = Modifier
+                .clip(shape = CircleShape)
+                .padding(end = 16.dp)
+            )
+          }
         }
         Text(
           text = stringResource(R.string.settings_bottom_sheet_temperature),
@@ -784,348 +764,3 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
   systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
 }
-
-@SuppressLint("DefaultLocale")
-@Composable
-fun HourlyForecast(modifier: Modifier, weatherByHour: List<WeatherByHour>) {
-  Column(
-    modifier = modifier
-      .fillMaxWidth()
-      .alpha(0.75f)
-      .background(Color.DarkGray, RoundedCornerShape(16.dp))
-      .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 16.dp)
-  ) {
-    Text(
-      modifier = modifier.padding(start = 8.dp),
-      text = "ЧАСОВОЙ ПРОГНОЗ",
-      fontSize = 16.sp,
-      color = Color.LightGray,
-      fontWeight = FontWeight.Bold
-    )
-    Spacer(modifier = modifier.height(8.dp))
-
-    LazyRow(
-      horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = modifier.fillMaxWidth()
-    ) {
-      items(weatherByHour) { index ->
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier.padding(start = 8.dp)
-        ) {
-          Spacer(modifier = modifier.height(4.dp))
-          index.temp?.let {
-            val temperatureInCelsius = (it - 273.15).toInt()
-            Text("$temperatureInCelsius°", color = Color.White, fontSize = 18.sp)
-          }
-
-          Icon(
-            painter = painterResource(weatherIconForForecast(index)),
-            contentDescription = null,
-            tint = Color.LightGray,
-            modifier = modifier.size(24.dp)
-          )
-          Spacer(modifier = modifier.height(4.dp))
-          index.timeStamp?.let {
-            val formattedTime = it.split("T").getOrNull(1)?.split(":")?.getOrNull(0)?.plus("h") ?: "N/A"
-            Text(formattedTime, color = Color.LightGray, fontSize = 12.sp)
-          }
-        }
-      }
-    }
-  }
-}
-
-
-@ExperimentalMaterial3Api
-@Composable
-fun CustomTopAppBar(
-  onMenuClick: () -> Unit,
-  onSettingsClick: (Unit) -> Unit,
-  onShareClick: (Unit) -> Unit
-) {
-  TopAppBar(
-    modifier = Modifier
-      .alpha(0.5f)
-      .background(color = Color.Gray),
-    title = { Text(text = "") },
-    navigationIcon = {
-      Row {
-        IconButton(onClick = onMenuClick) {
-          Icon(
-            imageVector = Icons.Default.Menu,
-            contentDescription = "Menu"
-          )
-        }
-        IconButton(onClick = { onShareClick.invoke(Unit) }) {
-          Icon(
-            imageVector = Icons.Default.Share,
-            contentDescription = "Share"
-          )
-        }
-
-      }
-    },
-    actions = {
-      IconButton(onClick = { onSettingsClick.invoke(Unit) }) {
-        Icon(
-          imageVector = Icons.Default.Settings,
-          contentDescription = "Settings"
-        )
-      }
-    },
-
-
-    )
-
-}
-
-@Composable
-fun TenDayForecast(modifier: Modifier, uiState: WeatherUiState) {
-  var itemCount by remember { mutableIntStateOf(5) }
-  var showMoreButton by remember { mutableStateOf(true) }
-
-
-  val currentDay = remember { getCurrentDayOfWeek() }
-
-  Column(
-    modifier = Modifier
-      .fillMaxWidth()
-      .background(Color.DarkGray, RoundedCornerShape(16.dp))
-      .padding(16.dp)
-  ) {
-    Text(
-      text = "5-ДНЕВНЫЙ ПРОГНОЗ", fontSize = 16.sp, color = Color.LightGray, fontWeight = FontWeight.Bold
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-
-
-    repeat(itemCount) { index ->
-      val dayOfWeek = getDayOfWeek(currentDay + index)
-      Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(vertical = 12.dp)
-      ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Spacer(modifier = Modifier.width(4.dp))
-          Text(text = dayOfWeek, color = Color.White, fontSize = 16.sp)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Icon(
-            painter = painterResource(
-              when {
-                uiState.description == "shower rain" -> R.drawable.showers_fill
-                uiState.description.contains("rain", ignoreCase = true) -> R.drawable.rainy_fill
-                uiState.description.contains("clear", ignoreCase = true) -> R.drawable.sun_fill
-                uiState.description.contains(
-                  "clouds",
-                  ignoreCase = true
-                ) -> R.drawable.cloud_windy_fill
-
-                uiState.description.contains(
-                  "thunderstorm",
-                  ignoreCase = true
-                ) -> R.drawable.thunderstorms_fill
-
-                uiState.description.contains("snow", ignoreCase = true) -> R.drawable.snowy_fill
-                uiState.description.contains("fog", ignoreCase = true) -> R.drawable.mist_fill
-                uiState.description.contains("mist", ignoreCase = true) -> R.drawable.mist_fill
-                else -> R.drawable.sun_fill
-              }
-            ),
-            contentDescription = null,
-            tint = Color.LightGray,
-            modifier = Modifier.size(14.dp)
-          )
-          Spacer(modifier = Modifier.width(4.dp))
-          Text(uiState.temperatureMin, color = Color.LightGray, fontSize = 14.sp)
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-          Spacer(modifier = Modifier.width(4.dp))
-          Text(uiState.temperatureMax, color = Color.White, fontSize = 16.sp)
-        }
-      }
-    }
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    if (showMoreButton) {
-      TextButton(
-        onClick = {
-          if (itemCount < 10) {
-            itemCount += 5
-          }
-          showMoreButton = false
-        }, modifier = Modifier.align(Alignment.CenterHorizontally)
-      ) {
-        Text(
-          text = "Показать ещё", color = Color.LightGray
-        )
-      }
-    } else {
-      TextButton(
-        onClick = {
-          itemCount = 5
-          showMoreButton = true
-        }, modifier = Modifier.align(Alignment.CenterHorizontally)
-      ) {
-        Text(
-          text = "Скрыть", color = Color.LightGray
-        )
-      }
-    }
-  }
-}
-
-fun getCurrentDayOfWeek(): Int {
-  return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1
-}
-
-
-fun getDayOfWeek(dayIndex: Int): String {
-  val daysOfWeek = listOf("Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб")
-  return daysOfWeek[dayIndex % 7]
-}
-@Composable
-fun MapWidget(
-  modifier: Modifier,
-  uiState: WeatherUiState,
-  action: (WeatherScreenAction) -> Unit
-) {
-  val currentLocation = uiState.markerPosition?.lon?.let {
-    uiState.markerPosition.lat?.let { lat ->
-      LatLng(lat, it)
-    }
-  }
-
-  val cameraPositionState = rememberCameraPositionState {
-    position = if (currentLocation != null)
-      CameraPosition.fromLatLngZoom(currentLocation, 10f)
-    else CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 1f)
-  }
-
-  val tileProvider = remember {
-    object : UrlTileProvider(256, 256) {
-      override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
-        return try {
-          URL("https://tile.openweathermap.org/map/temp_new/$zoom/$x/$y.png?appid=62b18818f899c80e1d2f4285220bc90b")
-        } catch (e: Exception) {
-          null
-        }
-      }
-    }
-  }
-  val tileOverlayState = rememberTileOverlayState()
-  GoogleMap(
-    modifier = Modifier
-      .fillMaxWidth()
-      .height(200.dp)
-      .background(Color.Gray, RoundedCornerShape(16.dp))
-      .clip(RoundedCornerShape(16.dp)),
-    cameraPositionState = cameraPositionState,
-    properties = MapProperties(isMyLocationEnabled = false),
-    onMapClick = {
-      action(WeatherScreenAction.OpenMapAction)
-    },
-    uiSettings = MapUiSettings(
-      zoomGesturesEnabled = false,
-      zoomControlsEnabled = false,
-      scrollGesturesEnabled = false,
-      compassEnabled = false,
-      rotationGesturesEnabled = false,
-      tiltGesturesEnabled = false
-    )
-  ) {
-    TileOverlay(
-      state = tileOverlayState,
-      tileProvider = tileProvider
-    )
-    currentLocation?.let { MarkerState(position = it) }?.let {
-      Marker(
-        state = it,
-        title = "",
-        snippet = "",
-        onClick = {
-          action(WeatherScreenAction.OpenMapAction)
-          true
-        }
-      )
-    }
-  }
-}
-
-
-@Composable
-fun Widgets(modifier: Modifier = Modifier, uiState: WidgetsUiState) {
-  val widgetData = listOf(
-    "Влажность" to uiState.humidity,
-    "Ощущается" to uiState.feelsLike,
-    "Ветер" to uiState.windSpeed,
-    "Давление" to uiState.sealevel
-  )
-
-  LazyRow(
-    modifier = modifier
-      .fillMaxWidth(),
-
-    horizontalArrangement = Arrangement.spacedBy(16.dp)
-  ) {
-    items(widgetData) { (title, value) ->
-      WidgetBox(title = title, value = value)
-    }
-  }
-}
-
-@Composable
-fun WidgetBox(title: String, value: String?) {
-  Column(
-    modifier = Modifier
-      .height(150.dp)
-      .width(150.dp)
-      .padding(bottom = 16.dp)
-      .background(Color.DarkGray.copy(alpha = 0.75f), RoundedCornerShape(16.dp)),
-
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.SpaceEvenly
-  ) {
-    Text(
-      text = title, fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.SemiBold
-
-    )
-    Text(
-      text = value ?: "-", fontSize = 28.sp, color = Color.White, fontWeight = FontWeight.Bold
-    )
-  }
-}
-
-
-fun weatherIconForForecast(weatherByHour: WeatherByHour): Int {
-  return when (weatherByHour.weather?.code) {
-    in 200..202 -> R.drawable.hail_fill
-    in 230..233 -> R.drawable.thunderstorms_fill
-    in 300..302 -> R.drawable.rainy_fill
-    in 500..522 -> R.drawable.showers_fill
-    in 600..623 -> R.drawable.snowy_fill
-    in 700..751 -> R.drawable.mist_fill
-    800 -> R.drawable.sun_fill
-    in 801..804 -> R.drawable.cloudy_fill
-    else -> R.drawable.blaze_fill    // Неизвестный код
-  }
-}
-
-fun weatherBackground(code: Int): Int {
-  return when (code) {
-    in 200..202 -> R.drawable.fall_rain
-    in 230..233 ->R.drawable.thunderstormm
-    in 300..302 ->R.drawable.fall_rain
-    in 500..522 ->R.drawable.fall_rain
-    in 600..623 ->R.drawable.snow_gif
-    in 700..751 ->R.drawable.mist
-    800 ->R.drawable.clear_sky
-    in 801..804 ->R.drawable.scaffered_clouds
-    else ->  R.drawable.scaffered_clouds   // Неизвестный код
-  }
-}
-
-

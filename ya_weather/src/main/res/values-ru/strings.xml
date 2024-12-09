@@ -55,4 +55,15 @@
   <string name="info_uri">- https://openweathermap.org</string>
   <string name="info_contact_us">Связаться с нами</string>
   <string name="info_thanks">Спасибо за внимание!</string>
+  <string name="humidity">Влажность</string>
+  <string name="feelsLike">Ощущается</string>
+  <string name="max">Макс.</string>
+  <string name="min">Мин.</string>
+  <string name="hourly_forecast">ЧАСОВОЙ ПРОГНОЗ</string>
+  <string name="fivedayforecast">5-ДНЕВНЫЙ ПРОГНОЗ</string>
+  <string name="showmore">Показать ещё</string>
+  <string name="hide">Скрыть</string>
+  <string name="menu">Меню</string>
+  <string name="share">Поделиться</string>
+  <string name="settings">Настройки</string>
 </resources>

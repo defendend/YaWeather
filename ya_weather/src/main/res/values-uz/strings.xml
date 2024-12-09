@@ -55,4 +55,15 @@
   <string name="info_retrofit">- Retrofit</string>
   <string name="info_contact_us">Biz bilan bog\'lanish</string>
   <string name="info_thanks">E\'tibor uchun rahmat</string>
+  <string name="humidity">Namlik</string>
+  <string name="feelsLike">Sezilyapti</string>
+  <string name="max">Max.</string>
+  <string name="min">Min.</string>
+  <string name="hourly_forecast">SOATBAY MA\'LUMOT</string>
+  <string name="fivedayforecast">5 KUNLIK MA\'LUMOT</string>
+  <string name="showmore">Yana</string>
+  <string name="hide">Yopish</string>
+  <string name="menu">Menu</string>
+  <string name="share">Ulashish</string>
+  <string name="settings">Sozlamalar</string>
 </resources>
