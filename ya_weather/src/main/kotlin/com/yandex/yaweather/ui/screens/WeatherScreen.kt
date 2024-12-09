@@ -69,7 +69,7 @@ import com.yandex.yaweather.utils.weatherBackground
 import com.yandex.yaweather.utils.weatherEmoji
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import kotlinx.coroutines.launch
-import java.util.Locale
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
