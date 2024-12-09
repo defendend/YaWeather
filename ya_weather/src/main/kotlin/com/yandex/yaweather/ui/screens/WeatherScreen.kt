@@ -63,9 +63,13 @@ import com.yandex.yaweather.appLanguage
 import com.yandex.yaweather.darkTheme
 import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.share.shareWeatherInfo
+import com.yandex.yaweather.utils.getMessage
+import com.yandex.yaweather.utils.getWeatherDescription
 import com.yandex.yaweather.utils.weatherBackground
+import com.yandex.yaweather.utils.weatherEmoji
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
@@ -76,9 +80,14 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   val skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
-  val weatherInfo =
-    "Погодная информация:\nГород :${uiState.cityItem.name}\nТемпература:${uiState.weatherUiState.temperature}°C\nОписание: снежно:${uiState.weatherUiState.description}\nПриложение: Yaweather.\n"
-
+  val weatherInfo = """
+    🏙️ ${LocalContext.current.resources.getString(R.string.weather_today_in_city)} ${if (appLanguage.value == Lang.ru) { uiState.cityItem.name ?: "Not found" } else { uiState.cityItem.engName ?: "Not found" }} 
+    🌡️ ${LocalContext.current.resources.getString(R.string.temperature)}: ${uiState.weatherUiState.temperature}°C  
+    ${weatherEmoji(uiState.weatherUiState.weatherId)} ${LocalContext.current.resources.getString(R.string.condition)}: ${getWeatherDescription(uiState.weatherUiState.weatherId, LocalContext.current)}
+    
+    -------------------  
+    📱 ${getMessage(uiState.weatherUiState.weatherId, LocalContext.current)} - YaWeather  
+""".trimIndent()
   var selectedIconIndex = remember {
     mutableIntStateOf(
       if (appLanguage.value == Lang.uz) {

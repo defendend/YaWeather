@@ -44,8 +44,7 @@ fun weatherBackground(code: Int): Int {
   }
 }
 
-fun weatherEmojiForForecast(weatherByHour: WeatherByHour): String {
-  val code = weatherByHour.weather?.code?: 0
+fun weatherEmoji(code: Int): String {
 
   return when (code) {
     in 200..202 -> "🌨️"
@@ -137,7 +136,7 @@ fun getWeatherDescription(code: Int, context: Context): String {
   }
 }
 
-private fun getWeatherIconAndMessage(weatherCondition: String): Pair<Int, Int> {
+fun getWeatherIconAndMessage(weatherCondition: String): Pair<Int, Int> {
   val icon: Int
   val messageResId: Int
 
@@ -177,4 +176,19 @@ private fun getWeatherIconAndMessage(weatherCondition: String): Pair<Int, Int> {
   }
 
   return Pair(icon, messageResId)
+}
+
+
+fun getMessage(code: Int, context: Context): Comparable<*> {
+  val resources = context.resources
+  return when (code) {
+    in 801..804 -> resources.getString(R.string.clouds_message)
+    in 701..781 -> resources.getString(R.string.thunderstorm_message)
+    in 600..622 -> resources.getString(R.string.drizzle_message)
+    in 500..531 -> resources.getString(R.string.rain_message)
+    in 300..321 -> resources.getString(R.string.snow_message)
+    in 200..232 -> resources.getString(R.string.mist_message)
+    800 -> R.string.perfect_time_for_walk
+    else -> R.string.unknown
+  }
 }

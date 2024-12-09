@@ -128,7 +128,7 @@
   <string name="broken_clouds">Singan bulut</string>
   <string name="overcast_clouds">Yopilgan bulut</string>
 
-  <string name="unknown">Unknown</string>
+  <string name="unknown">Nima deyishni ham bilmayman</string>
   <string name="search_result_for">Qidiruv natijalari uchun</string>
   <string name="search_cities">Shaharlarni qidirish</string>
   <string name="recent_searches">So\'nggi qidiruvlar</string>
@@ -142,4 +142,7 @@
     <string name="thunderstorm_message">Ehtiyot bo\‘ling va ochiq joylardan qoching :)</string>
     <string name="mist_message">Tinch o\‘ylar uchun ajoyib vaqt :)</string>
 
+  <string name="weather_today_in_city">Bugungi havo shahrida</string>
+  <string name="temperature">temperatura</string>
+  <string name="condition">Havo holati</string>
 </resources>
