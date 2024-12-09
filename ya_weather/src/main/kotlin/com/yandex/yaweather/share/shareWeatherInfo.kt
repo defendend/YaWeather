@@ -10,7 +10,5 @@ fun shareWeatherInfo(context: Context, weatherInfo: String){
       putExtra(Intent.EXTRA_TEXT, weatherInfo)
 
     }
-  context.startActivity(Intent.createChooser(shareIntent,"отправлять"))
-
-
+  context.startActivity(Intent.createChooser(shareIntent,"Поделиться погодой:"))
 }

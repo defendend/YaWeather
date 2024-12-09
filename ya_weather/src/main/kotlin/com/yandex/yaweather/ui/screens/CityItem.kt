@@ -1,4 +1,4 @@
-package com.yandex.yaweather.ui.screens
+  package com.yandex.yaweather.ui.screens
 
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
@@ -23,7 +23,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
+import com.yandex.yaweather.Lang
+import com.yandex.yaweather.R
+import com.yandex.yaweather.appLanguage
 import com.yandex.yaweather.handler.CityScreenAction
+import com.yandex.yaweather.utils.getWeatherDescription
 import com.yandex.yaweather.utils.weatherBackground
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import java.time.ZoneOffset
@@ -72,9 +76,12 @@ fun CityItem(
       val currentUtcTime = ZonedDateTime.now(ZoneOffset.UTC)
       val adjustedTime = citySelectionUIState.cityItem.timeZone?.toLong()?.let { currentUtcTime.plusHours(it) }
       val formattedTime = adjustedTime?.format(DateTimeFormatter.ofPattern("HH:mm"))
-
       Text(
-        text = citySelectionUIState.cityItem.name ?: "",
+        text = if (appLanguage.value == Lang.ru) {
+          citySelectionUIState.cityItem.name ?: "Not found"
+        } else {
+          citySelectionUIState.cityItem.engName ?: "Not found"
+        },
         fontSize = 26.sp,
         fontWeight = FontWeight.Bold,
         color = Color.White,
@@ -96,7 +103,7 @@ fun CityItem(
     )
 
     Text(
-      text = citySelectionUIState.weatherUiState.description,
+      text = getWeatherDescription(citySelectionUIState.weatherUiState.weatherId, LocalContext.current),
       modifier = Modifier
         .align(Alignment.BottomStart)
         .padding(16.dp),
@@ -105,7 +112,7 @@ fun CityItem(
     )
 
     Text(
-      text = "ощущается: ${citySelectionUIState.weatherUiState.feelsLike}°",
+      text = "${LocalContext.current.resources.getString(R.string.feelsLike)}: ${citySelectionUIState.weatherUiState.feelsLike}°",
       modifier = Modifier
         .align(Alignment.BottomEnd)
         .padding(16.dp),

@@ -66,4 +66,80 @@
   <string name="menu">Menu</string>
   <string name="share">Ulashish</string>
   <string name="settings">Sozlamalar</string>
+  <string name="thunderstorm_light_rain">Yengil yomg\'ir bilan momaqaldiroq</string>
+  <string name="thunderstorm_rain">Yomg\'ir bilan momaqaldiroq</string>
+  <string name="thunderstorm_heavy_rain">Kuchli yomg\'ir bilan momaqaldiroq</string>
+  <string name="light_thunderstorm">Yengil momaqaldiroq</string>
+  <string name="thunderstorm">Momaqaldiroq</string>
+  <string name="heavy_thunderstorm">Kuchli momaqaldiroq</string>
+  <string name="ragged_thunderstorm">Noaniq momaqaldiroq</string>
+  <string name="thunderstorm_light_dizzle">Yengil yomg\'ir bilan momaqaldiroq</string>
+  <string name="thunderstorm_dizzle">Momaqaldiroq va yomg\'ir</string>
+  <string name="thunderstorm_heavy_dizzle">Kuchli yomg\'ir bilan momaqaldiroq</string>
+
+  <string name="light_intensity_dizzle">Yengil momaqaldiroq yomg\'ir</string>
+  <string name="dizzle">Momoqaldiroq yomg\'ir</string>
+  <string name="heavy_intensity_dizzle">Kuchli momoaqaldiroq yomg\'ir</string>
+  <string name="light_intensity_dizzle_rain">Yengil momaqaldiroq yomg\'ir</string>
+  <string name="dizzle_rain">Momoqaldiroq yomg\'ir</string>
+  <string name="heavy_intensity_dizzle_rain">Kuchli momoaqaldiroq yomg\'ir</string>
+  <string name="shower_rain_and_dizzle">Yomg\'ir va momoaqaldiroq yomg\'ir</string>
+  <string name="heavy_shower_rain_and_dizzle">Kuchli yomg\'ir va momoaqaldiroq yomg\'ir</string>
+  <string name="shower_dizzle">Yomg\'ir va momoaqaldiroq yomg\'ir</string>
+
+  <string name="light_rain">Yengil yomg\'ir</string>
+  <string name="moderate_rain">O\'rtacha yomg\'ir</string>
+  <string name="heavy_intensity_rain">Kuchli yomg\'ir</string>
+  <string name="very_heavy_rain">Juda kuchli yomg\'ir</string>
+  <string name="extreme_rain">Ekstremal yomg\'ir</string>
+  <string name="freezing_rain">Muzlashgan yomg\'ir</string>
+  <string name="light_intensity_shower_rain">Yengil yomg\'ir</string>
+  <string name="shower_rain">Yomg\'ir</string>
+  <string name="heavy_intensity_shower_rain">Kuchli yomg\'ir</string>
+  <string name="ragged_shower_rain">Yomg\'ir bilan bo\'laklar</string>
+
+  <string name="light_snow">Yengil qor</string>
+  <string name="snow">Qor</string>
+  <string name="heavy_snow">Kuchli qor</string>
+  <string name="sleet">Qor va yomg\'ir</string>
+  <string name="light_shower_sleet">Yengil qor va yomg\'ir</string>
+  <string name="shower_sleet">Qor va yomg\'ir</string>
+  <string name="light_rain_and_snow">Yomg\'ir va qor</string>
+  <string name="rain_and_snow">Yomg\'ir va qor</string>
+  <string name="light_shower_snow">Yengil qor yog\'ishi</string>
+  <string name="shower_snow">Qor yog\'ishi</string>
+  <string name="heavy_shower_snow">Kuchli qor yog\'ishi</string>
+
+  <string name="mist">Tuman</string>
+  <string name="smoke">Dum</string>
+  <string name="haze">Dumka</string>
+  <string name="dust">Chang</string>
+  <string name="fog">Tuman</string>
+  <string name="sand">Qum</string>
+  <string name="dust_p">Chang</string>
+  <string name="ash">Vulkan tuzi</string>
+  <string name="squall">Shkval</string>
+  <string name="tornado">Tornado</string>
+
+  <string name="clear_sky">Ochiq osmon</string>
+
+  <string name="few_clouds">Kam bulut</string>
+  <string name="scattered_clouds">Tarqalgan bulut</string>
+  <string name="broken_clouds">Singan bulut</string>
+  <string name="overcast_clouds">Yopilgan bulut</string>
+
+  <string name="unknown">Unknown</string>
+  <string name="search_result_for">Qidiruv natijalari uchun</string>
+  <string name="search_cities">Shaharlarni qidirish</string>
+  <string name="recent_searches">So\'nggi qidiruvlar</string>
+  <string name="perfect_time_for_walk">Ajoyib sayr qilish vaqti.</string>
+
+    <string name="clouds_message">Issiqroq kiying :)</string>
+    <string name="snow_message">Issiq kofe ichish uchun ajoyib vaqt :)</string>
+    <string name="rain_message">Kitob o\‘qish uchun ajoyib vaqt :)</string>
+    <string name="clear_message">Sayr qilish uchun ajoyib vaqt :)</string>
+    <string name="drizzle_message">Sukut va salqinlikdan zavqlanish uchun ajoyib vaqt :)</string>
+    <string name="thunderstorm_message">Ehtiyot bo\‘ling va ochiq joylardan qoching :)</string>
+    <string name="mist_message">Tinch o\‘ylar uchun ajoyib vaqt :)</string>
+
 </resources>
