@@ -2,6 +2,8 @@ package com.yandex.yaweather.ui.screens
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +26,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,7 +54,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -62,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.UrlTileProvider
@@ -79,13 +85,13 @@ import com.yandex.yaweather.appLanguage
 import com.yandex.yaweather.darkTheme
 import com.yandex.yaweather.data.network.WeatherByHour
 import com.yandex.yaweather.handler.WeatherScreenAction
+import com.yandex.yaweather.share.shareWeatherInfo
 import com.yandex.yaweather.viewModel.CitySelectionUIState
 import com.yandex.yaweather.viewModel.WeatherUiState
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
 import kotlinx.coroutines.launch
 import java.net.URL
 import java.util.Calendar
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "DefaultLocale")
@@ -96,6 +102,8 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   val skipPartiallyExpanded by rememberSaveable { mutableStateOf(false) }
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
+  val weatherInfo ="Погодная информация:\nГород :${uiState.cityItem.name}\nТемпература:${uiState.weatherUiState.temperature}°C\nОписание: снежно:${uiState.weatherUiState.description}\nПриложение: Yaweather.\n"
+
   var selectedIconIndex = remember {
     mutableIntStateOf(
       if (appLanguage.value == Lang.uz) {
@@ -122,7 +130,11 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   Scaffold(topBar = {
     CustomTopAppBar(onMenuClick = {
       action(WeatherScreenAction.AddCityAction)
-    }, onSettingsClick = {openBottomSheet = !openBottomSheet})
+    }, onSettingsClick = { openBottomSheet = !openBottomSheet },
+      onShareClick = {
+        shareWeatherInfo(context, weatherInfo)
+
+      })
   }) { innerPadding ->
     Box(
       modifier = Modifier
@@ -131,8 +143,11 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
 
     ) {
       Image(
-        painter = rememberDrawablePainter(drawable = getDrawable(
-          LocalContext.current, weatherBackground(uiState.weatherUiState.weatherId))),
+        painter = rememberDrawablePainter(
+          drawable = getDrawable(
+            LocalContext.current, weatherBackground(uiState.weatherUiState.weatherId)
+          )
+        ),
         contentDescription = "Weather background",
         modifier = Modifier
           .fillMaxSize()
@@ -160,7 +175,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
       ) {
         item {
           Column(
-            modifier = Modifier.padding(top =64.dp),
+            modifier = Modifier.padding(top = 64.dp),
 
             horizontalAlignment = Alignment.CenterHorizontally
           ) {
@@ -824,28 +839,43 @@ fun HourlyForecast(modifier: Modifier, weatherByHour: List<WeatherByHour>) {
 @Composable
 fun CustomTopAppBar(
   onMenuClick: () -> Unit,
-  onSettingsClick: (Unit) -> Unit
+  onSettingsClick: (Unit) -> Unit,
+  onShareClick: (Unit) -> Unit
 ) {
   TopAppBar(
-    modifier = Modifier.alpha(0.5f).background(color = Color.Gray),
+    modifier = Modifier
+      .alpha(0.5f)
+      .background(color = Color.Gray),
     title = { Text(text = "") },
     navigationIcon = {
-      IconButton(onClick = onMenuClick) {
-        Icon(
-          imageVector = Icons.Default.Menu,
-          contentDescription = "Menu"
-        )
+      Row {
+        IconButton(onClick = onMenuClick) {
+          Icon(
+            imageVector = Icons.Default.Menu,
+            contentDescription = "Menu"
+          )
+        }
+        IconButton(onClick = { onShareClick.invoke(Unit) }) {
+          Icon(
+            imageVector = Icons.Default.Share,
+            contentDescription = "Share"
+          )
+        }
+
       }
     },
     actions = {
-      IconButton(onClick = {onSettingsClick.invoke(Unit)}) {
+      IconButton(onClick = { onSettingsClick.invoke(Unit) }) {
         Icon(
           imageVector = Icons.Default.Settings,
           contentDescription = "Settings"
         )
       }
-    }
-  )
+    },
+
+
+    )
+
 }
 
 @Composable
@@ -957,18 +987,25 @@ fun getDayOfWeek(dayIndex: Int): String {
   val daysOfWeek = listOf("Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб")
   return daysOfWeek[dayIndex % 7]
 }
-
 @Composable
-fun MapWidget(modifier: Modifier, uiState: WeatherUiState, action: (WeatherScreenAction) -> Unit) {
+fun MapWidget(
+  modifier: Modifier,
+  uiState: WeatherUiState,
+  action: (WeatherScreenAction) -> Unit
+) {
+  var googleMap: GoogleMap? by remember { mutableStateOf(null) }
 
-  val currentLocation = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
+  val currentLocation = uiState.markerPosition?.lon?.let {
+    uiState.markerPosition.lat?.let { lat ->
+      LatLng(lat, it)
+    }
+  }
 
   val cameraPositionState = rememberCameraPositionState {
     position = if (currentLocation != null)
       CameraPosition.fromLatLngZoom(currentLocation, 10f)
     else CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 1f)
   }
-
 
   val tileProvider = remember {
     object : UrlTileProvider(256, 256) {
@@ -983,6 +1020,7 @@ fun MapWidget(modifier: Modifier, uiState: WeatherUiState, action: (WeatherScree
   }
   val tileOverlayState = rememberTileOverlayState()
 
+  var mapBitmap by remember { mutableStateOf<Bitmap?>(null) } // snapshot uchun state
 
   GoogleMap(
     modifier = Modifier
@@ -994,7 +1032,6 @@ fun MapWidget(modifier: Modifier, uiState: WeatherUiState, action: (WeatherScree
     properties = MapProperties(isMyLocationEnabled = false),
     onMapClick = {
       action(WeatherScreenAction.OpenMapAction)
-
     },
     uiSettings = MapUiSettings(
       zoomGesturesEnabled = false,
@@ -1006,17 +1043,42 @@ fun MapWidget(modifier: Modifier, uiState: WeatherUiState, action: (WeatherScree
     )
   ) {
     TileOverlay(
-      state = tileOverlayState, tileProvider = tileProvider
+      state = tileOverlayState,
+      tileProvider = tileProvider
     )
     currentLocation?.let { MarkerState(position = it) }?.let {
-      Marker(state = it, title = "", snippet = "", onClick = {
-        action(WeatherScreenAction.OpenMapAction)
-        true
-      })
+      Marker(
+        state = it,
+        title = "",
+        snippet = "",
+        onClick = {
+          action(WeatherScreenAction.OpenMapAction)
+          true
+        }
+      )
+    }
+
+    // Google Map snapshotni olish
+    LaunchedEffect(Unit) {
+      googleMap?.snapshot { bitmap ->
+        mapBitmap = bitmap
+      }
     }
   }
 
+  // UI orqali snapshotni ko'rsatish
+  mapBitmap?.let {
+    Image(
+      painter = BitmapPainter(it.asImageBitmap()),
+      contentDescription = null,
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(200.dp)
+        .clip(RoundedCornerShape(16.dp))
+    )
+  }
 }
+
 
 @Composable
 fun Widgets(modifier: Modifier = Modifier, uiState: WidgetsUiState) {
@@ -1077,7 +1139,7 @@ fun weatherIconForForecast(weatherByHour: WeatherByHour): Int {
 }
 
 fun weatherBackground(code: Int): Int {
-  return when (code){
+  return when (code) {
     in 200..202 -> R.drawable.fall_rain
     in 230..233 ->R.drawable.thunderstormm
     in 300..302 ->R.drawable.fall_rain
