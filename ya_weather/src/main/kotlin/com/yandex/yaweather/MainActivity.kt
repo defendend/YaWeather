@@ -2,7 +2,10 @@ package com.yandex.yaweather
 
 import android.Manifest.permission
 import android.annotation.SuppressLint
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Looper
@@ -18,7 +21,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -55,6 +57,7 @@ import com.yandex.yaweather.ui.screens.MapScreen
 import com.yandex.yaweather.ui.screens.SplashScreen
 import com.yandex.yaweather.ui.screens.WeatherScreen
 import com.yandex.yaweather.viewModel.YaWeatherViewModel
+import com.yandex.yaweather.widget.WeatherWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -133,8 +136,9 @@ class MainActivity : ComponentActivity() {
       setLanguage(appLanguage.value, this)
       YaWeatherTheme(darkTheme.value) {
 
-        NavHost(navController, startDestination = Route.splashScreen,
-          ) {
+        NavHost(
+          navController, startDestination = Route.splashScreen,
+        ) {
           composable(Route.mainScreen) {
             WeatherScreen(weatherUiState) { uiAction -> handleAction(navController, uiAction) }
           }
@@ -169,16 +173,16 @@ class MainActivity : ComponentActivity() {
             }
           }
           composable(Route.openMapScreen) {
-            MapScreen(mapUIState, { action -> handleMapAction(action)})
+            MapScreen(mapUIState, { action -> handleMapAction(action) })
           }
           composable(
             route = "${Route.SelectedCityScreen}/{weatherUiStateIndex}",
             arguments = listOf(navArgument("weatherUiStateIndex") { type = NavType.IntType })
           ) { navBackStackEntry ->
             val weatherUiStateIndex = navBackStackEntry.arguments?.getInt("weatherUiStateIndex")
-              WeatherScreen(favoriteCityItems[weatherUiStateIndex ?: 0]) { uiAction ->
-                handleAction(navController, uiAction)
-              }
+            WeatherScreen(favoriteCityItems[weatherUiStateIndex ?: 0]) { uiAction ->
+              handleAction(navController, uiAction)
+            }
           }
           composable(Route.infoScreen) {
             InfoScreen { handleInfoScreenAction(navController, it) }
@@ -272,6 +276,17 @@ class MainActivity : ComponentActivity() {
       }.apply()
       appLanguage.value = Lang.en
     }
+    val preferences2 = context.getSharedPreferences("widget", MODE_PRIVATE)
+    if (appLanguage.value == Lang.ru) {
+      preferences2.edit().apply {
+        putString("language", "ru")
+      }.apply()
+    } else {
+      preferences2.edit().apply {
+        putString("language", "en")
+      }.apply()
+    }
+    notifyWidgetUpdate()
   }
 
   private fun handleInfoScreenAction(navController: NavController, action: InfoScreenAction) {
@@ -389,4 +404,17 @@ class MainActivity : ComponentActivity() {
     }
   }
 
+  private fun notifyWidgetUpdate() {
+    val ids = AppWidgetManager.getInstance(applicationContext).getAppWidgetIds(
+      ComponentName(
+        applicationContext,
+        WeatherWidget::class.java
+      )
+    )
+    val intent = Intent(applicationContext, WeatherWidget::class.java).apply {
+      action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+      putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+    }
+    applicationContext.sendBroadcast(intent)
+  }
 }

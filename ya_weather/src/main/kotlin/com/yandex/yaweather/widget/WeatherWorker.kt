@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.yandex.yaweather.dagger.application.MainApplication
+import com.yandex.yaweather.data.network.CityApi
 import com.yandex.yaweather.data.network.WeatherApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,7 +21,10 @@ class WeatherWorker @Inject constructor(
 ) : CoroutineWorker(context, workerParameters) {
 
   @Inject
-  lateinit var api: WeatherApi
+  lateinit var api1: CityApi
+
+  @Inject
+  lateinit var api2: WeatherApi
 
   init {
     (context.applicationContext as MainApplication).mainComponent.inject(this)
@@ -39,16 +43,21 @@ class WeatherWorker @Inject constructor(
   }
 
   private suspend fun fetchWeatherData(): WidgetData = withContext(Dispatchers.IO) {
-    val response = api.current(getLatitude(), getLongitude())
-    if (response.main == null || response.sys == null) {
+    val response1 = api1.getCity(getLatitude().toDouble(), getLongitude().toDouble())
+    val response2 = api2.current(getLatitude(), getLongitude())
+    if (response1.items == null) {
+      throw Exception("Invalid API response")
+    }
+    if (response2.main == null || response2.sys == null) {
       throw Exception("Invalid API response")
     }
     val data = WidgetData(
-      response.name,
-      response.main.temp?.toInt(),
-      response.weather?.get(0)?.description,
-      response.sys.sunrise,
-      response.sys.sunset
+      response1.items[1].engName,
+      response1.items[1].name,
+      response2.main.temp?.toInt(),
+      response2.weather?.get(0)?.description,
+      response2.sys.sunrise,
+      response2.sys.sunset
     )
     data
   }
@@ -56,7 +65,8 @@ class WeatherWorker @Inject constructor(
   private fun saveWeatherData(data: WidgetData) {
     val prefs = applicationContext.getSharedPreferences("widget", Context.MODE_PRIVATE)
     prefs.edit().apply {
-      putString("name", data.name)
+      putString("engName", data.engName)
+      putString("ruName", data.ruName)
       putInt("temp", data.temp ?: 0)
       putString("description", data.description)
       putLong("sunrise", data.sunrise ?: 0L)
@@ -84,7 +94,8 @@ class WeatherWorker @Inject constructor(
 }
 
 data class WidgetData(
-  val name: String? = null,
+  val engName: String? = null,
+  val ruName: String? = null,
   val temp: Int? = null,
   val description: String? = null,
   val sunrise: Long? = null,
