@@ -7,10 +7,10 @@ interface CityApi {
   @GET("geo/api.php")
   suspend fun getCityList(
     @Query("city_name") cityName: String,
-    @Query("json") json: String =  "",
+    @Query("json") json: String = "",
     @Query("limit") limit: Int = 15,
     @Query("api_key") apiKey: String = CITY_API_KEY
-  ) : CityListResponse
+  ): CityListResponse
 
   @GET("api/geo/city_coming")
   suspend fun getCity(
@@ -21,8 +21,9 @@ interface CityApi {
     @Query("json") json: String = "",
     @Query("perpage") perpage: Int = 1,
     @Query("api_key") apiKey: String = CITY_API_KEY
-  ) : CityResponse
+  ): CityResponse
+
   companion object {
-    private  const val CITY_API_KEY = "7083ec4aed7944afcc3d3ecb09cb53ac"
+    private const val CITY_API_KEY = "30dc5a8e20658c5eff865816e65eb46c"
   }
 }
