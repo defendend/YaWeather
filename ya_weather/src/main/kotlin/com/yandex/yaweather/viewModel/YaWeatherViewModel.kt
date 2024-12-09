@@ -202,18 +202,19 @@ class YaWeatherViewModel @Inject constructor(
       temperatureMin = ((response.main?.tempMin)?.minus(273))?.toInt().toString(),
       description = response.weather?.firstOrNull()?.description ?: "N/A",
       weatherId = response.weather?.firstOrNull()?.id ?: 0,
-      widgetsUiState = widgetResponeToUiState(response),
+      widgetsUiState = widgetResponseToUiState(response),
       markerPosition = response.coordinates
     )
   }
 
-  private fun widgetResponeToUiState(response: CoordinatesResponse): WidgetsUiState {
+  private fun widgetResponseToUiState(response: CoordinatesResponse): WidgetsUiState {
     return WidgetsUiState(
       feelsLike = response.main?.feelsLike?.minus(273)?.toInt().toString(), // Преобразование из Кельвинов в Цельсии
       humidity = response.main?.humidity?.toString() ?: "-",
       windSpeed = response.wind?.speed?.toString() ?: "-",
       sealevel = response.main?.seaLevel?.toString() ?: "-",
-
+      sunrise = response.sys?.sunrise ?: 0L, // Если значение null, используем 0L
+      sunset = response.sys?.sunset ?: 0L   // Если значение null, используем 0L
       )
   }
 
@@ -366,7 +367,9 @@ data class WeatherUiState(
     val sealevel: String = "",
     val windSpeed: String = "",
     val feelsLike: String = "",
-    val humidity: String = ""
+    val humidity: String = "",
+    val sunrise: Long = 0 ,
+    val sunset: Long = 0
   )
 }
 

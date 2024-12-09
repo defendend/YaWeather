@@ -57,6 +57,8 @@
   <string name="info_thanks">Спасибо за внимание!</string>
   <string name="humidity">Влажность</string>
   <string name="feelsLike">Ощущается</string>
+  <string name="sunrise">рассвет</string>
+  <string name="sunset">закат</string>
   <string name="max">Макс.</string>
   <string name="min">Мин.</string>
   <string name="hourly_forecast">ЧАСОВОЙ ПРОГНОЗ</string>

@@ -57,6 +57,8 @@
   <string name="info_thanks">E\'tibor uchun rahmat</string>
   <string name="humidity">Namlik</string>
   <string name="feelsLike">Sezilyapti</string>
+  <string name="sunrise">Tong otishi</string>
+  <string name="sunset">Quyosh botishi</string>
   <string name="max">Max.</string>
   <string name="min">Min.</string>
   <string name="hourly_forecast">SOATBAY MA\'LUMOT</string>

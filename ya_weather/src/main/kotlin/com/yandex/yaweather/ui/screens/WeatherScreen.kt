@@ -158,11 +158,11 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
                 uiState.cityItem.name ?: "Not found"
               } else {
                 uiState.cityItem.engName ?: "Not found"
-              }, fontSize = 24.sp, color = Color.White, fontWeight = FontWeight.Bold
+              }, fontSize = 36.sp, color = Color.White, fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = uiState.weatherUiState.temperature,
+              text ="${uiState.weatherUiState.temperature}°",
               fontSize = 64.sp,
               color = Color.White,
               fontWeight = FontWeight.ExtraBold
