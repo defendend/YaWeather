@@ -129,7 +129,7 @@
   <string name="broken_clouds">Облака с разрывами</string>
   <string name="overcast_clouds">Облачность</string>
 
-  <string name="unknown">Unknown</string>
+  <string name="unknown">Даже не знаю, что сказать</string>
   <string name="search_result_for">Результаты поиска для</string>
   <string name="search_cities">Поиск городов</string>
   <string name="recent_searches">Недавние поиски</string>
@@ -143,4 +143,7 @@
     <string name="thunderstorm_message">Будьте осторожны и избегайте открытых пространств :)</string>
     <string name="mist_message">Прекрасное время для тихих размышлений :)</string>
 
+  <string name="weather_today_in_city">Погода сегодня в городе</string>
+  <string name="temperature">Температура</string>
+  <string name="condition">Условия</string>
 </resources>

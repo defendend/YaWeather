@@ -128,7 +128,7 @@
   <string name="broken_clouds">Broken clouds</string>
   <string name="overcast_clouds">Overcast clouds</string>
 
-  <string name="unknown">Unknown</string>
+  <string name="unknown">I don\'t even know what to say</string>
   <string name="search_result_for">Search result for</string>
   <string name="search_cities">Search cities</string>
   <string name="recent_searches">Recent searches</string>
@@ -142,5 +142,7 @@
     <string name="thunderstorm_message">Be careful and avoid open spaces :)</string>
     <string name="mist_message">Perfect time for quiet reflections :)</string>
 
-
+  <string name="weather_today_in_city">The weather today in the city</string>
+  <string name="temperature">Temperature</string>
+  <string name="condition">Weather condition</string>
 </resources>
