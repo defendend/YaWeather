@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -17,12 +18,16 @@ import androidx.compose.ui.unit.dp
 import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
+import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
 import com.yandex.yaweather.utils.dragContainer
 import com.yandex.yaweather.utils.draggableItems
 import com.yandex.yaweather.utils.rememberDragDropState
 import com.yandex.yaweather.viewModel.CitySelectionUIState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun CitySelectionScreen(
   cityItems: State<MutableList<CityItem>>,
@@ -32,12 +37,27 @@ fun CitySelectionScreen(
 ) {
   var query by remember { mutableStateOf("") }
   val stateList = rememberLazyListState()
-  val dragDropState = rememberDragDropState(lazyListState = stateList,
+  val dragDropState = rememberDragDropState(
+    lazyListState = stateList,
     draggableItemsNum = favoriteCityItems.size,
     onMove = { fromIndex, toIndex ->
       action(CityScreenAction.MoveCity(fromIndex, toIndex))
       favoriteCitiesService.moveCity(fromIndex, toIndex)
-    })
+    }
+  )
+
+  val queryFlow = remember { MutableStateFlow(query) }
+
+  LaunchedEffect(queryFlow.value) {
+    queryFlow
+      .debounce(300)
+      .distinctUntilChanged()
+      .collect { debouncedQuery ->
+        if (debouncedQuery.isNotEmpty()) {
+          action(SearchCityAction(debouncedQuery))
+        }
+      }
+  }
 
   Scaffold(topBar = {
     WeatherSearchBar(
@@ -45,8 +65,9 @@ fun CitySelectionScreen(
       cityItems = cityItems,
       action = action,
       favoriteCitiesService = favoriteCitiesService,
-      onQueryChange = {
-        query = it
+      onQueryChange = { newQuery ->
+        query = newQuery
+        queryFlow.value = newQuery
       },
     )
   }) {
@@ -58,7 +79,8 @@ fun CitySelectionScreen(
       state = stateList,
     ) {
       draggableItems(
-        items = favoriteCityItems, dragDropState = dragDropState
+        items = favoriteCityItems,
+        dragDropState = dragDropState
       ) { modifier, item ->
         CityItem(
           item, favoriteCityItems.indexOf(item), action, modifier

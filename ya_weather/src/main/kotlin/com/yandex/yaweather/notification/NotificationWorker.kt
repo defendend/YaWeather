@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -46,7 +47,7 @@ class NotificationWorker @Inject constructor(
   init {
     (context.applicationContext as MainApplication).mainComponent.inject(this)
   }
-var wishYou = "Прекрасное время для прогулки."
+var wishYou = context.applicationContext.getString(R.string.perfect_time_for_walk)
   override suspend fun doWork(): Result {
     return withContext(Dispatchers.IO) {
       try {

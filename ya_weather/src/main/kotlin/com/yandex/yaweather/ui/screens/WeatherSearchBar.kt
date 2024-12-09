@@ -1,5 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -38,14 +40,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
 import com.yandex.yaweather.handler.CityScreenAction
+import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 
-@OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("StateFlowValueCalledInComposition")
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun WeatherSearchBar(
   query: String,
@@ -56,11 +65,30 @@ fun WeatherSearchBar(
 ) {
   var active by remember { mutableStateOf(false) }
   val recentSearches = remember { mutableStateListOf<String>() }
+  val queryFlow = remember { MutableStateFlow(query) }
+  LaunchedEffect(queryFlow.value) {
+    queryFlow
+      .debounce(300)
+      .distinctUntilChanged()
+      .collect { debouncedQuery ->
+        if (debouncedQuery.isNotEmpty()) {
+          action(SearchCityAction(debouncedQuery))
+        }
+      }
+  }
+
+  LaunchedEffect(active) {
+    if (!active) {
+      onQueryChange("")
+    }
+  }
 
   Column(modifier = Modifier.fillMaxWidth()) {
-    SearchBar(query = query,
+    SearchBar(
+      query = query,
       onQueryChange = { newQuery ->
         onQueryChange(newQuery)
+        queryFlow.value = newQuery
         if (newQuery.isEmpty()) active = false
       },
       onSearch = {
@@ -73,6 +101,7 @@ fun WeatherSearchBar(
           IconButton(onClick = {
             active = false
             onQueryChange("")
+            queryFlow.value = ""
           }) {
             Icon(Filled.ArrowBack, contentDescription = "Назад")
           }
@@ -82,7 +111,7 @@ fun WeatherSearchBar(
           )
         }
       },
-      placeholder = { Text(if (query.isEmpty()) "Search cities..." else "") },
+      placeholder = { Text(if (query.isEmpty()) "${LocalContext.current.resources.getString(R.string.search_cities)}..." else "") },
       modifier = Modifier
         .fillMaxWidth()
         .padding(start = 8.dp, end = 8.dp)
@@ -91,11 +120,9 @@ fun WeatherSearchBar(
         .background(MaterialTheme.colorScheme.surface)
         .padding(bottom = 7.dp, top = 10.dp)
         .clip(MaterialTheme.shapes.large)
-
-
     ) {
       if (query.isEmpty() && recentSearches.isNotEmpty()) {
-        Text("Recent searches", modifier = Modifier.padding(8.dp))
+        Text(LocalContext.current.resources.getString(R.string.recent_searches), modifier = Modifier.padding(8.dp))
         LazyColumn(
           modifier = Modifier
             .fillMaxWidth()
@@ -139,7 +166,7 @@ fun WeatherSearchBar(
 
       } else if (query.isNotEmpty()) {
         Text(
-          text = "Search result for \"$query\"",
+          text = "${LocalContext.current.resources.getString(R.string.search_result_for)} \"$query\"",
           modifier = Modifier.padding(8.dp),
           style = MaterialTheme.typography.titleMedium
         )

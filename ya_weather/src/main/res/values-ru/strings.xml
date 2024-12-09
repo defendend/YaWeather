@@ -66,4 +66,81 @@
   <string name="menu">Меню</string>
   <string name="share">Поделиться</string>
   <string name="settings">Настройки</string>
+
+  <string name="thunderstorm_light_rain">Гроза с лёгким дождём</string>
+  <string name="thunderstorm_rain">Гроза с дождём</string>
+  <string name="thunderstorm_heavy_rain">Гроза с сильным дождём</string>
+  <string name="light_thunderstorm">Лёгкая гроза</string>
+  <string name="thunderstorm">Гроза</string>
+  <string name="heavy_thunderstorm">Сильная гроза</string>
+  <string name="ragged_thunderstorm">Рваная гроза</string>
+  <string name="thunderstorm_light_dizzle">Гроза с лёгким моросящим дождём</string>
+  <string name="thunderstorm_dizzle">Гроза с моросящим дождём</string>
+  <string name="thunderstorm_heavy_dizzle">Гроза с сильным моросящим дождём</string>
+
+  <string name="light_intensity_dizzle">Лёгкий моросящий дождь</string>
+  <string name="dizzle">Моросящий дождь</string>
+  <string name="heavy_intensity_dizzle">Сильный моросящий дождь</string>
+  <string name="light_intensity_dizzle_rain">Лёгкий дождь с моросящим дождём</string>
+  <string name="dizzle_rain">Дождь с моросящим дождём</string>
+  <string name="heavy_intensity_dizzle_rain">Сильный дождь с моросящим дождём</string>
+  <string name="shower_rain_and_dizzle">Ливень с моросящим дождём</string>
+  <string name="heavy_shower_rain_and_dizzle">Сильный ливень с моросящим дождём</string>
+  <string name="shower_dizzle">Моросящий дождь с ливнем</string>
+
+  <string name="light_rain">Лёгкий дождь</string>
+  <string name="moderate_rain">Умеренный дождь</string>
+  <string name="heavy_intensity_rain">Сильный дождь</string>
+  <string name="very_heavy_rain">Очень сильный дождь</string>
+  <string name="extreme_rain">Экстремальный дождь</string>
+  <string name="freezing_rain">Замёрзший дождь</string>
+  <string name="light_intensity_shower_rain">Лёгкий ливневой дождь</string>
+  <string name="shower_rain">Ливневой дождь</string>
+  <string name="heavy_intensity_shower_rain">Сильный ливневой дождь</string>
+  <string name="ragged_shower_rain">Рваный ливневой дождь</string>
+
+  <string name="light_snow">Лёгкий снег</string>
+  <string name="snow">Снег</string>
+  <string name="heavy_snow">Сильный снег</string>
+  <string name="sleet">Снежная крупа</string>
+  <string name="light_shower_sleet">Лёгкий дождь с крупой</string>
+  <string name="shower_sleet">Дождь с крупой</string>
+  <string name="light_rain_and_snow">Дождь с снегом</string>
+  <string name="rain_and_snow">Дождь и снег</string>
+  <string name="light_shower_snow">Лёгкий снежный ливень</string>
+  <string name="shower_snow">Снежный ливень</string>
+  <string name="heavy_shower_snow">Сильный снежный ливень</string>
+
+  <string name="mist">Туман</string>
+  <string name="smoke">Дым</string>
+  <string name="haze">Дымка</string>
+  <string name="dust">Песчаные вихри</string>
+  <string name="fog">Туман</string>
+  <string name="sand">Песок</string>
+  <string name="dust_p">Пыль</string>
+  <string name="ash">Вулканический пепел</string>
+  <string name="squall">Шквал</string>
+  <string name="tornado">Торнадо</string>
+
+  <string name="clear_sky">Ясное небо</string>
+
+  <string name="few_clouds">Несколько облаков</string>
+  <string name="scattered_clouds">Рассеянные облака</string>
+  <string name="broken_clouds">Облака с разрывами</string>
+  <string name="overcast_clouds">Облачность</string>
+
+  <string name="unknown">Unknown</string>
+  <string name="search_result_for">Результаты поиска для</string>
+  <string name="search_cities">Поиск городов</string>
+  <string name="recent_searches">Недавние поиски</string>
+  <string name="perfect_time_for_walk">Прекрасное время для прогулки.</string>
+
+    <string name="clouds_message">Оденьтесь потеплее :)</string>
+    <string name="snow_message">Идеальное время для горячего кофе :)</string>
+    <string name="rain_message">Идеальное время для чтения книги :)</string>
+    <string name="clear_message">Прекрасное время для прогулки :)</string>
+    <string name="drizzle_message">Идеальное время, чтобы насладиться тишиной и прохладой :)</string>
+    <string name="thunderstorm_message">Будьте осторожны и избегайте открытых пространств :)</string>
+    <string name="mist_message">Прекрасное время для тихих размышлений :)</string>
+
 </resources>
