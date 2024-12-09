@@ -51,7 +51,7 @@ class MainApplication : Application() {
 
   fun setupPeriodicNotificationUpdate(context: Context) {
     val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(2, TimeUnit.HOURS)
-      .setInitialDelay(16, TimeUnit.MINUTES)
+      .setInitialDelay(2, TimeUnit.HOURS)
       .setConstraints(
         Constraints.Builder()
           .setRequiredNetworkType(NetworkType.CONNECTED)

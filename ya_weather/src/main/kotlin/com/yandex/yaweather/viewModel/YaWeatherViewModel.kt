@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.network.CityItem
-import com.yandex.yaweather.repository.CityFinderRepository
 import com.yandex.yaweather.data.network.WeatherByHour
+import com.yandex.yaweather.repository.CityFinderRepository
 import com.yandex.yaweather.repository.HourlyWeatherRepository
 import com.yandex.yaweather.repository.OpenWeatherRepository
 import com.yandex.yaweather.viewModel.WeatherUiState.WidgetsUiState
@@ -102,8 +102,7 @@ class YaWeatherViewModel @Inject constructor(
       _mapWeather.emit(
         MapUIState(
           Coordinates(
-            _currentWeather.value.coordinates?.lat,
-            _currentWeather.value.coordinates?.lon
+            _currentWeather.value.coordinates?.lat, _currentWeather.value.coordinates?.lon
           )
         )
       )
@@ -274,6 +273,7 @@ class YaWeatherViewModel @Inject constructor(
     }
   }
 }
+
 data class CitySelectionUIState(
   val cityItem: CityItem, val weatherUiState: WeatherUiState, var hourlyWeather: List<WeatherByHour> = emptyList()
 )
