@@ -134,7 +134,7 @@ var wishYou = "Прекрасное время для прогулки."
     val notification = NotificationCompat.Builder(applicationContext, channelId)
       .setSmallIcon(R.drawable.icon)
       .setContentTitle("Информация о погоде")
-      .setDefaults(NotificationCompat.DEFAULT_SOUND)
+      .setDefaults(0)
       .setVisibility(NotificationCompat.VISIBILITY_SECRET)
       .setContentText(weatherInfo)
       .setPriority(NotificationCompat.PRIORITY_HIGH)
