@@ -20,7 +20,7 @@ interface WeatherApi {
     @Query("appid") appid: String = WEATHER_API_KEY
   ): ForecastResponse
 
-  companion object{
+  companion object {
     private const val WEATHER_API_KEY = "7fd3fa2b3bf71545e2ff3b1a1f0871a0"
   }
 }

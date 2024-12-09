@@ -44,10 +44,11 @@ class MainApplication : Application() {
 
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
       "weather_update",
-      ExistingPeriodicWorkPolicy.REPLACE,
+      ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
       workRequest
     )
   }
+
   fun setupPeriodicNotificationUpdate(context: Context) {
     val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(2, TimeUnit.HOURS)
       .setInitialDelay(16, TimeUnit.MINUTES)
