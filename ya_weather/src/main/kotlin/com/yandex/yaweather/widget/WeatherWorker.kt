@@ -21,10 +21,7 @@ class WeatherWorker @Inject constructor(
 ) : CoroutineWorker(context, workerParameters) {
 
   @Inject
-  lateinit var api1: CityApi
-
-  @Inject
-  lateinit var api2: WeatherApi
+  lateinit var api: WeatherApi
 
   init {
     (context.applicationContext as MainApplication).mainComponent.inject(this)
@@ -43,21 +40,16 @@ class WeatherWorker @Inject constructor(
   }
 
   private suspend fun fetchWeatherData(): WidgetData = withContext(Dispatchers.IO) {
-    val response1 = api1.getCity(getLatitude().toDouble(), getLongitude().toDouble())
-    val response2 = api2.current(getLatitude(), getLongitude())
-    if (response1.items == null) {
-      throw Exception("Invalid API response")
-    }
-    if (response2.main == null || response2.sys == null) {
+    val response = api.current(getLatitude(), getLongitude())
+    if (response.main == null || response.sys == null) {
       throw Exception("Invalid API response")
     }
     val data = WidgetData(
-      response1.items[1].engName,
-      response1.items[1].name,
-      response2.main.temp?.toInt(),
-      response2.weather?.get(0)?.description,
-      response2.sys.sunrise,
-      response2.sys.sunset
+      response.name,
+      response.main.temp?.toInt(),
+      response.weather?.get(0)?.description,
+      response.sys.sunrise,
+      response.sys.sunset
     )
     data
   }
@@ -65,8 +57,7 @@ class WeatherWorker @Inject constructor(
   private fun saveWeatherData(data: WidgetData) {
     val prefs = applicationContext.getSharedPreferences("widget", Context.MODE_PRIVATE)
     prefs.edit().apply {
-      putString("engName", data.engName)
-      putString("ruName", data.ruName)
+      putString("name", data.name)
       putInt("temp", data.temp ?: 0)
       putString("description", data.description)
       putLong("sunrise", data.sunrise ?: 0L)
@@ -94,8 +85,7 @@ class WeatherWorker @Inject constructor(
 }
 
 data class WidgetData(
-  val engName: String? = null,
-  val ruName: String? = null,
+  val name: String? = null,
   val temp: Int? = null,
   val description: String? = null,
   val sunrise: Long? = null,

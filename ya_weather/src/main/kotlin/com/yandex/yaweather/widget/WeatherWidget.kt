@@ -28,12 +28,7 @@ class WeatherWidget : AppWidgetProvider() {
 
 private fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
   val preferences = context.getSharedPreferences("widget", Context.MODE_PRIVATE)
-  val language = preferences.getString("language", "ru")
-  val name = if (language == "ru") {
-    preferences.getString("ruName", "Unknown City")
-  } else {
-    preferences.getString("engName", "Unknown City")
-  }
+  val name = preferences.getString("name", "Unknown City")
   var description = preferences.getString("description", "No description")
   val temperature = preferences.getInt("temp", 0)
   val sunrise = preferences.getLong("sunrise", 0L)
