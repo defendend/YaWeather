@@ -239,8 +239,17 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             modifier = Modifier.padding(bottom = 16.dp)
           )
           Spacer(modifier = Modifier.weight(1f))
+          var lastClickTime by remember { mutableStateOf(0L) }
+          val debounceInterval: Long = 1000
+
           IconButton(
-            onClick = { action.invoke(WeatherScreenAction.OpenInfoAction) },
+            onClick = {
+              val currentTime = System.currentTimeMillis()
+              if (currentTime - lastClickTime > debounceInterval) {
+                lastClickTime = currentTime
+                action.invoke(WeatherScreenAction.OpenInfoAction)
+              }
+            },
             colors = IconButtonDefaults.iconButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)
           ) {
             Icon(
