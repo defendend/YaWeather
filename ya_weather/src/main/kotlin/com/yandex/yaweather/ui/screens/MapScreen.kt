@@ -84,7 +84,7 @@ fun MapScreen(
       }
     }}
   val tileOverlayState = rememberTileOverlayState()
-  val currentLocation  = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
+  val currentLocation  = long?.let { lat?.let { it1 -> LatLng(it1.toDouble(), it.toDouble()) } }
 
   val cameraPositionState = rememberCameraPositionState {
     position = if(currentLocation != null)
