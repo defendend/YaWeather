@@ -321,15 +321,18 @@ class YaWeatherViewModel @Inject constructor(
 
   fun loadFavoriteCities(service: FavoriteCitiesService) {
     viewModelScope.launch(Dispatchers.IO) {
-      service.getAllCities().forEach { item ->
-        weatherRepository.getCurrentWeather(item.lat.toString(), item.lon.toString()).onSuccess { coordinatesResponse ->
-          _favoriteCityItems.update {
-            (it + CitySelectionUIState(
-              item, mapResponseToUiState(coordinatesResponse)
-            )).toMutableList()
-          }
-        }.onFailure {
-          _errorMessage.value = it.message.toString()
+      if (_favoriteCityItems.value.size == 0) {
+        service.getAllCities().forEach { item ->
+          weatherRepository.getCurrentWeather(item.lat.toString(), item.lon.toString())
+            .onSuccess { coordinatesResponse ->
+              _favoriteCityItems.update {
+                (it + CitySelectionUIState(
+                  item, mapResponseToUiState(coordinatesResponse)
+                )).toMutableList()
+              }
+            }.onFailure {
+              _errorMessage.value = it.message.toString()
+            }
         }
       }
     }
