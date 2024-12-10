@@ -68,11 +68,15 @@ fun CityItemUi(
   action: (CityScreenAction) -> Unit,
   modifier: Modifier,
   deleteClick: (Unit) -> Unit,
-  redactorClick: (String) -> Unit
+  redactorClick: (String) -> Unit,
 ) {
   val revealSwipe = rememberRevealState()
   var isEditing by remember { mutableStateOf(false) }
   var editedCityName by remember { mutableStateOf(citySelectionUIState.cityItem.name ?: "") }
+
+  LaunchedEffect(citySelectionUIState) {
+    editedCityName = citySelectionUIState.cityItem.name ?: ""
+  }
 
   if (isEditing) {
     AlertDialog(
