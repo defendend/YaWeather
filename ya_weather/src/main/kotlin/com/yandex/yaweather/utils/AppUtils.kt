@@ -1,5 +1,9 @@
 package com.yandex.yaweather.utils
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 import android.content.Context
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.network.Per3Hour
@@ -209,3 +213,16 @@ fun getMessage(code: Int, context: Context): Comparable<*> {
     else -> R.string.unknown
   }
 }
+
+
+fun getDayOfWeekFromDate(context: Context, dateString: String): String {
+  return try {
+    val date = LocalDate.parse(dateString)
+    val currentLocale: Locale = context.resources.configuration.locales[0]
+    val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.FULL, currentLocale)
+    dayOfWeek
+  } catch (e: Exception) {
+    "Неверный формат даты"
+  }
+}
+

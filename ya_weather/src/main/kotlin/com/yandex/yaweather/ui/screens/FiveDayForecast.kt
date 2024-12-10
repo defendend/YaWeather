@@ -2,6 +2,7 @@ package com.yandex.yaweather.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,8 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 //noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.ui.platform.LocalContext
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.network.Per3Hour
+import com.yandex.yaweather.utils.getDayOfWeekFromDate
 import com.yandex.yaweather.utils.getForecastWeatherByDay
 
 @Composable
@@ -36,7 +39,8 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
   Column(
     modifier = Modifier
       .fillMaxWidth()
-      .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+      .background(MaterialTheme.colorScheme.primary,
+        RoundedCornerShape(16.dp))
       .padding(16.dp)
   ) {
     if (forecast.isEmpty()) {
@@ -67,23 +71,29 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
           val maxTemp = dayForecast.mapNotNull { it.main?.temp }.maxOrNull()?.toInt()
           val icon = getForecastWeatherByDay(dayForecast)
 
-          Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+          Box(
             modifier = Modifier
               .fillMaxWidth()
-              .padding(vertical = 12.dp)
+              .padding(vertical = 12.dp),
+            contentAlignment = Alignment.Center
           ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              modifier = Modifier.align(Alignment.CenterStart)
+            ) {
               Spacer(modifier = Modifier.width(4.dp))
               Text(
-                text = text ?: "N/A",
+                text = getDayOfWeekFromDate(LocalContext.current, text ?: "") ?: "N/A",
                 color = MaterialTheme.colorScheme.inversePrimary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
               )
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.Center
+            ) {
               Icon(
                 painter = painterResource(icon),
                 contentDescription = null,
@@ -92,15 +102,18 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
               )
               Spacer(modifier = Modifier.width(4.dp))
               Text(
-                minTemp?.toString() ?: "N/A",
+                "${minTemp?.toString() ?: "N/A"}°",
                 color = MaterialTheme.colorScheme.inversePrimary,
                 fontSize = 20.sp
               )
             }
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
               Spacer(modifier = Modifier.width(4.dp))
               Text(
-                maxTemp?.toString() ?: "N/A",
+                "${maxTemp?.toString() ?: "N/A"}°",
                 color = MaterialTheme.colorScheme.inversePrimary,
                 fontSize = 20.sp
               )
