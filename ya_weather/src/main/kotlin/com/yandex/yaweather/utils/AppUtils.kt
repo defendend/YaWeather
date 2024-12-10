@@ -1,14 +1,12 @@
 package com.yandex.yaweather.utils
 
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
-import java.util.Locale
 import android.content.Context
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.network.Per3Hour
 import com.yandex.yaweather.data.network.WeatherByHour
-import java.util.Calendar
+import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 fun getForecastWeatherByDay(lst: List<Per3Hour>) : Int
 {
@@ -191,7 +189,7 @@ fun getWeatherIconAndMessage(weatherCondition: String): Pair<Int, Int> {
       messageResId = R.string.mist_message
     }
     else -> {
-      icon = R.drawable.sasha
+      icon = R.drawable.cloudsday
       messageResId = R.string.perfect_time_for_walk
     }
   }
