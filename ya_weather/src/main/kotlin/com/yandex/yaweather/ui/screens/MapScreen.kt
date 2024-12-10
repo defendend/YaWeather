@@ -1,6 +1,9 @@
 package com.yandex.yaweather.ui.screens
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.provider.CallLog.Locations.LATITUDE
+import android.provider.CallLog.Locations.LONGITUDE
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -50,14 +53,19 @@ import com.yandex.yaweather.handler.MapScreenAction.UpdateMarkerPositionAction
 import com.yandex.yaweather.viewModel.MapUIState
 import java.net.URL
 
-
+private const val LOCATION_FILE = "_location"
 @Composable
 fun MapScreen(
   uiState: MapUIState,
   action: (MapScreenAction) -> Unit,
 ) {
   var selectedMenuItem by remember { mutableStateOf<String?>("Temperature") }
+  val context = LocalContext.current
 
+  val preferences =
+    context.getSharedPreferences(context.packageName + LOCATION_FILE, MODE_PRIVATE)
+  val lat = preferences.getString(LATITUDE, "0.0")
+  val long = preferences.getString(LONGITUDE, "0.0")
   val tileProvider = remember {
     object : UrlTileProvider(256, 256) {
       override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
@@ -76,7 +84,7 @@ fun MapScreen(
       }
     }}
   val tileOverlayState = rememberTileOverlayState()
-  val currentLocation  = uiState.markerPosition?.lon?.let { uiState.markerPosition.lat?.let { it1 -> LatLng(it1, it) } }
+  val currentLocation  = long?.let { lat?.let { it1 -> LatLng(it1.toDouble(), it.toDouble()) } }
 
   val cameraPositionState = rememberCameraPositionState {
     position = if(currentLocation != null)
@@ -84,10 +92,9 @@ fun MapScreen(
     else  CameraPosition.fromLatLngZoom(LatLng(0.0,0.0), 1f)
   }
   var isMenuExpanded by remember { mutableStateOf(false) }
-  val markerTitle: String
+  var markerTitle by remember { mutableStateOf("") }
   var markerPosition by remember { mutableStateOf(currentLocation) }
   var isNightMode by remember { mutableStateOf(false) }
-  val context = LocalContext.current
 
 
   when (selectedMenuItem) {
