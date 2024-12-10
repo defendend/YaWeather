@@ -135,16 +135,21 @@
   <string name="search_cities">Search cities</string>
   <string name="recent_searches">Recent searches</string>
 
-  <string name="perfect_time_for_walk">Perfect time for a walk.</string>
-    <string name="clouds_message">Dress warmly :)</string>
-    <string name="snow_message">Perfect time for hot coffee :)</string>
-    <string name="rain_message">Perfect time for reading a book :)</string>
-    <string name="clear_message">Perfect time for a walk :)</string>
-    <string name="drizzle_message">Perfect time to enjoy the silence and coolness :)</string>
-    <string name="thunderstorm_message">Be careful and avoid open spaces :)</string>
-    <string name="mist_message">Perfect time for quiet reflections :)</string>
+  <string name="perfect_time_for_walk">Perfect time for a walk</string>
+    <string name="clouds_message">Dress warmly</string>
+    <string name="snow_message">Perfect time for hot coffee</string>
+    <string name="rain_message">Perfect time for reading a book</string>
+    <string name="clear_message">Perfect time for a walk</string>
+    <string name="drizzle_message">Perfect time to enjoy the silence and coolness</string>
+    <string name="thunderstorm_message">Be careful and avoid open spaces</string>
+    <string name="mist_message">Perfect time for quiet reflections</string>
 
   <string name="weather_today_in_city">The weather today in the city</string>
   <string name="temperature">Temperature</string>
   <string name="condition">Weather condition</string>
+
+  <string name="weather_info">Wather information</string>
+  <string name="wind_speed">Wind speed</string>
+  <string name="pressure">Pressure</string>
+  <string name="precipitation">Precipitation</string>
 </resources>

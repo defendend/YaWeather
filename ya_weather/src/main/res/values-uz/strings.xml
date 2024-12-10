@@ -136,15 +136,22 @@
   <string name="recent_searches">So\'nggi qidiruvlar</string>
   <string name="perfect_time_for_walk">Ajoyib sayr qilish vaqti.</string>
 
-    <string name="clouds_message">Issiqroq kiying :)</string>
-    <string name="snow_message">Issiq kofe ichish uchun ajoyib vaqt :)</string>
-    <string name="rain_message">Kitob o\‘qish uchun ajoyib vaqt :)</string>
-    <string name="clear_message">Sayr qilish uchun ajoyib vaqt :)</string>
-    <string name="drizzle_message">Sukut va salqinlikdan zavqlanish uchun ajoyib vaqt :)</string>
-    <string name="thunderstorm_message">Ehtiyot bo\‘ling va ochiq joylardan qoching :)</string>
+    <string name="clouds_message">Issiqroq kiying</string>
+    <string name="snow_message">Issiq kofe ichish uchun ajoyib vaqt</string>
+    <string name="rain_message">Kitob o\‘qish uchun ajoyib vaqt</string>
+    <string name="clear_message">Sayr qilish uchun ajoyib vaqt</string>
+    <string name="drizzle_message">Sukut va salqinlikdan zavqlanish uchun ajoyib vaqt</string>
+    <string name="thunderstorm_message">Ehtiyot bo\‘ling va ochiq joylardan qoching</string>
     <string name="mist_message">Tinch o\‘ylar uchun ajoyib vaqt :)</string>
 
   <string name="weather_today_in_city">Bugungi havo shahrida</string>
-  <string name="temperature">temperatura</string>
+  <string name="temperature">Temperatura</string>
   <string name="condition">Havo holati</string>
+
+  <string name="weather_info">Ob-havo ma\'lumotlari</string>
+  <string name="wind_speed">Shamol tezligi</string>
+  <string name="pressure">Bosim</string>
+  <string name="precipitation">Yog\'ingarchilik</string>
+
+
 </resources>

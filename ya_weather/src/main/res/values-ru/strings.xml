@@ -137,15 +137,23 @@
   <string name="recent_searches">Недавние поиски</string>
   <string name="perfect_time_for_walk">Прекрасное время для прогулки.</string>
 
-    <string name="clouds_message">Оденьтесь потеплее :)</string>
-    <string name="snow_message">Идеальное время для горячего кофе :)</string>
-    <string name="rain_message">Идеальное время для чтения книги :)</string>
-    <string name="clear_message">Прекрасное время для прогулки :)</string>
-    <string name="drizzle_message">Идеальное время, чтобы насладиться тишиной и прохладой :)</string>
-    <string name="thunderstorm_message">Будьте осторожны и избегайте открытых пространств :)</string>
-    <string name="mist_message">Прекрасное время для тихих размышлений :)</string>
+    <string name="clouds_message">Оденьтесь потеплее</string>
+    <string name="snow_message">Идеальное время для горячего кофе</string>
+    <string name="rain_message">Идеальное время для чтения книги</string>
+    <string name="clear_message">Прекрасное время для прогулки</string>
+    <string name="drizzle_message">Идеальное время, чтобы насладиться тишиной и прохладой</string>
+    <string name="thunderstorm_message">Будьте осторожны и избегайте открытых пространств</string>
+    <string name="mist_message">Прекрасное время для тихих размышлений</string>
 
   <string name="weather_today_in_city">Погода сегодня в городе</string>
   <string name="temperature">Температура</string>
   <string name="condition">Условия</string>
+
+  <string name="weather_info">Информация о погоде</string>
+  <string name="wind_speed">Скорость ветра</string>
+  <string name="pressure">Давление</string>
+  <string name="precipitation">Осадки</string>
+
+
+
 </resources>
