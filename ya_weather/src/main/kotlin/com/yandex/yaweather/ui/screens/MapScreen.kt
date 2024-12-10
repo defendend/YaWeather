@@ -97,7 +97,7 @@ fun MapScreen(
     }
 
     "Wind" -> {
-      markerTitle = "${LocalContext.current.resources.getString(R.string.wind_speed)}: ${uiState.windSpeed}m/s"
+      markerTitle = "${LocalContext.current.resources.getString(R.string.wind_speed)}: ${uiState.windSpeed}km/h"
 
     }
 
