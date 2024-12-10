@@ -6,13 +6,16 @@ import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.yandex.yaweather.data.network.CityItem
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 
 
 private const val CITIES_LIST_KEY = "cities_list"
 private const val LOCATION_FILE = "_favorite_cities"
 
 
-class FavoriteCitiesService(private val context: Context) {
+@Singleton
+class FavoriteCitiesService@Inject constructor(private val context: Context) {
 
   private val preferences = context.getSharedPreferences(
     context.applicationContext.packageName + LOCATION_FILE,
@@ -52,8 +55,6 @@ class FavoriteCitiesService(private val context: Context) {
 
   fun moveCity(fromIndex: Int, toIndex: Int) {
     val cities = getCitiesFromPreferences()
-
-
     if (fromIndex in cities.indices && toIndex in cities.indices) {
       if (fromIndex == toIndex) {
         return
@@ -64,5 +65,22 @@ class FavoriteCitiesService(private val context: Context) {
       saveCitiesToPreferences(cities)
     }
   }
+
+  fun removeCityAt(index: Int) {
+    val cities = getCitiesFromPreferences()
+    if (index in cities.indices) {
+      cities.removeAt(index)
+      saveCitiesToPreferences(cities)
+    }
+  }
+
+  fun editCityNameAt(index: Int, newCityName: String) {
+    val cities = getCitiesFromPreferences()
+    if (index in cities.indices) {
+      cities[index] = cities[index].copy(name = newCityName, engName = newCityName)
+      saveCitiesToPreferences(cities)
+    }
+  }
+
 }
 

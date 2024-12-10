@@ -36,8 +36,10 @@ import com.yandex.yaweather.data.diModules.FavoriteCitiesService
 import com.yandex.yaweather.data.diModules.LocationService
 import com.yandex.yaweather.handler.CityScreenAction
 import com.yandex.yaweather.handler.CityScreenAction.AddToFavoriteCityList
+import com.yandex.yaweather.handler.CityScreenAction.EditFavoriteCityName
 import com.yandex.yaweather.handler.CityScreenAction.MoveCity
 import com.yandex.yaweather.handler.CityScreenAction.OpenSelectedCityScreen
+import com.yandex.yaweather.handler.CityScreenAction.RemoveFavoriteCity
 import com.yandex.yaweather.handler.CityScreenAction.SearchCityAction
 import com.yandex.yaweather.handler.InfoScreenAction
 import com.yandex.yaweather.handler.MapScreenAction
@@ -178,8 +180,10 @@ class MainActivity : ComponentActivity() {
             arguments = listOf(navArgument("weatherUiStateIndex") { type = NavType.IntType })
           ) { navBackStackEntry ->
             val weatherUiStateIndex = navBackStackEntry.arguments?.getInt("weatherUiStateIndex")
-            WeatherScreen(favoriteCityItems[weatherUiStateIndex ?: 0]) { uiAction ->
+            if (weatherUiStateIndex != null) {
+            WeatherScreen(favoriteCityItems[weatherUiStateIndex]) { uiAction ->
               handleAction(navController, uiAction)
+            }
             }
           }
           composable(Route.infoScreen) {
@@ -327,6 +331,12 @@ class MainActivity : ComponentActivity() {
 
       is MoveCity -> {
         viewModel.moveCity(action.fromIndex, action.toIndex)
+      }
+      is RemoveFavoriteCity -> {
+        viewModel.removeFavoriteCity(action.index)
+      }
+      is EditFavoriteCityName -> {
+        viewModel.editFavoriteCity(action.index, action.newCityName)
       }
     }
   }

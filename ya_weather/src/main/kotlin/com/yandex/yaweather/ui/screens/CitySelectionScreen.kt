@@ -23,10 +23,12 @@ import com.yandex.yaweather.utils.dragContainer
 import com.yandex.yaweather.utils.draggableItems
 import com.yandex.yaweather.utils.rememberDragDropState
 import com.yandex.yaweather.viewModel.CitySelectionUIState
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+@OptIn(FlowPreview::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "StateFlowValueCalledInComposition")
 @Composable
 fun CitySelectionScreen(
@@ -43,7 +45,7 @@ fun CitySelectionScreen(
     onMove = { fromIndex, toIndex ->
       action(CityScreenAction.MoveCity(fromIndex, toIndex))
       favoriteCitiesService.moveCity(fromIndex, toIndex)
-    }
+    },
   )
 
   val queryFlow = remember { MutableStateFlow(query) }
@@ -82,8 +84,22 @@ fun CitySelectionScreen(
         items = favoriteCityItems,
         dragDropState = dragDropState
       ) { modifier, item ->
-        CityItem(
-          item, favoriteCityItems.indexOf(item), action, modifier
+        CityItemUi(
+          item,
+          favoriteCityItems.indexOf(item),
+          action,
+          modifier,
+          deleteClick = {
+            val index = favoriteCityItems.indexOf(item)
+            action(CityScreenAction.RemoveFavoriteCity(index))
+            favoriteCitiesService.removeCityAt(index)
+          },
+          redactorClick = { newCityName ->
+            val index = favoriteCityItems.indexOf(item)
+            action(CityScreenAction.EditFavoriteCityName(index, newCityName))
+            favoriteCitiesService.editCityNameAt(index, newCityName)
+          }
+
         )
       }
     }
