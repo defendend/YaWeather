@@ -163,7 +163,9 @@ class MainActivity : ComponentActivity() {
               }
             },
           ) {
-            SplashScreen { action -> handleSplashScreenAction(navController, action) }
+            val isLoaded by viewModel.isDataLoaded.collectAsState()
+
+            SplashScreen(isLoaded) { action -> handleSplashScreenAction(navController, action) }
           }
           composable(Route.addCityScreen) {
             CitySelectionScreen(cityItems, favoriteCitiesService, favoriteCityItems) { action ->
@@ -181,9 +183,9 @@ class MainActivity : ComponentActivity() {
           ) { navBackStackEntry ->
             val weatherUiStateIndex = navBackStackEntry.arguments?.getInt("weatherUiStateIndex")
             if (weatherUiStateIndex != null) {
-            WeatherScreen(favoriteCityItems[weatherUiStateIndex]) { uiAction ->
-              handleAction(navController, uiAction)
-            }
+              WeatherScreen(favoriteCityItems[weatherUiStateIndex]) { uiAction ->
+                handleAction(navController, uiAction)
+              }
             }
           }
           composable(Route.infoScreen) {
@@ -332,9 +334,11 @@ class MainActivity : ComponentActivity() {
       is MoveCity -> {
         viewModel.moveCity(action.fromIndex, action.toIndex)
       }
+
       is RemoveFavoriteCity -> {
         viewModel.removeFavoriteCity(action.index)
       }
+
       is EditFavoriteCityName -> {
         viewModel.editFavoriteCity(action.index, action.newCityName)
       }
@@ -349,81 +353,84 @@ class MainActivity : ComponentActivity() {
             inclusive = true
           }
           launchSingleTop = true
+          anim {
+            enter = android.R.anim.fade_in
+            exit = android.R.anim.fade_out
+          }
         }
       }
     }
   }
 
-
-  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-      if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-        fetchLocation()
-      } else {
-        Toast.makeText(this, "Location permission is required for weather updates", Toast.LENGTH_SHORT).show()
-      }
-    }
-  }
-
-  private fun fetchLocation() {
-    if (ActivityCompat.checkSelfPermission(
-        this, permission.ACCESS_COARSE_LOCATION
-      ) == PackageManager.PERMISSION_GRANTED
-    ) {
-      fusedLocationClient.lastLocation.addOnCompleteListener { task ->
-        val location = task.result
-        location?.let {
-          val latitude = it.latitude
-          val longitude = it.longitude
-          locationService.setLocation(latitude to longitude)
-        } ?: run {
-          requestNewLocationData()
-          Toast.makeText(this, "Unable to get location. Try again.", Toast.LENGTH_SHORT).show()
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+      super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+      if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          fetchLocation()
+        } else {
+          Toast.makeText(this, "Location permission is required for weather updates", Toast.LENGTH_SHORT).show()
         }
       }
     }
-  }
 
-  @SuppressLint("MissingPermission")
-  private fun requestNewLocationData() {
-
-    // Initializing LocationRequest
-    // object with appropriate methods
-    val mLocationRequest = LocationRequest()
-    mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-    mLocationRequest.interval = 5
-    mLocationRequest.fastestInterval = 0
-    mLocationRequest.numUpdates = 1
-
-    // setting LocationRequest
-    // on FusedLocationClient
-    fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-    fusedLocationClient.requestLocationUpdates(
-      mLocationRequest, mLocationCallback, Looper.getMainLooper()
-    )
-  }
-
-  private val mLocationCallback: LocationCallback = object : LocationCallback() {
-    override fun onLocationResult(locationResult: LocationResult) {
-      val mLastLocation = locationResult.lastLocation
-      if (mLastLocation != null) {
-        locationService.setLocation(mLastLocation.latitude to mLastLocation.longitude)
+    private fun fetchLocation() {
+      if (ActivityCompat.checkSelfPermission(
+          this, permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+      ) {
+        fusedLocationClient.lastLocation.addOnCompleteListener { task ->
+          val location = task.result
+          location?.let {
+            val latitude = it.latitude
+            val longitude = it.longitude
+            locationService.setLocation(latitude to longitude)
+          } ?: run {
+            requestNewLocationData()
+            Toast.makeText(this, "Unable to get location. Try again.", Toast.LENGTH_SHORT).show()
+          }
+        }
       }
     }
-  }
 
-  private fun notifyWidgetUpdate() {
-    val ids = AppWidgetManager.getInstance(applicationContext).getAppWidgetIds(
-      ComponentName(
-        applicationContext,
-        WeatherWidget::class.java
+    @SuppressLint("MissingPermission")
+    private fun requestNewLocationData() {
+
+      // Initializing LocationRequest
+      // object with appropriate methods
+      val mLocationRequest = LocationRequest()
+      mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+      mLocationRequest.interval = 5
+      mLocationRequest.fastestInterval = 0
+      mLocationRequest.numUpdates = 1
+
+      // setting LocationRequest
+      // on FusedLocationClient
+      fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+      fusedLocationClient.requestLocationUpdates(
+        mLocationRequest, mLocationCallback, Looper.getMainLooper()
       )
-    )
-    val intent = Intent(applicationContext, WeatherWidget::class.java).apply {
-      action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-      putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
     }
-    applicationContext.sendBroadcast(intent)
+
+    private val mLocationCallback: LocationCallback = object : LocationCallback() {
+      override fun onLocationResult(locationResult: LocationResult) {
+        val mLastLocation = locationResult.lastLocation
+        if (mLastLocation != null) {
+          locationService.setLocation(mLastLocation.latitude to mLastLocation.longitude)
+        }
+      }
+    }
+
+    private fun notifyWidgetUpdate() {
+      val ids = AppWidgetManager.getInstance(applicationContext).getAppWidgetIds(
+        ComponentName(
+          applicationContext,
+          WeatherWidget::class.java
+        )
+      )
+      val intent = Intent(applicationContext, WeatherWidget::class.java).apply {
+        action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+      }
+      applicationContext.sendBroadcast(intent)
+    }
   }
-}

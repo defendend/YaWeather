@@ -1,5 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -9,6 +10,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +24,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -38,28 +43,45 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun SplashScreen(action: (SplashScreenAction) -> Unit) {
-  Box(
-    modifier = Modifier
-      .fillMaxWidth()
-      .background(
-        brush = Brush.verticalGradient(
-          colors = listOf(
-            Color(0xFF4682B4), Color(0xFF5A9BD4), Color(0xFF87CEFA), Color(0xFFAEDCF3), Color(0xFFB0E0E6)
+fun SplashScreen(isDataLoaded: Boolean, action: (SplashScreenAction) -> Unit) {
+  var timerCompleted by remember { mutableStateOf(false) }
+  var isVisible by remember { mutableStateOf(true) }
+
+  LaunchedEffect(Unit) {
+    delay(3000)
+    timerCompleted = true
+  }
+
+  AnimatedVisibility(
+    visible = isVisible,
+    exit = fadeOut(animationSpec = tween(durationMillis = 500))
+  )
+  {
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .background(
+          brush = Brush.verticalGradient(
+            colors = listOf(
+              Color(0xFF4682B4), Color(0xFF5A9BD4), Color(0xFF87CEFA), Color(0xFFAEDCF3), Color(0xFFB0E0E6)
+            )
           )
         )
-      )
-  ) {
-    AnimatedSun()
-    MovingCloud()
-    LaunchedEffect(Unit) {
-      delay(3000)
-      action(SplashScreenAction.OpenMainScreen)
+    ) {
+      AnimatedSun()
+      MovingCloud()
     }
+    if (isDataLoaded && timerCompleted) {
+      LaunchedEffect(Unit) {
+        isVisible = false
+        delay(500)
+        action(SplashScreenAction.OpenMainScreen)
+      }
+    }
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
+    systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
   }
-  val systemUiController = rememberSystemUiController()
-  systemUiController.setStatusBarColor(MaterialTheme.colorScheme.primary)
-  systemUiController.setNavigationBarColor(MaterialTheme.colorScheme.primary)
 }
 
 

@@ -1,6 +1,5 @@
 package com.yandex.yaweather.viewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
@@ -34,6 +33,9 @@ class YaWeatherViewModel @Inject constructor(
   private val _currentWeatherUIState = MutableStateFlow(CitySelectionUIState(CityItem(), WeatherUiState()))
   val userCurrentWeatherState: StateFlow<CitySelectionUIState>
     get() = _currentWeatherUIState.asStateFlow()
+
+  private val _isDataLoaded = MutableStateFlow(false)
+  val isDataLoaded = _isDataLoaded.asStateFlow()
 
   private val _mapWeather = MutableStateFlow(MapUIState())
   val mapWeatherState: StateFlow<MapUIState>
@@ -127,6 +129,7 @@ class YaWeatherViewModel @Inject constructor(
           )
         )
       )
+      _isDataLoaded.emit(true)
     }
   }
 
