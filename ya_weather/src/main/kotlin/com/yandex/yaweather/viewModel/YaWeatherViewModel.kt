@@ -1,5 +1,6 @@
 package com.yandex.yaweather.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
@@ -330,6 +331,24 @@ class YaWeatherViewModel @Inject constructor(
       }
     }
   }
+
+  fun removeFavoriteCity(index: Int) {
+    if (index in _favoriteCityItems.value.indices) {
+      _favoriteCityItems.value = _favoriteCityItems.value.toMutableList().apply {
+        removeAt(index)
+      }
+    }
+  }
+
+  fun editFavoriteCity(index: Int, newCityName: String) {
+    if (index in _favoriteCityItems.value.indices) {
+      _favoriteCityItems.value = _favoriteCityItems.value.toMutableList().apply {
+        val updatedCity = this[index].cityItem.copy(name = newCityName, engName = newCityName)
+        this[index] = this[index].copy(cityItem = updatedCity)
+      }
+    }
+  }
+
 }
 
 data class CitySelectionUIState(

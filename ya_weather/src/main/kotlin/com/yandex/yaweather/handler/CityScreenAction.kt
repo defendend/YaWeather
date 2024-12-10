@@ -7,4 +7,6 @@ sealed class CityScreenAction {
   data class AddToFavoriteCityList(val cityItem: CityItem) : CityScreenAction()
   data class OpenSelectedCityScreen(val index: Int): CityScreenAction()
   data class MoveCity(val fromIndex: Int, val toIndex: Int): CityScreenAction()
+  data class RemoveFavoriteCity(val index: Int): CityScreenAction()
+  data class EditFavoriteCityName(val index: Int, val newCityName: String): CityScreenAction()
 }
