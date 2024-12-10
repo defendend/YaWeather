@@ -14,7 +14,9 @@ import com.yandex.yaweather.MainActivity
 import com.yandex.yaweather.R
 import com.yandex.yaweather.dagger.application.MainApplication
 import com.yandex.yaweather.repository.OpenWeatherRepository
-import com.yandex.yaweather.utils.getWeatherIconAndMessage
+import com.yandex.yaweather.utils.getMessage
+import com.yandex.yaweather.utils.getMessageForNotification
+import com.yandex.yaweather.utils.getWeatherIcon
 import data.network.CoordinatesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -79,10 +81,9 @@ var wishYou = context.applicationContext.getString(R.string.perfect_time_for_wal
 
   private fun parseWeatherInfo(weatherResponse: CoordinatesResponse?): String {
     return weatherResponse?.let { it ->
-      it.weather?.firstOrNull()?.main.let {
-
-        icon = getWeatherIconAndMessage(it.toString()).first
-        wishYou = applicationContext.resources.getString(getWeatherIconAndMessage(it.toString()).second)
+      it.weather?.firstOrNull()?.id.let {
+        icon = getWeatherIcon(it?: 900)
+        wishYou = applicationContext.resources.getString(getMessageForNotification(it?: 900))
       }
       it.weather?.firstOrNull()?.description.let {
      }

@@ -155,46 +155,31 @@ fun getWeatherDescription(code: Int, context: Context): String {
   }
 }
 
-fun getWeatherIconAndMessage(weatherCondition: String): Pair<Int, Int> {
-  val icon: Int
-  val messageResId: Int
-
-  when (weatherCondition) {
-    "Clouds" -> {
-      icon = R.drawable.cloudsday
-      messageResId = R.string.clouds_message
-    }
-    "Snow" -> {
-      icon = R.drawable.snowday
-      messageResId = R.string.snow_message
-    }
-    "Rain" -> {
-      icon = R.drawable.rainyday
-      messageResId = R.string.rain_message
-    }
-    "Clear" -> {
-      icon = R.drawable.cloudy
-      messageResId = R.string.clear_message
-    }
-    "Drizzle" -> {
-      icon = R.drawable.cloudy
-      messageResId = R.string.drizzle_message
-    }
-    "Thunderstorm" -> {
-      icon = R.drawable.thunderstormm
-      messageResId = R.string.thunderstorm_message
-    }
-    "Mist" -> {
-      icon = R.drawable.cloudymin
-      messageResId = R.string.mist_message
-    }
-    else -> {
-      icon = R.drawable.cloudsday
-      messageResId = R.string.perfect_time_for_walk
-    }
+fun getMessageForNotification(code: Int): Int  {
+  return when (code) {
+    in 801..804 -> R.string.clouds_message
+    in 701..781 -> R.string.thunderstorm_message
+    in 600..622 -> R.string.drizzle_message
+    in 500..531 -> R.string.rain_message
+    in 300..321 -> R.string.snow_message
+    in 200..232 -> R.string.mist_message
+    800 -> R.string.perfect_time_for_walk
+    else -> R.string.unknown
   }
+}
 
-  return Pair(icon, messageResId)
+fun getWeatherIcon(code: Int): Int {
+  return when (code) {
+    in 200..202 -> R.drawable.rainyday
+    in 230..233 -> R.drawable.thunderstormm
+    in 300..302 -> R.drawable.rainyday
+    in 500..522 -> R.drawable.rainyday
+    in 600..623 -> R.drawable.snowday
+    in 700..751 -> R.drawable.cloudymin
+    800 -> R.drawable.ic_sun
+    in 801..804 -> R.drawable.cloudsday
+    else -> R.drawable.sasha
+  }
 }
 
 
