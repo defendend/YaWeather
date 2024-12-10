@@ -1,5 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,21 +13,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-//noinspection UsingMaterialAndMaterial3Libraries
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.ui.platform.LocalContext
 import com.yandex.yaweather.R
+import com.yandex.yaweather.celsius
 import com.yandex.yaweather.data.network.Per3Hour
 import com.yandex.yaweather.utils.getDayOfWeekFromDate
 import com.yandex.yaweather.utils.getForecastWeatherByDay
@@ -39,14 +40,14 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
   Column(
     modifier = Modifier
       .fillMaxWidth()
-      .background(MaterialTheme.colorScheme.primary,
-        RoundedCornerShape(16.dp))
+      .background(
+        MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)
+      )
       .padding(16.dp)
   ) {
     if (forecast.isEmpty()) {
       CircularProgressIndicator(
-        modifier = Modifier
-          .align(Alignment.CenterHorizontally),
+        modifier = Modifier.align(Alignment.CenterHorizontally),
         color = MaterialTheme.colorScheme.inversePrimary,
         strokeWidth = 4.dp
       )
@@ -74,12 +75,10 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
           Box(
             modifier = Modifier
               .fillMaxWidth()
-              .padding(vertical = 12.dp),
-            contentAlignment = Alignment.Center
+              .padding(vertical = 12.dp), contentAlignment = Alignment.Center
           ) {
             Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.align(Alignment.CenterStart)
+              verticalAlignment = Alignment.CenterVertically, modifier = Modifier.align(Alignment.CenterStart)
             ) {
               Spacer(modifier = Modifier.width(4.dp))
               Text(
@@ -91,8 +90,7 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
             }
 
             Row(
-              verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.Center
+              verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center
             ) {
               Icon(
                 painter = painterResource(icon),
@@ -102,20 +100,27 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
               )
               Spacer(modifier = Modifier.width(4.dp))
               Text(
-                "${minTemp?.toString() ?: "N/A"}°",
-                color = MaterialTheme.colorScheme.inversePrimary,
-                fontSize = 20.sp
+                text = if (celsius.value) {
+                  val celsiusTemp = minTemp?.let { it - 273.15 }?.toInt() ?: "N/A"
+                  "$celsiusTemp°C"
+                } else {
+                  val fahrenheitTemp = minTemp?.let { (it - 273.15) * 9 / 5 + 32 }?.toInt() ?: "N/A"
+                  "$fahrenheitTemp°F"
+                }, color = MaterialTheme.colorScheme.inversePrimary, fontSize = 20.sp
               )
             }
             Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier.align(Alignment.CenterEnd)
+              verticalAlignment = Alignment.CenterVertically, modifier = Modifier.align(Alignment.CenterEnd)
             ) {
               Spacer(modifier = Modifier.width(4.dp))
               Text(
-                "${maxTemp?.toString() ?: "N/A"}°",
-                color = MaterialTheme.colorScheme.inversePrimary,
-                fontSize = 20.sp
+                text = if (celsius.value) {
+                  val celsiusTemp = maxTemp?.let { it - 273.15 }?.toInt() ?: "N/A"
+                  "$celsiusTemp°C"
+                } else {
+                  val fahrenheitTemp = maxTemp?.let { (it - 273.15) * 9 / 5 + 32 }?.toInt() ?: "N/A"
+                  "$fahrenheitTemp°F"
+                }, color = MaterialTheme.colorScheme.inversePrimary, fontSize = 20.sp
               )
             }
           }
@@ -124,5 +129,3 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
     }
   }
 }
-
-

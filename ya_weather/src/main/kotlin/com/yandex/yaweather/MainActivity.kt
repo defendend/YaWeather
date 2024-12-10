@@ -50,8 +50,11 @@ import com.yandex.yaweather.handler.WeatherScreenAction
 import com.yandex.yaweather.handler.WeatherScreenAction.AddCityAction
 import com.yandex.yaweather.handler.WeatherScreenAction.OpenInfoAction
 import com.yandex.yaweather.handler.WeatherScreenAction.OpenMapAction
+import com.yandex.yaweather.handler.WeatherScreenAction.SetCelsius
 import com.yandex.yaweather.handler.WeatherScreenAction.SetLanguage
+import com.yandex.yaweather.handler.WeatherScreenAction.SetPressure
 import com.yandex.yaweather.handler.WeatherScreenAction.SetTheme
+import com.yandex.yaweather.handler.WeatherScreenAction.SetWindSpeed
 import com.yandex.yaweather.ui.screens.CitySelectionScreen
 import com.yandex.yaweather.ui.screens.InfoScreen
 import com.yandex.yaweather.ui.screens.MapScreen
@@ -74,6 +77,9 @@ enum class Lang {
 
 val darkTheme = mutableStateOf(false)
 val appLanguage = mutableStateOf(Lang.ru)
+val celsius = mutableStateOf(true)
+val pressurePHa = mutableStateOf(true)
+val windSpeedMS = mutableStateOf(true)
 private const val LOCATION_FILE = "_location"
 
 class MainActivity : ComponentActivity() {
@@ -134,6 +140,9 @@ class MainActivity : ComponentActivity() {
         Lang.uz
       } else Lang.en
       setLanguage(appLanguage.value, this)
+      celsius.value = preferences.getBoolean("celsius", true)
+      pressurePHa.value = preferences.getBoolean("pressure", true)
+      windSpeedMS.value = preferences.getBoolean("wind", false)
       YaWeatherTheme(darkTheme.value) {
 
         NavHost(
@@ -237,12 +246,28 @@ class MainActivity : ComponentActivity() {
   }
 
   private fun handleAction(navController: NavController, action: WeatherScreenAction) {
+    val preferences =
+      applicationContext.getSharedPreferences(applicationContext.packageName + LOCATION_FILE, MODE_PRIVATE)
     when (action) {
       is AddCityAction -> navController.navigate(Route.addCityScreen)
       is OpenMapAction -> navController.navigate(Route.openMapScreen)
       is OpenInfoAction -> navController.navigate(Route.infoScreen)
       is SetTheme -> setTheme(action.lightTheme)
       is SetLanguage -> setLanguage(action.language, this)
+      is SetCelsius -> {
+        preferences.edit().putBoolean("celsius", action.isCelsius).apply()
+        celsius.value = action.isCelsius
+      }
+
+      is SetPressure -> {
+        preferences.edit().putBoolean("pressure", action.isHPa).apply()
+        pressurePHa.value = action.isHPa
+      }
+
+      is SetWindSpeed -> {
+        preferences.edit().putBoolean("wind", action.isMS).apply()
+        windSpeedMS.value = action.isMS
+      }
     }
   }
 

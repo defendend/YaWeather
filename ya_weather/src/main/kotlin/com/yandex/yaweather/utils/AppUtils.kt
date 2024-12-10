@@ -8,8 +8,7 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
-fun getForecastWeatherByDay(lst: List<Per3Hour>) : Int
-{
+fun getForecastWeatherByDay(lst: List<Per3Hour>): Int {
   val weatherCountMap: MutableMap<Int, Int> = mutableMapOf()
 
   lst.forEach {
@@ -21,9 +20,8 @@ fun getForecastWeatherByDay(lst: List<Per3Hour>) : Int
   return weatherCountMap.maxByOrNull { it.value }?.key ?: R.drawable.blaze_fill
 }
 
-private fun openWeatherIcons(id: Int) : Int
-{
-  return when(id) {
+private fun openWeatherIcons(id: Int): Int {
+  return when (id) {
     in 200..232 -> R.drawable.thunderstorms_fill
     in 300..321 -> R.drawable.rainy_fill
     in 500..531 -> R.drawable.showers_fill
