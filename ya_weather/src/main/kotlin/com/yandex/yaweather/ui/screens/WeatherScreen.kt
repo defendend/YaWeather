@@ -60,14 +60,17 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.yandex.yaweather.Lang
 import com.yandex.yaweather.R
 import com.yandex.yaweather.appLanguage
+import com.yandex.yaweather.celsius
 import com.yandex.yaweather.darkTheme
 import com.yandex.yaweather.handler.WeatherScreenAction
+import com.yandex.yaweather.pressurePHa
 import com.yandex.yaweather.share.shareWeatherInfo
 import com.yandex.yaweather.utils.getMessage
 import com.yandex.yaweather.utils.getWeatherDescription
 import com.yandex.yaweather.utils.weatherBackground
 import com.yandex.yaweather.utils.weatherEmoji
 import com.yandex.yaweather.viewModel.CitySelectionUIState
+import com.yandex.yaweather.windSpeedMS
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,9 +83,19 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = skipPartiallyExpanded)
   val weatherInfo = """
-    🏙️ ${LocalContext.current.resources.getString(R.string.weather_today_in_city)} ${if (appLanguage.value == Lang.ru) { uiState.cityItem.name ?: "Not found" } else { uiState.cityItem.engName ?: "Not found" }} 
+    🏙️ ${LocalContext.current.resources.getString(R.string.weather_today_in_city)} ${
+    if (appLanguage.value == Lang.ru) {
+      uiState.cityItem.name ?: "Not found"
+    } else {
+      uiState.cityItem.engName ?: "Not found"
+    }
+  } 
     🌡️ ${LocalContext.current.resources.getString(R.string.temperature)}: ${uiState.weatherUiState.temperature}°C  
-    ${weatherEmoji(uiState.weatherUiState.weatherId)} ${LocalContext.current.resources.getString(R.string.condition)}: ${getWeatherDescription(uiState.weatherUiState.weatherId, LocalContext.current)}
+    ${weatherEmoji(uiState.weatherUiState.weatherId)} ${LocalContext.current.resources.getString(R.string.condition)}: ${
+    getWeatherDescription(
+      uiState.weatherUiState.weatherId, LocalContext.current
+    )
+  }
     
     -------------------  
     📱 ${getMessage(uiState.weatherUiState.weatherId, LocalContext.current)} - YaWeather  
@@ -161,16 +174,26 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text ="${uiState.weatherUiState.temperature}°",
-              fontSize = 64.sp,
-              color = Color.White,
-              fontWeight = FontWeight.ExtraBold
+              text = if (celsius.value) {
+                "${uiState.weatherUiState.temperature}°C"
+              } else {
+                val fahrenheit = uiState.weatherUiState.temperature.toInt() * 9 / 5 + 32
+                "${fahrenheit}°F"
+              }, fontSize = 64.sp, color = Color.White, fontWeight = FontWeight.ExtraBold
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-              text = stringResource(R.string.max) + "${uiState.weatherUiState.temperatureMax}°" + stringResource(R.string.min) + "${uiState.weatherUiState.temperatureMin}°",
-              fontSize = 16.sp,
-              color = Color.LightGray
+              text = stringResource(R.string.max) + if (celsius.value) {
+                "${uiState.weatherUiState.temperatureMax}°C"
+              } else {
+                val fahrenheit = uiState.weatherUiState.temperatureMax.toInt() * 9 / 5 + 32
+                "${fahrenheit}°F"
+              } + " " + stringResource(R.string.min) + if (celsius.value) {
+                "${uiState.weatherUiState.temperatureMin}°C"
+              } else {
+                val fahrenheit = uiState.weatherUiState.temperatureMin.toInt() * 9 / 5 + 32
+                "${fahrenheit}°F"
+              }, fontSize = 16.sp, color = Color.LightGray
             )
           }
         }
@@ -195,6 +218,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
   val temperatureFahrenheit = remember {
     mutableStateOf(false)
   }
+  temperatureFahrenheit.value = !celsius.value
   if (openBottomSheet) {
     ModalBottomSheet(
       onDismissRequest = { openBottomSheet = false },
@@ -257,6 +281,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               )
               .clickable {
                 temperatureFahrenheit.value = true
+                action(WeatherScreenAction.SetCelsius(!celsius.value))
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
@@ -275,6 +300,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               )
               .clickable {
                 temperatureFahrenheit.value = false
+                action(WeatherScreenAction.SetCelsius(!celsius.value))
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
@@ -282,6 +308,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
         val windSpeedKm = remember {
           mutableStateOf(true)
         }
+        windSpeedKm.value = !windSpeedMS.value
         Text(
           text = stringResource(R.string.settings_bottom_sheet_wind),
           color = MaterialTheme.colorScheme.inversePrimary,
@@ -311,6 +338,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               )
               .clickable {
                 windSpeedKm.value = true
+                action(WeatherScreenAction.SetWindSpeed(!windSpeedMS.value))
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
@@ -329,6 +357,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               )
               .clickable {
                 windSpeedKm.value = false
+                action(WeatherScreenAction.SetWindSpeed(!windSpeedMS.value))
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
@@ -336,6 +365,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
         val pressureHPa = remember {
           mutableStateOf(true)
         }
+        pressureHPa.value = pressurePHa.value
         Text(
           text = stringResource(R.string.settings_bottom_sheet_pressure),
           color = MaterialTheme.colorScheme.inversePrimary,
@@ -365,6 +395,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               )
               .clickable {
                 pressureHPa.value = true
+                action(WeatherScreenAction.SetPressure(!pressurePHa.value))
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)
@@ -383,6 +414,7 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
               )
               .clickable {
                 pressureHPa.value = false
+                action(WeatherScreenAction.SetPressure(!pressurePHa.value))
               }
               .padding(4.dp),
             textAlign = TextAlign.Center)

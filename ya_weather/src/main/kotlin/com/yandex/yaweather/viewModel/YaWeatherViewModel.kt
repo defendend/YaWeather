@@ -90,11 +90,10 @@ class YaWeatherViewModel @Inject constructor(
     }
   }
 
-  private fun getForecastWeather(lat: Double, lon: Double) : Job
-  {
+  private fun getForecastWeather(lat: Double, lon: Double): Job {
     return viewModelScope.launch(Dispatchers.IO)
     {
-        weatherRepository.getForecastWeather(lat.toString(), lon.toString()).onSuccess {
+      weatherRepository.getForecastWeather(lat.toString(), lon.toString()).onSuccess {
         _currentForecast.emit(it)
       }.onFailure {
         _errorMessage.emit(it.message.toString())
@@ -219,7 +218,7 @@ class YaWeatherViewModel @Inject constructor(
       sealevel = response.main?.seaLevel?.toString() ?: "-",
       sunrise = response.sys?.sunrise ?: 0L, // Если значение null, используем 0L
       sunset = response.sys?.sunset ?: 0L   // Если значение null, используем 0L
-      )
+    )
   }
 
   private fun getCurrentTemperature(response: CoordinatesResponse): String {
@@ -268,11 +267,10 @@ class YaWeatherViewModel @Inject constructor(
     }
   }
 
-  private suspend fun getForecast(lat: Double?, lon: Double?): List<Per3Hour>
-  {
-    return try{
+  private suspend fun getForecast(lat: Double?, lon: Double?): List<Per3Hour> {
+    return try {
       val response = weatherRepository.getForecastWeather(lat.toString(), lon.toString())
-      if(response.isSuccess) {
+      if (response.isSuccess) {
         response.getOrNull()?.list ?: emptyList()
       } else {
         emptyList()
@@ -354,7 +352,6 @@ class YaWeatherViewModel @Inject constructor(
       }
     }
   }
-
 }
 
 data class CitySelectionUIState(
@@ -393,7 +390,7 @@ data class WeatherUiState(
     val windSpeed: String = "",
     val feelsLike: String = "",
     val humidity: String = "",
-    val sunrise: Long = 0 ,
+    val sunrise: Long = 0,
     val sunset: Long = 0
   )
 }
