@@ -1,19 +1,36 @@
 package com.yandex.yaweather.utils
 
 import android.content.Context
-import android.content.res.Resources
 import com.yandex.yaweather.R
+import com.yandex.yaweather.data.network.Per3Hour
 import com.yandex.yaweather.data.network.WeatherByHour
 import java.util.Calendar
 
-fun getCurrentDayOfWeek(): Int {
-  return Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1
+fun getForecastWeatherByDay(lst: List<Per3Hour>) : Int
+{
+  val weatherCountMap: MutableMap<Int, Int> = mutableMapOf()
+
+  lst.forEach {
+    val id = it.weather?.get(0)?.id
+    val iconId = openWeatherIcons(id ?: 0)
+    weatherCountMap[iconId] = weatherCountMap.getOrDefault(iconId, 0) + 1
+  }
+
+  return weatherCountMap.maxByOrNull { it.value }?.key ?: R.drawable.blaze_fill
 }
 
-
-fun getDayOfWeek(dayIndex: Int): String {
-  val daysOfWeek = listOf("Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб")
-  return daysOfWeek[dayIndex % 7]
+private fun openWeatherIcons(id: Int) : Int
+{
+  return when(id) {
+    in 200..232 -> R.drawable.thunderstorms_fill
+    in 300..321 -> R.drawable.rainy_fill
+    in 500..531 -> R.drawable.showers_fill
+    in 600..622 -> R.drawable.snowy_fill
+    in 701..781 -> R.drawable.mist_fill
+    800 -> R.drawable.sun_fill
+    in 801..804 -> R.drawable.cloudy_fill
+    else -> R.drawable.blaze_fill    // Неизвестный код
+  }
 }
 
 fun weatherIconForForecast(weatherByHour: WeatherByHour): Int {

@@ -19,5 +19,14 @@ data class Per3Hour(
   @SerialName("main")
   val main: Main? = null,
   @SerialName("dt_txt")
-  val dtTxt: String? = null
+  val dtTxt: String? = null,
+  @SerialName("weather")
+  val weather: List<WeatherCode>? = null,
 )
+
+@Serializable
+data class WeatherCode(
+  @SerialName("id")
+  val id: Int? = null
+)
+
