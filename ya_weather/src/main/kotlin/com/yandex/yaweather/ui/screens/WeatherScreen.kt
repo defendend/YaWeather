@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -152,66 +154,67 @@ fun WeatherScreen(uiState: CitySelectionUIState, action: (WeatherScreenAction) -
         .background(color = Color.Transparent)
         .padding(16.dp)
     ) {
-      LazyColumn(
+      val scrollState = rememberScrollState()
+      Column(
         modifier = Modifier
           .fillMaxSize()
           .background(color = Color.Transparent)
           .padding(top = 54.dp)
-          .alpha(0.75f),
+          .alpha(0.75f).verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
       ) {
-        item {
-          Column(
-            modifier = Modifier.padding(top = 64.dp), horizontalAlignment = Alignment.CenterHorizontally
-          ) {
-            Text(
-              text = if (appLanguage.value == Lang.ru) {
-                uiState.cityItem.name ?: "Not found"
-              } else {
-                uiState.cityItem.engName ?: "Not found"
-              }, fontSize = 36.sp, color = Color.White, fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-              text = if (celsius.value) {
-                "${uiState.weatherUiState.temperature}°C"
-              } else {
-                val fahrenheit = uiState.weatherUiState.temperature.toInt() * 9 / 5 + 32
-                "${fahrenheit}°F"
-              }, fontSize = 64.sp, color = Color.White, fontWeight = FontWeight.ExtraBold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-              text = stringResource(R.string.max) + if (celsius.value) {
-                "${uiState.weatherUiState.temperatureMax}°C"
-              } else {
-                val fahrenheit = uiState.weatherUiState.temperatureMax.toInt() * 9 / 5 + 32
-                "${fahrenheit}°F"
-              } + " " + stringResource(R.string.min) + if (celsius.value) {
-                "${uiState.weatherUiState.temperatureMin}°C"
-              } else {
-                val fahrenheit = uiState.weatherUiState.temperatureMin.toInt() * 9 / 5 + 32
-                "${fahrenheit}°F"
-              }, fontSize = 16.sp, color = Color.LightGray
-            )
-          }
-        }
-        item {
-          HourlyForecast(uiState.hourlyWeather)
-        }
-
-        item {
-          FiveDayForecast(uiState.forecast)
-        }
-
-        item {
-          MapWidget(uiState.weatherUiState, action)
+        Column(
+          modifier = Modifier.padding(top = 64.dp),
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          Text(
+            text = if (appLanguage.value == Lang.ru) {
+              uiState.cityItem.name ?: "Not found"
+            } else {
+              uiState.cityItem.engName ?: "Not found"
+            },
+            fontSize = 36.sp,
+            color = Color.White,
+            fontWeight = FontWeight.Bold
+          )
+          Spacer(modifier = Modifier.height(8.dp))
+          Text(
+            text = if (celsius.value) {
+              "${uiState.weatherUiState.temperature}°C"
+            } else {
+              val fahrenheit = uiState.weatherUiState.temperature.toInt() * 9 / 5 + 32
+              "${fahrenheit}°F"
+            },
+            fontSize = 64.sp,
+            color = Color.White,
+            fontWeight = FontWeight.ExtraBold
+          )
+          Spacer(modifier = Modifier.height(8.dp))
+          Text(
+            text = stringResource(R.string.max) + if (celsius.value) {
+              "${uiState.weatherUiState.temperatureMax}°C"
+            } else {
+              val fahrenheit = uiState.weatherUiState.temperatureMax.toInt() * 9 / 5 + 32
+              "${fahrenheit}°F"
+            } + " " + stringResource(R.string.min) + if (celsius.value) {
+              "${uiState.weatherUiState.temperatureMin}°C"
+            } else {
+              val fahrenheit = uiState.weatherUiState.temperatureMin.toInt() * 9 / 5 + 32
+              "${fahrenheit}°F"
+            },
+            fontSize = 16.sp,
+            color = Color.LightGray
+          )
         }
 
-        item {
-          Widgets(uiState.weatherUiState.widgetsUiState)
-        }
+        HourlyForecast(uiState.hourlyWeather)
+
+        FiveDayForecast(uiState.forecast)
+
+        MapWidget(uiState.weatherUiState, action)
+
+        Widgets(uiState.weatherUiState.widgetsUiState)
       }
     }
   }
