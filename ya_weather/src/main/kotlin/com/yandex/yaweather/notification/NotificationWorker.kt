@@ -14,6 +14,7 @@ import com.yandex.yaweather.MainActivity
 import com.yandex.yaweather.R
 import com.yandex.yaweather.dagger.application.MainApplication
 import com.yandex.yaweather.repository.OpenWeatherRepository
+import com.yandex.yaweather.utils.getWeatherIconAndMessage
 import data.network.CoordinatesResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -75,47 +76,19 @@ var wishYou = context.applicationContext.getString(R.string.perfect_time_for_wal
     intent,
     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
   )
+
   private fun parseWeatherInfo(weatherResponse: CoordinatesResponse?): String {
     return weatherResponse?.let { it ->
       it.weather?.firstOrNull()?.main.let {
-        when (it) {
-          "Clouds" -> {
-            icon = R.drawable.cloudsday
-            wishYou ="Оденьтесь потеплее :)"
-          }
-          "Snow" -> {
-            icon = R.drawable.snowday
-            wishYou ="Идеальное время для горячего кофе:)"
 
-          }
-          "Rain" -> {
-            icon = R.drawable.rainyday
-            wishYou ="Идеальное время для чтения книги :)"
-
-          }
-          "Clear" -> {
-            icon = R.drawable.cloudy
-            wishYou =("Прекрасное время для прогулки :)")
-          }
-          "Drizzle" -> {
-            icon = R.drawable.cloudy
-            wishYou =("Идеальное время, чтобы насладиться тишиной и прохладой :)")
-          }
-          "Thunderstorm" -> {
-            icon = R.drawable.thunderstormm
-            wishYou =("Будьте осторожны и избегайте открытых пространств :)")
-          }
-          "Mist" -> {
-            icon = R.drawable.cloudymin
-            wishYou =("Прекрасное время для тихих размышлений :)")
-          }
-        }
+        icon = getWeatherIconAndMessage(it.toString()).first
+        wishYou = applicationContext.resources.getString(getWeatherIconAndMessage(it.toString()).second)
       }
       it.weather?.firstOrNull()?.description.let {
      }
       val temp = ((it.main?.temp)?.minus(273)?.toInt() ?: 0)
       val description = it.weather?.firstOrNull()?.description ?: "Unknown weather"
-      "Температура: $temp°C, Состояние: $description \n $wishYou"
+      "${applicationContext.getString(R.string.temperature)}: $temp°C, ${applicationContext.getString(R.string.condition)}: $description\n$wishYou \uD83C\uDF1F"
     } ?: "Unable to fetch weather data"
   }
 
@@ -134,11 +107,11 @@ var wishYou = context.applicationContext.getString(R.string.perfect_time_for_wal
 
     val notification = NotificationCompat.Builder(applicationContext, channelId)
       .setSmallIcon(R.drawable.icon)
-      .setContentTitle("Информация о погоде")
+      .setContentTitle(applicationContext.resources.getString(R.string.weather_info))
       .setDefaults(0)
       .setVisibility(NotificationCompat.VISIBILITY_SECRET)
       .setContentText(weatherInfo)
-      .setPriority(NotificationCompat.PRIORITY_HIGH)
+      .setPriority(NotificationCompat.PRIORITY_MAX)
       .setContentIntent(pendingIntent)
       .setLargeIcon(Icon.createWithResource(applicationContext, icon))
       .build()

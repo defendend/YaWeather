@@ -50,8 +50,8 @@ class MainApplication : Application() {
   }
 
   fun setupPeriodicNotificationUpdate(context: Context) {
-    val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(2, TimeUnit.HOURS)
-      .setInitialDelay(2, TimeUnit.HOURS)
+    val workRequest = PeriodicWorkRequestBuilder<NotificationWorker>(16, TimeUnit.MINUTES)
+      .setInitialDelay(0, TimeUnit.MINUTES)
       .setConstraints(
         Constraints.Builder()
           .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -62,7 +62,7 @@ class MainApplication : Application() {
 
     WorkManager.getInstance(context).enqueueUniquePeriodicWork(
       "notification_update",
-      ExistingPeriodicWorkPolicy.KEEP,
+      ExistingPeriodicWorkPolicy.REPLACE,
       workRequest
     )
   }

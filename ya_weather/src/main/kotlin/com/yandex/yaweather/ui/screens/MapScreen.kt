@@ -1,5 +1,6 @@
 package com.yandex.yaweather.ui.screens
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
@@ -85,231 +87,38 @@ fun MapScreen(
   val markerTitle: String
   var markerPosition by remember { mutableStateOf(currentLocation) }
   var isNightMode by remember { mutableStateOf(false) }
+  val context = LocalContext.current
+
 
   when (selectedMenuItem) {
     "Temperature" -> {
-      markerTitle = "Temperature: ${uiState.temperature}°C"
+      markerTitle = "${LocalContext.current.resources.getString(R.string.temperature)}: ${uiState.temperature}°C"
 
     }
 
     "Wind" -> {
-      markerTitle = "Wind speed: ${uiState.windSpeed}m/s"
+      markerTitle = "${LocalContext.current.resources.getString(R.string.wind_speed)}: ${uiState.windSpeed}m/s"
 
     }
 
     "Pressue" -> {
-      markerTitle = "Pressue: ${uiState.pressure} Pa"
+      markerTitle = "${LocalContext.current.resources.getString(R.string.pressure)}: ${uiState.pressure} Pa"
 
 
     }
 
     "Precipitation" -> {
-      markerTitle = "Precipitation: ${uiState.humidity}%"
+      markerTitle = "${LocalContext.current.resources.getString(R.string.precipitation)}: ${uiState.humidity}%"
     }
 
     else -> {
       markerTitle = ""
     }
   }
-  val nightModeStyle = """
-    [
-      {
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#242f3e"
-          }
-        ]
-      },
-      {
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#746855"
-          }
-        ]
-      },
-      {
-        "elementType": "labels.text.stroke",
-        "stylers": [
-          {
-            "color": "#242f3e"
-          }
-        ]
-      },
-      {
-        "featureType": "administrative.locality",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#d59563"
-          }
-        ]
-      },
-      {
-        "featureType": "poi",
-        "elementType": "labels.text",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "poi",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#d59563"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.business",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.park",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#263c3f"
-          }
-        ]
-      },
-      {
-        "featureType": "poi.park",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#6b9a76"
-          }
-        ]
-      },
-      {
-        "featureType": "road",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#38414e"
-          }
-        ]
-      },
-      {
-        "featureType": "road",
-        "elementType": "geometry.stroke",
-        "stylers": [
-          {
-            "color": "#212a37"
-          }
-        ]
-      },
-      {
-        "featureType": "road",
-        "elementType": "labels.icon",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "road",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#9ca5b3"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#746855"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "geometry.stroke",
-        "stylers": [
-          {
-            "color": "#1f2835"
-          }
-        ]
-      },
-      {
-        "featureType": "road.highway",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#f3d19c"
-          }
-        ]
-      },
-      {
-        "featureType": "transit",
-        "stylers": [
-          {
-            "visibility": "off"
-          }
-        ]
-      },
-      {
-        "featureType": "transit",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#2f3948"
-          }
-        ]
-      },
-      {
-        "featureType": "transit.station",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#d59563"
-          }
-        ]
-      },
-      {
-        "featureType": "water",
-        "elementType": "geometry",
-        "stylers": [
-          {
-            "color": "#17263c"
-          }
-        ]
-      },
-      {
-        "featureType": "water",
-        "elementType": "labels.text.fill",
-        "stylers": [
-          {
-            "color": "#515c6d"
-          }
-        ]
-      },
-      {
-        "featureType": "water",
-        "elementType": "labels.text.stroke",
-        "stylers": [
-          {
-            "color": "#17263c"
-          }
-        ]
-      }
-    ]
-""".trimIndent()
+
   val nightModeStyleOptions = remember {
-    MapStyleOptions(nightModeStyle)
+    val jsonString = getJsonFromRaw(context, R.raw.night_mode_map)
+    MapStyleOptions(jsonString)
   }
   Box(modifier = Modifier.fillMaxSize()) {
 
@@ -385,11 +194,12 @@ fun MapScreen(
           DropdownMenu(
             expanded = isMenuExpanded,
             onDismissRequest = { isMenuExpanded = false },
-            Modifier.background(Color.White),
+            Modifier.background(color = Color.Gray.copy(alpha = 0.7f))
+            ,
 
             ) {
             DropdownMenuItem(
-              text = { Text("Precipition") },
+              text = { Text(LocalContext.current.resources.getString(R.string.precipitation)) },
               onClick = { selectedMenuItem = "Precipitation" },
               leadingIcon = {
                 Icon(
@@ -408,7 +218,7 @@ fun MapScreen(
               }
             )
             DropdownMenuItem(
-              text = { Text("Temperature") },
+              text = { Text(LocalContext.current.resources.getString(R.string.temperature)) },
               onClick = { selectedMenuItem = "Temperature" },
               leadingIcon = {
                 Icon(
@@ -427,7 +237,7 @@ fun MapScreen(
               }
             )
             DropdownMenuItem(
-              text = { Text("Pressue") },
+              text = { Text(LocalContext.current.resources.getString(R.string.pressure)) },
               onClick = { selectedMenuItem = "Pressue" },
               leadingIcon = {
                 Icon(
@@ -447,7 +257,7 @@ fun MapScreen(
 
             )
             DropdownMenuItem(
-              text = { Text("Wind") },
+              text = { Text(LocalContext.current.resources.getString(R.string.wind_speed)) },
               onClick = { selectedMenuItem = "Wind" },
               leadingIcon = {
                 Icon(
@@ -470,4 +280,7 @@ fun MapScreen(
       }
     }
   }
+}
+fun getJsonFromRaw(context: Context, rawResourceId: Int): String {
+  return context.resources.openRawResource(rawResourceId).bufferedReader().use { it.readText() }
 }
