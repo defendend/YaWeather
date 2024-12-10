@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,36 +40,45 @@ fun HourlyForecast(weatherByHour: List<WeatherByHour>) {
       .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
       .padding(start = 16.dp, top = 16.dp, bottom = 16.dp, end = 16.dp)
   ) {
-    Text(
-      modifier = Modifier.padding(start = 8.dp),
-      text = stringResource(R.string.hourly_forecast),
-      fontSize = 16.sp,
-      color = MaterialTheme.colorScheme.inversePrimary,
-      fontWeight = FontWeight.Bold
-    )
-    Spacer(modifier = Modifier.height(8.dp))
-    LazyRow(
-      horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()
-    ) {
-      items(weatherByHour) { index ->
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(start = 8.dp)
-        ) {
-          Spacer(modifier = Modifier.height(4.dp))
-          index.temp?.let {
-            val temperatureInCelsius = (it - 273.15).toInt()
-            Text("$temperatureInCelsius°", color = MaterialTheme.colorScheme.inversePrimary, fontSize = 18.sp)
-          }
-          Icon(
-            painter = painterResource(weatherIconForForecast(index)),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.inversePrimary,
-            modifier = Modifier.size(24.dp)
-          )
-          Spacer(modifier = Modifier.height(4.dp))
-          index.timeStamp?.let {
-            val formattedTime = it.split("T").getOrNull(1)?.split(":")?.getOrNull(0)?.plus("h") ?: "N/A"
-            Text(formattedTime, color = MaterialTheme.colorScheme.inversePrimary, fontSize = 12.sp)
+    if (weatherByHour.isEmpty()) {
+      CircularProgressIndicator(
+        modifier = Modifier
+          .align(Alignment.CenterHorizontally),
+        color = MaterialTheme.colorScheme.inversePrimary,
+        strokeWidth = 4.dp
+      )
+    } else {
+      Text(
+        modifier = Modifier.padding(start = 8.dp),
+        text = stringResource(R.string.hourly_forecast),
+        fontSize = 16.sp,
+        color = MaterialTheme.colorScheme.inversePrimary,
+        fontWeight = FontWeight.Bold
+      )
+      Spacer(modifier = Modifier.height(8.dp))
+      LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.fillMaxWidth()
+      ) {
+        items(weatherByHour) { index ->
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(start = 8.dp)
+          ) {
+            Spacer(modifier = Modifier.height(4.dp))
+            index.temp?.let {
+              val temperatureInCelsius = (it - 273.15).toInt()
+              Text("$temperatureInCelsius°", color = MaterialTheme.colorScheme.inversePrimary, fontSize = 18.sp)
+            }
+            Icon(
+              painter = painterResource(weatherIconForForecast(index)),
+              contentDescription = null,
+              tint = MaterialTheme.colorScheme.inversePrimary,
+              modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            index.timeStamp?.let {
+              val formattedTime = it.split("T").getOrNull(1)?.split(":")?.getOrNull(0)?.plus("h") ?: "N/A"
+              Text(formattedTime, color = MaterialTheme.colorScheme.inversePrimary, fontSize = 12.sp)
+            }
           }
         }
       }

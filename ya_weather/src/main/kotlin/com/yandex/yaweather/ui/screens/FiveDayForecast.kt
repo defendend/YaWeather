@@ -2,7 +2,6 @@ package com.yandex.yaweather.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+//noinspection UsingMaterialAndMaterial3Libraries
+import androidx.compose.material.CircularProgressIndicator
 import com.yandex.yaweather.R
 import com.yandex.yaweather.data.network.Per3Hour
 import com.yandex.yaweather.utils.getForecastWeatherByDay
@@ -32,22 +33,20 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
   val elementsPerDay = 8
   val daysCount = 5
 
-  if (forecast.isEmpty()) {
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(16.dp),
-      contentAlignment = Alignment.Center
-    ) {
-
-    }
-  } else {
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
-        .padding(16.dp)
-    ) {
+  Column(
+    modifier = Modifier
+      .fillMaxWidth()
+      .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
+      .padding(16.dp)
+  ) {
+    if (forecast.isEmpty()) {
+      CircularProgressIndicator(
+        modifier = Modifier
+          .align(Alignment.CenterHorizontally),
+        color = MaterialTheme.colorScheme.inversePrimary,
+        strokeWidth = 4.dp
+      )
+    } else {
       Text(
         text = stringResource(R.string.fivedayforecast),
         fontSize = 16.sp,
@@ -112,3 +111,5 @@ fun FiveDayForecast(forecast: List<Per3Hour>) {
     }
   }
 }
+
+

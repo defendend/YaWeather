@@ -78,6 +78,7 @@ dependencies {
   implementation(libs.androidx.material)
   implementation(libs.androidx.ui)
   implementation(libs.androidx.ui.tooling.preview)
+  implementation(libs.androidx.runtime)
   implementation("de.charlex.compose:revealswipe:1.0.0")
 
   //Navigation
