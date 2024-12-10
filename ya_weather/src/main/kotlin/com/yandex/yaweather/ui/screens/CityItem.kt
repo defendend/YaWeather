@@ -47,6 +47,7 @@ import com.google.accompanist.drawablepainter.rememberDrawablePainter
 import com.yandex.yaweather.Lang
 import com.yandex.yaweather.R
 import com.yandex.yaweather.appLanguage
+import com.yandex.yaweather.celsius
 import com.yandex.yaweather.handler.CityScreenAction
 import com.yandex.yaweather.utils.getWeatherDescription
 import com.yandex.yaweather.utils.weatherBackground
@@ -207,7 +208,9 @@ fun CityItemUi(
       }
 
       Text(
-        text = "${citySelectionUIState.weatherUiState.temperature}°",
+        text = if (celsius.value) {
+          "${citySelectionUIState.weatherUiState.temperature}°C" }
+        else { "${citySelectionUIState.weatherUiState.temperature.toInt() * 9 / 5 + 32}°F"},
         modifier = Modifier
           .align(Alignment.TopEnd)
           .padding(16.dp),
@@ -226,7 +229,8 @@ fun CityItemUi(
       )
 
       Text(
-        text = "${LocalContext.current.resources.getString(R.string.feelsLike)}: ${citySelectionUIState.weatherUiState.feelsLike}°",
+        text = "${LocalContext.current.resources.getString(R.string.feelsLike)}:" + if (celsius.value) {
+          "${citySelectionUIState.weatherUiState.feelsLike}°C" } else { "${citySelectionUIState.weatherUiState.feelsLike.toInt() * 9 / 5 + 32}°F"},
         modifier = Modifier
           .align(Alignment.BottomEnd)
           .padding(16.dp),
