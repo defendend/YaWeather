@@ -19,6 +19,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -29,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +39,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,6 +47,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.yandex.yaweather.R
 import com.yandex.yaweather.handler.SplashScreenAction
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalTime
 import kotlin.random.Random
 
@@ -99,6 +103,7 @@ fun SplashScreen(isDataLoaded: Boolean, action: (SplashScreenAction) -> Unit) {
         NightSkyAnimation()
       } else {
         AnimatedSun()
+        Snowfall()
         MovingCloud()
       }
     }
@@ -246,3 +251,68 @@ fun NightSkyAnimation() {
   }
 }
 
+@Composable
+fun Snowfall() {
+  val snowflakes = remember { generateSnowflakes(20) }
+
+  Box(modifier = Modifier.fillMaxSize()) {
+    snowflakes.forEach { snowflake ->
+      SnowflakeItem(snowflake)
+    }
+  }
+}
+
+@Composable
+fun SnowflakeItem(snowflake: Snowflake) {
+  val coroutineScope = rememberCoroutineScope()
+  val yPosition = remember { Animatable(snowflake.startY) }
+
+  LaunchedEffect(Unit) {
+    coroutineScope.launch {
+      delay(Random.nextLong(0, 1000))
+      while (true) {
+        yPosition.snapTo(snowflake.startY)
+        yPosition.animateTo(
+          targetValue = snowflake.endY,
+          animationSpec = infiniteRepeatable(
+            animation = tween(
+              durationMillis = snowflake.speed,
+              easing = LinearEasing
+            ),
+            repeatMode = RepeatMode.Restart
+          )
+        )
+      }
+    }
+  }
+
+  Image(
+    painter = painterResource(id = R.drawable.snowflake),
+    contentDescription = "Snowflake",
+    modifier = Modifier
+      .absoluteOffset(x = snowflake.x.dp, y = yPosition.value.dp)
+      .size(snowflake.size.dp),
+    contentScale = ContentScale.Fit
+  )
+}
+
+
+data class Snowflake(
+  val x: Float,
+  val size: Float,
+  val speed: Int,
+  val startY: Float,
+  val endY: Float
+)
+
+fun generateSnowflakes(count: Int): List<Snowflake> {
+  return List(count) {
+    Snowflake(
+      x = Random.nextFloat() * 360f,
+      size = Random.nextFloat() * 30f + 10f,
+      speed = Random.nextInt(3000, 7000),
+      startY = -Random.nextFloat() * 50f,
+      endY = 800f
+    )
+  }
+}
